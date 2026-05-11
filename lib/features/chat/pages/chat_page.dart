@@ -40,32 +40,44 @@ class _ChatPageState extends State<ChatPage> {
             centerTitle: true,
             backgroundColor: const Color(0xffFDF6F6),
           ),
-          body: Column(
-            children: [
-              Expanded(
-                child: ListView.builder(
-                  controller: _scrollController,
-                  padding: const EdgeInsets.all(16),
-                  itemCount: controller.messages.length,
-                  itemBuilder: (context, index) {
-                    return MessageBubble(
-                      message: controller.messages[index],
-                    );
+          body: Container(
+            decoration: const BoxDecoration(
+    gradient: LinearGradient(
+      colors: [
+        Color(0xffFDF6F6), 
+        Color(0xffF7F7FB), 
+      ],
+      begin: Alignment.topLeft,
+      end: Alignment.bottomRight,
+    ),
+  ),
+            child: Column(
+              children: [
+                Expanded(
+                  child: ListView.builder(
+                    controller: _scrollController,
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+                    itemCount: controller.messages.length,
+                    itemBuilder: (context, index) {
+                      return MessageBubble(
+                        message: controller.messages[index],
+                      );
+                    },
+                  ),
+                ),
+            
+                if (controller.isLoading)
+                  const TypingIndicator(),
+            
+                ChatInput(
+                  controller: _controller,
+                  onSend: () {
+                    controller.sendMessage(_controller.text);
+                    _controller.clear();
                   },
                 ),
-              ),
-
-              if (controller.isLoading)
-                const TypingIndicator(),
-
-              ChatInput(
-                controller: _controller,
-                onSend: () {
-                  controller.sendMessage(_controller.text);
-                  _controller.clear();
-                },
-              ),
-            ],
+              ],
+            ),
           ),
         );
       },

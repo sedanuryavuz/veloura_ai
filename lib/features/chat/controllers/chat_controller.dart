@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../core/constants/prompts.dart';
 import '../models/message_model.dart';
 import '../services/gemini_service.dart';
 
@@ -27,17 +28,9 @@ class ChatController extends ChangeNotifier {
     notifyListeners();
 
     try {
-final response = await sendWithRetry("""
-You are a professional fashion stylist.
-
-Top:
-Bottom:
-Shoes:
-Accessories:
-Style vibe:
-
-User: $text
-""");
+  final response = await sendWithRetry(
+  Prompts.fashionStylist(text),
+);
 
       addAIMessage(response);
     } catch (e) {
