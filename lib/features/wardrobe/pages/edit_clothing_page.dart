@@ -9,46 +9,68 @@ import '../models/clothing_item_model.dart';
 import '../services/image_service.dart';
 import '../widgets/image_source_sheet.dart';
 
-class AddClothingPage extends StatefulWidget {
-  const AddClothingPage({super.key});
+class EditClothingPage extends StatefulWidget {
+  final ClothingItemModel item;
+
+  const EditClothingPage({super.key, required this.item});
 
   @override
-  State<AddClothingPage> createState() => _AddClothingPageState();
+  State<EditClothingPage> createState() => _EditClothingPageState();
 }
 
-class _AddClothingPageState extends State<AddClothingPage> {
+class _EditClothingPageState extends State<EditClothingPage> {
+  late TextEditingController nameController;
+  late String selectedCategory;
+
   File? selectedImage;
-
-  final nameController = TextEditingController();
-
-  String selectedCategory = 'top';
 
   final ImageService _imageService = ImageService();
 
-  void saveItem() {
-    if (selectedImage == null || nameController.text.trim().isEmpty) {
-      return;
-    }
+  @override
+  void initState() {
+    super.initState();
 
-    final item = ClothingItemModel(
-      id: DateTime.now().toString(),
+    nameController = TextEditingController(text: widget.item.name);
+
+    selectedCategory = widget.item.category;
+
+    selectedImage = File(widget.item.imagePath);
+  }
+
+  void changeImage() async {
+    final image = await _imageService.pickImage(ImageSource.gallery);
+
+    if (image != null) {
+      setState(() {
+        selectedImage = image;
+      });
+    }
+  }
+
+  void saveChanges() async {
+    if (nameController.text.trim().isEmpty) return;
+
+    final updatedItem = ClothingItemModel(
+      id: widget.item.id,
 
       imagePath: selectedImage!.path,
 
       name: nameController.text,
 
-      category: selectedCategory.toLowerCase(),
+      category: selectedCategory,
     );
 
-    context.read<WardrobeController>().addItem(item);
+    await context.read<WardrobeController>().updateItem(updatedItem);
 
-    Navigator.pop(context);
+    if (mounted) {
+      Navigator.pop(context);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Add Clothing')),
+      appBar: AppBar(title: const Text('Edit Clothing')),
 
       body: Padding(
         padding: const EdgeInsets.all(16),
@@ -67,23 +89,17 @@ class _AddClothingPageState extends State<AddClothingPage> {
                 );
               },
 
-              child: Container(
-                height: 220,
-                width: double.infinity,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(20),
 
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade200,
+                child: Image.file(
+                  selectedImage!,
 
-                  borderRadius: BorderRadius.circular(20),
+                  height: 250,
+                  width: double.infinity,
+
+                  fit: BoxFit.cover,
                 ),
-
-                child: selectedImage == null
-                    ? const Icon(Icons.add_a_photo, size: 50)
-                    : ClipRRect(
-                        borderRadius: BorderRadius.circular(20),
-
-                        child: Image.file(selectedImage!, fit: BoxFit.cover),
-                      ),
               ),
             ),
 
@@ -128,7 +144,7 @@ class _AddClothingPageState extends State<AddClothingPage> {
               width: double.infinity,
 
               child: ElevatedButton(
-                onPressed: saveItem,
+                onPressed: saveChanges,
 
                 child: const Text('Save'),
               ),
