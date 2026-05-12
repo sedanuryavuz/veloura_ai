@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../controllers/wardrobe_controller.dart';
-import '../widgets/clothing_card.dart';
+import '../widgets/wardrobe_grid.dart';
 import 'add_clothing_page.dart';
 import '../widgets/category_filter.dart';
 
@@ -52,31 +52,7 @@ class _WardrobePageState extends State<WardrobePage> {
           ),
 
           const SizedBox(height: 16),
-          Expanded(
-            child: GridView.builder(
-              padding: const EdgeInsets.all(16),
-
-              itemCount: controller.filteredItems.length,
-
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                crossAxisSpacing: 12,
-                mainAxisSpacing: 12,
-                childAspectRatio: 0.7,
-              ),
-
-              itemBuilder: (context, index) {
-                final item = controller.items[index];
-
-                return ClothingCard(
-                  item: item,
-                  onDelete: () {
-                    controller.deleteItem(item.id);
-                  },
-                );
-              },
-            ),
-          ),
+          Expanded(child: WardrobeGrid(controller: controller)),
         ],
       ),
     );
