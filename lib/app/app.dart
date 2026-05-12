@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:veloura_ai/features/outfit/controllers/outfit_controller.dart';
+import 'package:veloura_ai/features/outfit/pages/outfit_builder_page.dart';
+import 'package:veloura_ai/features/outfit/pages/outfit_list_page.dart';
 import 'package:veloura_ai/features/wardrobe/pages/wardrobe_page.dart';
 
 import '../features/chat/controllers/chat_controller.dart';
@@ -19,6 +22,9 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: (_) => WardrobeController(),
         ),
+        ChangeNotifierProvider(
+          create: (_) => OutfitController(),
+        ),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
@@ -29,7 +35,7 @@ class MyApp extends StatelessWidget {
             seedColor: const Color(0xffE8B4B8),
           ),
         ),
-        home: const WardrobePage(),
+        home: const OutfitListPage(),
       ),
     );
   }
