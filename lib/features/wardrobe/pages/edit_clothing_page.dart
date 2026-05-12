@@ -1,10 +1,13 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
 import '../controllers/wardrobe_controller.dart';
 import '../models/clothing_item_model.dart';
+import '../services/image_service.dart';
+import '../widgets/image_source_sheet.dart';
 
 class EditClothingPage extends StatefulWidget {
   final ClothingItemModel item;
@@ -17,8 +20,11 @@ class EditClothingPage extends StatefulWidget {
 
 class _EditClothingPageState extends State<EditClothingPage> {
   late TextEditingController nameController;
-
   late String selectedCategory;
+
+  File? selectedImage;
+
+  final ImageService _imageService = ImageService();
 
   @override
   void initState() {
@@ -27,19 +33,38 @@ class _EditClothingPageState extends State<EditClothingPage> {
     nameController = TextEditingController(text: widget.item.name);
 
     selectedCategory = widget.item.category;
+
+    selectedImage = File(widget.item.imagePath);
+  }
+
+  void changeImage() async {
+    final image = await _imageService.pickImage(ImageSource.gallery);
+
+    if (image != null) {
+      setState(() {
+        selectedImage = image;
+      });
+    }
   }
 
   void saveChanges() async {
+    if (nameController.text.trim().isEmpty) return;
+
     final updatedItem = ClothingItemModel(
       id: widget.item.id,
-      imagePath: widget.item.imagePath,
+
+      imagePath: selectedImage!.path,
+
       name: nameController.text,
+
       category: selectedCategory,
     );
 
     await context.read<WardrobeController>().updateItem(updatedItem);
 
-    Navigator.pop(context);
+    if (mounted) {
+      Navigator.pop(context);
+    }
   }
 
   @override
@@ -52,14 +77,29 @@ class _EditClothingPageState extends State<EditClothingPage> {
 
         child: Column(
           children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(20),
+            GestureDetector(
+              onTap: () {
+                ImageSourceSheet.show(
+                  context: context,
+                  onImagePicked: (image) {
+                    setState(() {
+                      selectedImage = image;
+                    });
+                  },
+                );
+              },
 
-              child: Image.file(
-                File(widget.item.imagePath),
-                height: 250,
-                width: double.infinity,
-                fit: BoxFit.cover,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(20),
+
+                child: Image.file(
+                  selectedImage!,
+
+                  height: 250,
+                  width: double.infinity,
+
+                  fit: BoxFit.cover,
+                ),
               ),
             ),
 
@@ -67,6 +107,7 @@ class _EditClothingPageState extends State<EditClothingPage> {
 
             TextField(
               controller: nameController,
+
               decoration: const InputDecoration(hintText: 'Item name'),
             ),
 
@@ -74,6 +115,7 @@ class _EditClothingPageState extends State<EditClothingPage> {
 
             DropdownButton<String>(
               value: selectedCategory,
+
               isExpanded: true,
 
               items: const [
@@ -103,6 +145,7 @@ class _EditClothingPageState extends State<EditClothingPage> {
 
               child: ElevatedButton(
                 onPressed: saveChanges,
+
                 child: const Text('Save'),
               ),
             ),
