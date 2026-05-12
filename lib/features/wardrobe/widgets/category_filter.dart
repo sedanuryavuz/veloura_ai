@@ -12,27 +12,18 @@ class CategoryFilter extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final categories = [
-      'all',
-      'top',
-      'bottom',
-      'shoes',
-      'accessories',
-    ];
+    final categories = ['all', 'top', 'bottom', 'shoes', 'accessories'];
 
     return SizedBox(
       height: 45,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(
-          horizontal: 16,
-        ),
+        padding: const EdgeInsets.symmetric(horizontal: 16),
 
         itemBuilder: (context, index) {
           final category = categories[index];
 
-          final isSelected =
-              selected == category;
+          final isSelected = selected == category;
 
           return GestureDetector(
             onTap: () {
@@ -40,30 +31,20 @@ class CategoryFilter extends StatelessWidget {
             },
 
             child: AnimatedContainer(
-              duration:
-                  const Duration(milliseconds: 250),
+              duration: const Duration(milliseconds: 250),
 
-              padding:
-                  const EdgeInsets.symmetric(
-                horizontal: 18,
-                vertical: 10,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
 
               decoration: BoxDecoration(
-                color: isSelected
-                    ? const Color(0xffE8B4B8)
-                    : Colors.white,
+                color: isSelected ? const Color(0xffE8B4B8) : Colors.white,
 
-                borderRadius:
-                    BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(20),
               ),
 
               child: Text(
                 category.toUpperCase(),
                 style: TextStyle(
-                  color: isSelected
-                      ? Colors.white
-                      : Colors.black87,
+                  color: isSelected ? Colors.white : Colors.black87,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -71,8 +52,7 @@ class CategoryFilter extends StatelessWidget {
           );
         },
 
-        separatorBuilder: (_, __) =>
-            const SizedBox(width: 10),
+        separatorBuilder: (_, __) => const SizedBox(width: 10),
 
         itemCount: categories.length,
       ),

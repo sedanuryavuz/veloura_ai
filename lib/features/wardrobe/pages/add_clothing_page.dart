@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 
 import '../controllers/wardrobe_controller.dart';
@@ -24,20 +25,25 @@ class _AddClothingPageState extends State<AddClothingPage> {
   Future<void> pickImage() async {
     final picker = ImagePicker();
 
-    final image = await picker.pickImage(
-      source: ImageSource.gallery,
-    );
+    final image = await picker.pickImage(source: ImageSource.gallery);
 
     if (image != null) {
+      final appDir = await getApplicationDocumentsDirectory();
+
+      final fileName = DateTime.now().millisecondsSinceEpoch.toString();
+
+      final savedImage = await File(
+        image.path,
+      ).copy('${appDir.path}/$fileName.jpg');
+
       setState(() {
-        selectedImage = File(image.path);
+        selectedImage = savedImage;
       });
     }
   }
 
   void saveItem() {
-    if (selectedImage == null ||
-        nameController.text.trim().isEmpty) {
+    if (selectedImage == null || nameController.text.trim().isEmpty) {
       return;
     }
 
@@ -45,7 +51,7 @@ class _AddClothingPageState extends State<AddClothingPage> {
       id: DateTime.now().toString(),
       imagePath: selectedImage!.path,
       name: nameController.text,
-      category: selectedCategory,
+      category: selectedCategory.toLowerCase(),
     );
 
     context.read<WardrobeController>().addItem(item);
@@ -56,9 +62,7 @@ class _AddClothingPageState extends State<AddClothingPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Add Clothing'),
-      ),
+      appBar: AppBar(title: const Text('Add Clothing')),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -76,10 +80,7 @@ class _AddClothingPageState extends State<AddClothingPage> {
                     ? const Icon(Icons.add_a_photo, size: 50)
                     : ClipRRect(
                         borderRadius: BorderRadius.circular(20),
-                        child: Image.file(
-                          selectedImage!,
-                          fit: BoxFit.cover,
-                        ),
+                        child: Image.file(selectedImage!, fit: BoxFit.cover),
                       ),
               ),
             ),
@@ -88,9 +89,7 @@ class _AddClothingPageState extends State<AddClothingPage> {
 
             TextField(
               controller: nameController,
-              decoration: const InputDecoration(
-                hintText: 'Item name',
-              ),
+              decoration: const InputDecoration(hintText: 'Item name'),
             ),
 
             const SizedBox(height: 20),
@@ -99,18 +98,9 @@ class _AddClothingPageState extends State<AddClothingPage> {
               value: selectedCategory,
               isExpanded: true,
               items: const [
-                DropdownMenuItem(
-                  value: 'top',
-                  child: Text('Top'),
-                ),
-                DropdownMenuItem(
-                  value: 'bottom',
-                  child: Text('Bottom'),
-                ),
-                DropdownMenuItem(
-                  value: 'shoes',
-                  child: Text('Shoes'),
-                ),
+                DropdownMenuItem(value: 'top', child: Text('Top')),
+                DropdownMenuItem(value: 'bottom', child: Text('Bottom')),
+                DropdownMenuItem(value: 'shoes', child: Text('Shoes')),
                 DropdownMenuItem(
                   value: 'accessories',
                   child: Text('Accessories'),
