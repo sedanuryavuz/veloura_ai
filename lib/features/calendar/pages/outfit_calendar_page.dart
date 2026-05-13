@@ -14,11 +14,25 @@ class OutfitCalendarPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = context.watch<CalendarController>();
+    
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final selectedDate = DateTime(
+      controller.selectedDay.year, 
+      controller.selectedDay.month, 
+      controller.selectedDay.day
+    );
+    final isPast = selectedDate.isBefore(today);
+    
+    final dayOutfits = controller.plannedOutfits.where((e) =>
+        e.date.year == controller.selectedDay.year &&
+        e.date.month == controller.selectedDay.month &&
+        e.date.day == controller.selectedDay.day).toList();
 
     return Scaffold(
       backgroundColor: const Color(0xffF5F2F3),
 
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: isPast ? null : FloatingActionButton(
         backgroundColor: Colors.black,
 
         child: const Icon(Icons.add, color: Colors.white),
@@ -59,18 +73,18 @@ class OutfitCalendarPage extends StatelessWidget {
             const SizedBox(height: 24),
 
             Expanded(
-              child: controller.plannedOutfits.isEmpty
+              child: dayOutfits.isEmpty
                   ? const EmptyPlanner()
                   : ListView.builder(
-                      itemCount: controller.plannedOutfits.length,
+                      itemCount: dayOutfits.length,
 
                       itemBuilder: (context, index) {
-                        final item = controller.plannedOutfits[index];
+                        final item = dayOutfits[index];
 
                         return PlannedOutfitCard(
                           outfit: item.outfit,
 
-                          onTap: () {
+                          onTap: isPast ? null : () {
                             OutfitSelectionSheet.show(
                               context: context,
 
@@ -82,7 +96,7 @@ class OutfitCalendarPage extends StatelessWidget {
                             );
                           },
 
-                          onDelete: () {
+                          onDelete: isPast ? null : () {
                             controller.removePlannedOutfit(item.date);
                           },
                         );

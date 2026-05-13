@@ -5,14 +5,14 @@ import '../../outfit/models/outfit_model.dart';
 
 class PlannedOutfitCard extends StatelessWidget {
   final OutfitModel outfit;
-  final VoidCallback onTap;
-  final VoidCallback onDelete;
+  final VoidCallback? onTap;
+  final VoidCallback? onDelete;
 
   const PlannedOutfitCard({
     super.key,
     required this.outfit,
-    required this.onTap,
-    required this.onDelete,
+    this.onTap,
+    this.onDelete,
   });
 
   @override
@@ -70,9 +70,11 @@ class PlannedOutfitCard extends StatelessWidget {
             Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                IconButton(onPressed: onDelete, icon: const Icon(Icons.delete)),
+                if (onDelete != null)
+                  IconButton(onPressed: onDelete, icon: const Icon(Icons.delete)),
 
-                const Icon(Icons.chevron_right),
+                if (onTap != null)
+                  const Icon(Icons.chevron_right),
               ],
             ),
           ],

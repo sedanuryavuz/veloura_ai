@@ -77,8 +77,6 @@ class _OutfitBuilderPageState extends State<OutfitBuilderPage> {
           await provider.saveOutfit(userId);
 
           if (mounted) {
-                print(provider.error!);
-
             if (provider.error != null) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
