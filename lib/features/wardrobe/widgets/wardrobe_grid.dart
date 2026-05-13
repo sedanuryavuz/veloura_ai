@@ -1,24 +1,24 @@
 import 'package:flutter/material.dart';
 
-import '../controllers/wardrobe_controller.dart';
+import '../providers/wardrobe_provider.dart';
 import 'clothing_card.dart';
 import 'empty_wardrobe.dart';
 
 class WardrobeGrid extends StatelessWidget {
-  final WardrobeController controller;
+  final WardrobeProvider provider;
 
-  const WardrobeGrid({super.key, required this.controller});
+  const WardrobeGrid({super.key, required this.provider});
 
   @override
   Widget build(BuildContext context) {
-    if (controller.filteredItems.isEmpty) {
+    if (provider.filteredItems.isEmpty) {
       return const EmptyWardrobe();
     }
 
     return GridView.builder(
       padding: const EdgeInsets.all(16),
 
-      itemCount: controller.filteredItems.length,
+      itemCount: provider.filteredItems.length,
 
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
@@ -28,13 +28,13 @@ class WardrobeGrid extends StatelessWidget {
       ),
 
       itemBuilder: (context, index) {
-        final item = controller.filteredItems[index];
+        final item = provider.filteredItems[index];
 
         return ClothingCard(
           item: item,
 
           onDelete: () {
-            controller.deleteItem(item.id);
+            provider.deleteItem(item);
           },
         );
       },

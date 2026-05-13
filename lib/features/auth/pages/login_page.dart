@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:veloura_ai/features/chat/pages/chat_page.dart';
+import 'package:veloura_ai/features/wardrobe/pages/wardrobe_page.dart';
 
 import '../controllers/auth_controller.dart';
 import '../widgets/auth_button.dart';
@@ -72,7 +73,7 @@ class _LoginPageState extends State<LoginPage> {
                           Navigator.pushReplacement(
                             context,
 
-                            MaterialPageRoute(builder: (_) => const ChatPage()),
+                            MaterialPageRoute(builder: (_) => const WardrobePage()),
                           );
                         }
                       },

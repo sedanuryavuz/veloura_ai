@@ -1,12 +1,13 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
-import '../controllers/wardrobe_controller.dart';
+import '../../../core/constants/categories.dart';
 import '../models/clothing_item_model.dart';
-import '../services/image_service.dart';
+import '../providers/wardrobe_provider.dart';
+import '../widgets/category_dropdown.dart';
 import '../widgets/image_source_sheet.dart';
 
 class EditClothingPage extends StatefulWidget {
@@ -20,137 +21,122 @@ class EditClothingPage extends StatefulWidget {
 
 class _EditClothingPageState extends State<EditClothingPage> {
   late TextEditingController nameController;
-  late String selectedCategory;
+  late ClothingCategory selectedCategory;
 
-  File? selectedImage;
-
-  final ImageService _imageService = ImageService();
+  File? newImage;
 
   @override
   void initState() {
     super.initState();
-
     nameController = TextEditingController(text: widget.item.name);
-
     selectedCategory = widget.item.category;
-
-    selectedImage = File(widget.item.imagePath);
   }
 
-  void changeImage() async {
-    final image = await _imageService.pickImage(ImageSource.gallery);
-
-    if (image != null) {
-      setState(() {
-        selectedImage = image;
-      });
-    }
+  @override
+  void dispose() {
+    nameController.dispose();
+    super.dispose();
   }
 
-  void saveChanges() async {
+  Future<void> saveChanges() async {
+    final provider = context.read<WardrobeProvider>();
+
     if (nameController.text.trim().isEmpty) return;
 
-    final updatedItem = ClothingItemModel(
-      id: widget.item.id,
-
-      imagePath: selectedImage!.path,
-
-      name: nameController.text,
-
-      category: selectedCategory,
+    await provider.updateItem(
+      item: widget.item,
+      newName: nameController.text.trim(),
+      newCategory: selectedCategory,
+      newImageFile: newImage,
     );
 
-    await context.read<WardrobeController>().updateItem(updatedItem);
-
-    if (mounted) {
-      Navigator.pop(context);
-    }
+    if (mounted) Navigator.pop(context);
   }
 
   @override
   Widget build(BuildContext context) {
+    final provider = context.watch<WardrobeProvider>();
+
     return Scaffold(
-      appBar: AppBar(title: const Text('Edit Clothing')),
+      appBar: AppBar(title: const Text("Edit Clothing")),
+      body: Stack(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              children: [
+                GestureDetector(
+                  onTap: provider.isLoading
+                      ? null
+                      : () {
+                          ImageSourceSheet.show(
+                            context: context,
+                            onImagePicked: (file) {
+                              setState(() {
+                                newImage = file;
+                              });
+                            },
+                          );
+                        },
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(20),
+                    child: SizedBox(
+                      height: 250,
+                      width: double.infinity,
+                      child: newImage != null
+                          ? Image.file(newImage!, fit: BoxFit.cover)
+                          : CachedNetworkImage(
+                              imageUrl: widget.item.imageUrl,
+                              fit: BoxFit.cover,
+                              placeholder: (_, __) =>
+                                  const Center(child: CircularProgressIndicator()),
+                              errorWidget: (_, __, ___) =>
+                                  const Icon(Icons.error),
+                            ),
+                    ),
+                  ),
+                ),
 
-      body: Padding(
-        padding: const EdgeInsets.all(16),
+                const SizedBox(height: 20),
 
-        child: Column(
-          children: [
-            GestureDetector(
-              onTap: () {
-                ImageSourceSheet.show(
-                  context: context,
-                  onImagePicked: (image) {
+                TextField(
+                  controller: nameController,
+                  decoration: const InputDecoration(
+                    hintText: "Item name",
+                  ),
+                  enabled: !provider.isLoading,
+                ),
+
+                const SizedBox(height: 20),
+
+                CategoryDropdown(
+                  value: selectedCategory,
+                  onChanged: (value) {
                     setState(() {
-                      selectedImage = image;
+                      selectedCategory = value;
                     });
                   },
-                );
-              },
-
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(20),
-
-                child: Image.file(
-                  selectedImage!,
-
-                  height: 250,
-                  width: double.infinity,
-
-                  fit: BoxFit.cover,
                 ),
-              ),
-            ),
 
-            const SizedBox(height: 20),
+                const Spacer(),
 
-            TextField(
-              controller: nameController,
-
-              decoration: const InputDecoration(hintText: 'Item name'),
-            ),
-
-            const SizedBox(height: 20),
-
-            DropdownButton<String>(
-              value: selectedCategory,
-
-              isExpanded: true,
-
-              items: const [
-                DropdownMenuItem(value: 'top', child: Text('Top')),
-
-                DropdownMenuItem(value: 'bottom', child: Text('Bottom')),
-
-                DropdownMenuItem(value: 'shoes', child: Text('Shoes')),
-
-                DropdownMenuItem(
-                  value: 'accessories',
-                  child: Text('Accessories'),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: provider.isLoading ? null : saveChanges,
+                    child: const Text("Save Changes"),
+                  ),
                 ),
               ],
-
-              onChanged: (value) {
-                setState(() {
-                  selectedCategory = value!;
-                });
-              },
             ),
+          ),
 
-            const Spacer(),
-
-            SizedBox(
-              width: double.infinity,
-
-              child: ElevatedButton(
-                onPressed: saveChanges,
-
-                child: const Text('Save'),
-              ),
+          if (provider.isLoading)
+            const ColoredBox(
+              color: Colors.black45,
+              child: Center(child: CircularProgressIndicator()),
             ),
-          ],
-        ),
+        ],
       ),
     );
   }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 import '../../outfit/models/outfit_model.dart';
 
@@ -36,12 +37,10 @@ class PlannedOutfitCard extends StatelessWidget {
               ClipRRect(
                 borderRadius: BorderRadius.circular(18),
 
-                child: Image.file(
-                  outfit.top!.imageFile,
-
+                child: CachedNetworkImage(
+                  imageUrl: outfit.top!.imageUrl,
                   width: 80,
                   height: 100,
-
                   fit: BoxFit.cover,
                 ),
               ),

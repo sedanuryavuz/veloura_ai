@@ -1,5 +1,5 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import '../../wardrobe/models/clothing_item_model.dart';
 import '../utils/outfit_theme.dart';
 
@@ -54,7 +54,7 @@ class OutfitSelectorGrid extends StatelessWidget {
               ),
               boxShadow: isSelected ? OutfitTheme.softShadow : null,
               image: DecorationImage(
-                image: FileImage(File(item.imagePath)),
+                image: CachedNetworkImageProvider(item.imageUrl),
                 fit: BoxFit.cover,
               ),
             ),
