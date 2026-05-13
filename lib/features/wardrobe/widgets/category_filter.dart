@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 
+import '../../../core/constants/categories.dart';
+
 class CategoryFilter extends StatelessWidget {
-  final String selected;
-  final Function(String) onSelected;
+  final ClothingCategory selected;
+  final Function(ClothingCategory) onSelected;
 
   const CategoryFilter({
     super.key,
@@ -12,37 +14,28 @@ class CategoryFilter extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final categories = ['all', 'top', 'bottom', 'shoes', 'accessories'];
-
     return SizedBox(
       height: 45,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: 16),
-
+        itemCount: ClothingCategory.values.length,
+        separatorBuilder: (_, __) => const SizedBox(width: 10),
         itemBuilder: (context, index) {
-          final category = categories[index];
-
+          final category = ClothingCategory.values[index];
           final isSelected = selected == category;
 
           return GestureDetector(
-            onTap: () {
-              onSelected(category);
-            },
-
+            onTap: () => onSelected(category),
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 250),
-
               padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
-
               decoration: BoxDecoration(
                 color: isSelected ? const Color(0xffE8B4B8) : Colors.white,
-
                 borderRadius: BorderRadius.circular(20),
               ),
-
               child: Text(
-                category.toUpperCase(),
+                category.name,
                 style: TextStyle(
                   color: isSelected ? Colors.white : Colors.black87,
                   fontWeight: FontWeight.w600,
@@ -51,10 +44,6 @@ class CategoryFilter extends StatelessWidget {
             ),
           );
         },
-
-        separatorBuilder: (_, __) => const SizedBox(width: 10),
-
-        itemCount: categories.length,
       ),
     );
   }

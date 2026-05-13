@@ -1,6 +1,6 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 import '../controllers/outfit_controller.dart';
 import '../models/outfit_model.dart';
@@ -29,9 +29,9 @@ class OutfitCard extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                _buildImage(outfit.top?.imagePath),
-                _buildImage(outfit.bottom?.imagePath),
-                _buildImage(outfit.shoes?.imagePath),
+                _buildImage(outfit.top?.imageUrl),
+                _buildImage(outfit.bottom?.imageUrl),
+                _buildImage(outfit.shoes?.imageUrl),
               ],
             ),
           ),
@@ -78,8 +78,8 @@ class OutfitCard extends StatelessWidget {
     );
   }
 
-  Widget _buildImage(String? path) {
-    if (path == null) {
+  Widget _buildImage(String? url) {
+    if (url == null) {
       return Container(
         width: 70,
         height: 90,
@@ -98,7 +98,7 @@ class OutfitCard extends StatelessWidget {
         borderRadius: OutfitTheme.borderRadiusM,
         border: Border.all(color: OutfitTheme.borderSubtle, width: 0.5),
         image: DecorationImage(
-          image: FileImage(File(path)),
+          image: CachedNetworkImageProvider(url),
           fit: BoxFit.cover,
         ),
       ),

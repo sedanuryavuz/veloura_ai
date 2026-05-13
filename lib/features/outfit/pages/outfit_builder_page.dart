@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../wardrobe/controllers/wardrobe_controller.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import '../../../core/constants/categories.dart';
+import '../../wardrobe/providers/wardrobe_provider.dart';
 import '../controllers/outfit_controller.dart';
 import '../utils/outfit_theme.dart';
 import '../widgets/outfit_preview.dart';
@@ -21,27 +23,28 @@ class _OutfitBuilderPageState extends State<OutfitBuilderPage> {
 
     Future.microtask(() {
       if (mounted) {
-        context.read<WardrobeController>().loadItems();
+        final userId = Supabase.instance.client.auth.currentUser!.id;
+        context.read<WardrobeProvider>().loadItems(userId);
       }
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    final wardrobe = context.watch<WardrobeController>();
+    final wardrobe = context.watch<WardrobeProvider>();
     final outfit = context.watch<OutfitController>();
     final controller = context.read<OutfitController>();
 
     final tops = wardrobe.items
-        .where((e) => e.category.toLowerCase() == 'top')
+        .where((e) => e.category == ClothingCategory.top)
         .toList();
 
     final bottoms = wardrobe.items
-        .where((e) => e.category.toLowerCase() == 'bottom')
+        .where((e) => e.category == ClothingCategory.bottom)
         .toList();
 
     final shoes = wardrobe.items
-        .where((e) => e.category.toLowerCase() == 'shoes')
+        .where((e) => e.category == ClothingCategory.shoes)
         .toList();
 
     return Scaffold(

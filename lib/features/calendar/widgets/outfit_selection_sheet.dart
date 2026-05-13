@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 import '../../outfit/controllers/outfit_controller.dart';
 import '../../outfit/models/outfit_model.dart';
@@ -55,12 +56,10 @@ class OutfitSelectionSheet {
                                 BorderRadius.circular(
                                     12),
 
-                            child: Image.file(
-                              outfit.top!.imageFile,
-
+                            child: CachedNetworkImage(
+                              imageUrl: outfit.top!.imageUrl,
                               width: 50,
                               height: 60,
-
                               fit: BoxFit.cover,
                             ),
                           )
