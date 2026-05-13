@@ -3,7 +3,8 @@ import 'package:provider/provider.dart';
 import 'package:veloura_ai/features/auth/pages/login_page.dart';
 import 'package:veloura_ai/features/auth/pages/register_page.dart';
 import 'package:veloura_ai/features/calendar/pages/outfit_calendar_page.dart';
-import 'package:veloura_ai/features/outfit/controllers/outfit_controller.dart';
+import 'package:veloura_ai/features/outfit/providers/outfit_provider.dart';
+import 'package:veloura_ai/features/outfit/repositories/outfit_repository.dart';
 import 'package:veloura_ai/features/outfit/pages/outfit_builder_page.dart';
 import 'package:veloura_ai/features/outfit/pages/outfit_list_page.dart';
 import 'package:veloura_ai/features/wardrobe/pages/add_clothing_page.dart';
@@ -25,7 +26,7 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => ChatController()),
         ChangeNotifierProvider(create: (_) => ClothingFormController(),),
-        ChangeNotifierProvider(create: (_) => OutfitController()),
+        ChangeNotifierProvider(create: (_) => OutfitProvider(OutfitRepository())),
         ChangeNotifierProvider(create: (_) => CalendarController()),
         ChangeNotifierProvider(create: (_) => AuthController()),
             ChangeNotifierProvider(create: (_) => WardrobeProvider()),
