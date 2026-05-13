@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
-import '../controllers/outfit_controller.dart';
+import '../providers/outfit_provider.dart';
 import '../models/outfit_model.dart';
 import '../pages/outfit_builder_page.dart';
 import '../utils/outfit_theme.dart';
@@ -63,13 +63,13 @@ class OutfitCard extends StatelessWidget {
             ],
             onSelected: (value) {
               if (value == 'edit') {
-                context.read<OutfitController>().setEditingOutfit(outfit);
+                context.read<OutfitProvider>().setEditingOutfit(outfit);
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (_) => const OutfitBuilderPage()),
                 );
               } else if (value == 'delete') {
-                context.read<OutfitController>().deleteOutfit(outfit.id);
+                context.read<OutfitProvider>().deleteOutfit(outfit.id);
               }
             },
           ),

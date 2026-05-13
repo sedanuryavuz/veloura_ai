@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../core/constants/categories.dart';
 import '../../wardrobe/providers/wardrobe_provider.dart';
-import '../controllers/outfit_controller.dart';
+import '../providers/outfit_provider.dart';
 import '../utils/outfit_theme.dart';
 import '../widgets/outfit_preview.dart';
 import '../widgets/outfit_selector_grid.dart';
@@ -32,8 +32,8 @@ class _OutfitBuilderPageState extends State<OutfitBuilderPage> {
   @override
   Widget build(BuildContext context) {
     final wardrobe = context.watch<WardrobeProvider>();
-    final outfit = context.watch<OutfitController>();
-    final controller = context.read<OutfitController>();
+    final outfit = context.watch<OutfitProvider>();
+    final provider = context.read<OutfitProvider>();
 
     final tops = wardrobe.items
         .where((e) => e.category == ClothingCategory.top)
@@ -60,7 +60,7 @@ class _OutfitBuilderPageState extends State<OutfitBuilderPage> {
       ),
       floatingActionButton: FloatingActionButton.extended(
         backgroundColor: OutfitTheme.accentColor,
-        onPressed: () {
+        onPressed: outfit.isLoading ? null : () async {
           if (outfit.selectedTop == null &&
               outfit.selectedBottom == null &&
               outfit.selectedShoes == null) {
@@ -73,25 +73,45 @@ class _OutfitBuilderPageState extends State<OutfitBuilderPage> {
             return;
           }
 
-          controller.saveOutfit();
+          final userId = Supabase.instance.client.auth.currentUser!.id;
+          await provider.saveOutfit(userId);
 
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text("Outfit saved successfully"),
-              behavior: SnackBarBehavior.floating,
-            ),
-          );
+          if (mounted) {
+                print(provider.error!);
 
-          controller.clearSelection();
+            if (provider.error != null) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(provider.error!),
+                  behavior: SnackBarBehavior.floating,
+                  backgroundColor: Colors.redAccent,
+                ),
+              );
+              return;
+            }
 
-          if (Navigator.of(context).canPop()) {
-            Navigator.of(context).pop();
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text("Outfit saved successfully"),
+                behavior: SnackBarBehavior.floating,
+              ),
+            );
+
+            if (Navigator.of(context).canPop()) {
+              Navigator.of(context).pop();
+            }
           }
         },
-        label: const Text(
-          "Save Outfit",
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
-        ),
+        label: outfit.isLoading
+            ? const SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+              )
+            : const Text(
+                "Save Outfit",
+                style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+              ),
         icon: const Icon(Icons.check, color: Colors.white),
       ),
       body: Column(
