@@ -22,7 +22,7 @@ class CalendarOutfitModel {
       'id': id,
       'user_id': userId,
       'outfit_id': outfitId,
-      'selected_date': date.toIso8601String(),
+      'selected_date': '${date.year.toString().padLeft(4, '0')}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}',
       'created_at': createdAt.toIso8601String(),
     };
   }
