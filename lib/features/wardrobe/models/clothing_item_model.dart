@@ -1,3 +1,4 @@
+import 'dart:io';
 class ClothingItemModel {
   final String id;
   final String imagePath;
@@ -10,4 +11,5 @@ class ClothingItemModel {
     required this.name,
     required this.category,
   });
+  File get imageFile => File(imagePath);
 }
