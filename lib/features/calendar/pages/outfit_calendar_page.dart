@@ -1,33 +1,51 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../controllers/calendar_controller.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+
+import '../providers/calendar_provider.dart';
 
 import '../widgets/calendar_widget.dart';
 import '../widgets/empty_planner.dart';
 import '../widgets/outfit_selection_sheet.dart';
 import '../widgets/planned_outfit_card.dart';
 
-class OutfitCalendarPage extends StatelessWidget {
+class OutfitCalendarPage extends StatefulWidget {
   const OutfitCalendarPage({super.key});
 
   @override
+  State<OutfitCalendarPage> createState() => _OutfitCalendarPageState();
+}
+
+class _OutfitCalendarPageState extends State<OutfitCalendarPage> {
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(() {
+      if (mounted) {
+        final userId = Supabase.instance.client.auth.currentUser!.id;
+        context.read<CalendarProvider>().loadOutfits(userId);
+      }
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final controller = context.watch<CalendarController>();
+    final provider = context.watch<CalendarProvider>();
     
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
     final selectedDate = DateTime(
-      controller.selectedDay.year, 
-      controller.selectedDay.month, 
-      controller.selectedDay.day
+      provider.selectedDay.year, 
+      provider.selectedDay.month, 
+      provider.selectedDay.day
     );
     final isPast = selectedDate.isBefore(today);
     
-    final dayOutfits = controller.plannedOutfits.where((e) =>
-        e.date.year == controller.selectedDay.year &&
-        e.date.month == controller.selectedDay.month &&
-        e.date.day == controller.selectedDay.day).toList();
+    final dayOutfits = provider.plannedOutfits.where((e) =>
+        e.date.year == provider.selectedDay.year &&
+        e.date.month == provider.selectedDay.month &&
+        e.date.day == provider.selectedDay.day).toList();
 
     return Scaffold(
       backgroundColor: const Color(0xffF5F2F3),
@@ -37,12 +55,13 @@ class OutfitCalendarPage extends StatelessWidget {
 
         child: const Icon(Icons.add, color: Colors.white),
 
-        onPressed: () {
+        onPressed: provider.isLoading ? null : () {
           OutfitSelectionSheet.show(
             context: context,
 
-            onSelect: (outfit) {
-              controller.addOrUpdateOutfit(outfit);
+            onSelect: (outfit) async {
+              final userId = Supabase.instance.client.auth.currentUser!.id;
+              await context.read<CalendarProvider>().addOrUpdateOutfit(userId, outfit);
             },
           );
         },
@@ -61,18 +80,21 @@ class OutfitCalendarPage extends StatelessWidget {
         child: Column(
           children: [
             CalendarWidget(
-              focusedDay: controller.focusedDay,
+              focusedDay: provider.focusedDay,
 
-              selectedDay: controller.selectedDay,
+              selectedDay: provider.selectedDay,
 
               onDaySelected: (selected, focused) {
-                controller.changeSelectedDay(selected);
+                context.read<CalendarProvider>().changeSelectedDay(selected);
               },
             ),
 
             const SizedBox(height: 24),
 
-            Expanded(
+            if (provider.isLoading && provider.plannedOutfits.isEmpty)
+              const Expanded(child: Center(child: CircularProgressIndicator()))
+            else
+              Expanded(
               child: dayOutfits.isEmpty
                   ? const EmptyPlanner()
                   : ListView.builder(
@@ -88,16 +110,16 @@ class OutfitCalendarPage extends StatelessWidget {
                             OutfitSelectionSheet.show(
                               context: context,
 
-                              onSelect: (newOutfit) {
-                                controller.changeSelectedDay(item.date);
-
-                                controller.addOrUpdateOutfit(newOutfit);
+                              onSelect: (newOutfit) async {
+                                context.read<CalendarProvider>().changeSelectedDay(item.date);
+                                final userId = Supabase.instance.client.auth.currentUser!.id;
+                                await context.read<CalendarProvider>().addOrUpdateOutfit(userId, newOutfit);
                               },
                             );
                           },
 
-                          onDelete: isPast ? null : () {
-                            controller.removePlannedOutfit(item.date);
+                          onDelete: isPast ? null : () async {
+                            await context.read<CalendarProvider>().removePlannedOutfit(item.id);
                           },
                         );
                       },

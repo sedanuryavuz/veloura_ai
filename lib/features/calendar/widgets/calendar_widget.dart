@@ -47,17 +47,61 @@ class CalendarWidget extends StatelessWidget {
         ),
 
         calendarStyle: CalendarStyle(
-
-          selectedDecoration:
-              const BoxDecoration(
+          selectedDecoration: const BoxDecoration(
             color: Colors.black,
             shape: BoxShape.circle,
           ),
-
           todayDecoration: BoxDecoration(
             color: Colors.grey.shade300,
             shape: BoxShape.circle,
           ),
+        ),
+
+        calendarBuilders: CalendarBuilders(
+          defaultBuilder: (context, day, focusedDay) {
+            final now = DateTime.now();
+            final today = DateTime(now.year, now.month, now.day);
+            final cellDate = DateTime(day.year, day.month, day.day);
+            
+            if (cellDate.isBefore(today)) {
+              return Center(
+                child: Opacity(
+                  opacity: 0.5,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        '${day.day}',
+                        style: const TextStyle(color: Colors.grey),
+                      ),
+                      const SizedBox(height: 2),
+                      const Icon(Icons.lock_outline, size: 10, color: Colors.grey),
+                    ],
+                  ),
+                ),
+              );
+            }
+            return null;
+          },
+          selectedBuilder: (context, day, focusedDay) {
+            final now = DateTime.now();
+            final today = DateTime(now.year, now.month, now.day);
+            final cellDate = DateTime(day.year, day.month, day.day);
+            
+            return Container(
+              margin: const EdgeInsets.all(6.0),
+              decoration: BoxDecoration(
+                color: cellDate.isBefore(today) ? Colors.grey : Colors.black,
+                shape: BoxShape.circle,
+              ),
+              child: Center(
+                child: Text(
+                  '${day.day}',
+                  style: const TextStyle(color: Colors.white),
+                ),
+              ),
+            );
+          },
         ),
       ),
     );
