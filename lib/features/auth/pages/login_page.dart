@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:veloura_ai/features/chat/pages/chat_page.dart';
 import 'package:veloura_ai/features/wardrobe/pages/wardrobe_page.dart';
 
+import '../../../core/navigation/main_navigation_page.dart';
 import '../controllers/auth_controller.dart';
 import '../widgets/auth_button.dart';
 import '../widgets/auth_textfield.dart';
@@ -73,7 +74,7 @@ class _LoginPageState extends State<LoginPage> {
                           Navigator.pushReplacement(
                             context,
 
-                            MaterialPageRoute(builder: (_) => const WardrobePage()),
+                            MaterialPageRoute(builder: (_) => const MainNavigationPage()),
                           );
                         }
                       },

@@ -1,11 +1,13 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
 import '../../../core/constants/categories.dart';
 import '../../../core/services/supabase_service.dart';
 import '../providers/wardrobe_provider.dart';
+import '../services/background_removal_service.dart';
 import '../widgets/category_dropdown.dart';
 import '../widgets/image_picker_field.dart';
 import '../widgets/image_source_sheet.dart';
@@ -21,7 +23,10 @@ class _AddClothingPageState extends State<AddClothingPage> {
   File? image;
   final nameController = TextEditingController();
   ClothingCategory category = ClothingCategory.top;
-
+  final _bgService = BackgroundRemovalService();
+  final _picker = ImagePicker();
+  bool isProcessing = false;
+  
   @override
   void dispose() {
     nameController.dispose();
@@ -43,7 +48,24 @@ class _AddClothingPageState extends State<AddClothingPage> {
 
     if (mounted) Navigator.pop(context);
   }
+Future<void> pickAndProcessImage(ImageSource source) async {
+  final picked = await _picker.pickImage(source: source);
+  if (picked == null) return;
 
+  setState(() => isProcessing = true);
+
+  final file = File(picked.path);
+
+  final processed = await _bgService.removeBackground(file);
+
+  if (processed != null) {
+    setState(() {
+      image = processed;
+    });
+  }
+
+  setState(() => isProcessing = false);
+}
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<WardrobeProvider>();
@@ -51,20 +73,52 @@ class _AddClothingPageState extends State<AddClothingPage> {
     return Scaffold(
       appBar: AppBar(title: const Text("Add Clothing")),
       body: Stack(
+        
         children: [
           Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
               children: [
                 ImagePickerField(
-                  image: image,
-                  onTap: () {
-                    ImageSourceSheet.show(
-                      context: context,
-                      onImagePicked: (img) => setState(() => image = img),
-                    );
-                  },
-                ),
+  image: image,
+  onTap: () {
+    showModalBottomSheet(
+      context: context,
+      builder: (_) {
+        return SafeArea(
+          child: Wrap(
+            children: [
+              ListTile(
+                leading: const Icon(Icons.photo),
+                title: const Text("Gallery"),
+                onTap: () {
+                  Navigator.pop(context);
+                  pickAndProcessImage(ImageSource.gallery);
+                },
+              ),
+              
+              ListTile(
+                leading: const Icon(Icons.camera_alt),
+                title: const Text("Camera"),
+                onTap: () {
+                  Navigator.pop(context);
+                  pickAndProcessImage(ImageSource.camera);
+                },
+              ),
+              if (isProcessing)
+  Container(
+    color: Colors.black45,
+    child: const Center(
+      child: CircularProgressIndicator(),
+    ),
+  ),
+            ],
+          ),
+        );
+      },
+    );
+  },
+),
 
                 const SizedBox(height: 20),
 
@@ -99,6 +153,7 @@ class _AddClothingPageState extends State<AddClothingPage> {
               child: Center(child: CircularProgressIndicator()),
             ),
         ],
+        
       ),
     );
   }

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
-import '../controllers/outfit_controller.dart';
+import '../providers/outfit_provider.dart';
 import '../utils/outfit_theme.dart';
 
 class OutfitPreview extends StatelessWidget {
-  final OutfitController outfit;
+  final OutfitProvider outfit;
 
   const OutfitPreview({super.key, required this.outfit});
 

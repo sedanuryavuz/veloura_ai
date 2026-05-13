@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
-import '../../outfit/controllers/outfit_controller.dart';
+import '../../outfit/providers/outfit_provider.dart';
 import '../../outfit/models/outfit_model.dart';
 
 class OutfitSelectionSheet {
@@ -22,7 +22,7 @@ class OutfitSelectionSheet {
       builder: (_) {
 
         final outfits =
-            context.read<OutfitController>()
+            context.read<OutfitProvider>()
                 .outfits;
 
         return Container(
