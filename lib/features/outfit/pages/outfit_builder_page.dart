@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:veloura_ai/core/services/supabase_service.dart';
+import 'package:veloura_ai/features/wardrobe/presentation/provider/wardrobe_provider.dart';
 import '../../../core/constants/enums/categories.dart';
-import '../../wardrobe/providers/wardrobe_provider.dart';
+import '../../wardrobe/data/models/clothing_model.dart';
 import '../providers/outfit_provider.dart';
 import '../utils/outfit_theme.dart';
 import '../widgets/outfit_preview.dart';
@@ -23,8 +24,10 @@ class _OutfitBuilderPageState extends State<OutfitBuilderPage> {
 
     Future.microtask(() {
       if (mounted) {
-        final userId = Supabase.instance.client.auth.currentUser!.id;
-        context.read<WardrobeProvider>().loadItems(userId);
+        final userId = SupabaseService.currentUserId ?? '';
+        if (userId.isNotEmpty) {
+          context.read<WardrobeProvider>().loadItems(userId);
+        }
       }
     });
   }
@@ -35,17 +38,9 @@ class _OutfitBuilderPageState extends State<OutfitBuilderPage> {
     final outfit = context.watch<OutfitProvider>();
     final provider = context.read<OutfitProvider>();
 
-    final tops = wardrobe.items
-        .where((e) => e.category == ClothingCategory.top)
-        .toList();
-
-    final bottoms = wardrobe.items
-        .where((e) => e.category == ClothingCategory.bottom)
-        .toList();
-
-    final shoes = wardrobe.items
-        .where((e) => e.category == ClothingCategory.shoes)
-        .toList();
+    final tops = wardrobe.tops;
+    final bottoms = wardrobe.bottoms;
+    final shoes = wardrobe.shoes;
 
     return Scaffold(
       backgroundColor: OutfitTheme.background,
@@ -73,8 +68,10 @@ class _OutfitBuilderPageState extends State<OutfitBuilderPage> {
             return;
           }
 
-          final userId = Supabase.instance.client.auth.currentUser!.id;
-          await provider.saveOutfit(userId);
+          final userId = SupabaseService.currentUserId ?? '';
+          if (userId.isNotEmpty) {
+            await provider.saveOutfit(userId);
+          }
 
           if (mounted) {
             if (provider.error != null) {
@@ -141,17 +138,18 @@ class _OutfitBuilderPageState extends State<OutfitBuilderPage> {
                       children: [
                         OutfitSelectorGrid(
                           items: tops,
-                          onTap: outfit.selectTop,
+                          onTap: (item) => outfit.selectTop(item as ClothingModel),
                           selectedItem: outfit.selectedTop,
                         ),
+                        
                         OutfitSelectorGrid(
                           items: bottoms,
-                          onTap: outfit.selectBottom,
+                          onTap: (item) => outfit.selectBottom(item as ClothingModel),
                           selectedItem: outfit.selectedBottom,
                         ),
                         OutfitSelectorGrid(
                           items: shoes,
-                          onTap: outfit.selectShoes,
+                          onTap: (item) => outfit.selectShoes(item as ClothingModel),
                           selectedItem: outfit.selectedShoes,
                         ),
                       ],

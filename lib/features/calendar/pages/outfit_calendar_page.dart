@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:veloura_ai/core/services/supabase_service.dart';
 
 import '../providers/calendar_provider.dart';
 
@@ -23,8 +23,10 @@ class _OutfitCalendarPageState extends State<OutfitCalendarPage> {
     super.initState();
     Future.microtask(() {
       if (mounted) {
-        final userId = Supabase.instance.client.auth.currentUser!.id;
-        context.read<CalendarProvider>().loadOutfits(userId);
+        final userId = SupabaseService.currentUserId ?? '';
+        if (userId.isNotEmpty) {
+          context.read<CalendarProvider>().loadOutfits(userId);
+        }
       }
     });
   }
@@ -60,8 +62,10 @@ class _OutfitCalendarPageState extends State<OutfitCalendarPage> {
             context: context,
 
             onSelect: (outfit) async {
-              final userId = Supabase.instance.client.auth.currentUser!.id;
-              await context.read<CalendarProvider>().addOrUpdateOutfit(userId, outfit);
+              final userId = SupabaseService.currentUserId ?? '';
+              if (userId.isNotEmpty) {
+                await context.read<CalendarProvider>().addOrUpdateOutfit(userId, outfit);
+              }
             },
           );
         },
@@ -112,8 +116,10 @@ class _OutfitCalendarPageState extends State<OutfitCalendarPage> {
 
                               onSelect: (newOutfit) async {
                                 context.read<CalendarProvider>().changeSelectedDay(item.date);
-                                final userId = Supabase.instance.client.auth.currentUser!.id;
-                                await context.read<CalendarProvider>().addOrUpdateOutfit(userId, newOutfit);
+                                final userId = SupabaseService.currentUserId ?? '';
+                                if (userId.isNotEmpty) {
+                                  await context.read<CalendarProvider>().addOrUpdateOutfit(userId, newOutfit);
+                                }
                               },
                             );
                           },

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../wardrobe/models/clothing_item_model.dart';
+import '../../wardrobe/data/models/clothing_model.dart';
 import '../models/outfit_model.dart';
 import '../repositories/outfit_repository.dart';
 
@@ -18,9 +18,9 @@ class OutfitProvider extends ChangeNotifier {
   String? _error;
   String? get error => _error;
 
-  ClothingItemModel? selectedTop;
-  ClothingItemModel? selectedBottom;
-  ClothingItemModel? selectedShoes;
+  ClothingModel? selectedTop;
+  ClothingModel? selectedBottom;
+  ClothingModel? selectedShoes;
 
   String? editingOutfitId;
 
@@ -47,7 +47,7 @@ class OutfitProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      List<ClothingItemModel> items = [];
+      List<ClothingModel> items = [];
       if (selectedTop != null) items.add(selectedTop!);
       if (selectedBottom != null) items.add(selectedBottom!);
       if (selectedShoes != null) items.add(selectedShoes!);
@@ -103,17 +103,17 @@ class OutfitProvider extends ChangeNotifier {
     }
   }
 
-  void selectTop(ClothingItemModel item) {
+  void selectTop(ClothingModel item) {
     selectedTop = item;
     notifyListeners();
   }
 
-  void selectBottom(ClothingItemModel item) {
+  void selectBottom(ClothingModel item) {
     selectedBottom = item;
     notifyListeners();
   }
 
-  void selectShoes(ClothingItemModel item) {
+  void selectShoes(ClothingModel item) {
     selectedShoes = item;
     notifyListeners();
   }

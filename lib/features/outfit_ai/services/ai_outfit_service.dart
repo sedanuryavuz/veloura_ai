@@ -6,7 +6,7 @@ import 'package:veloura_ai/features/outfit_ai/models/ai_outfit_result.dart';
 class AiOutfitService {
   final model = GenerativeModel(
     model: 'gemini-2-flash',
-    apiKey: dotenv.env['GEMINI_API_KEY']!,
+    apiKey: dotenv.env['GEMINI_API_KEY'] ?? '',
   );
 
   // ---------------- PROMPT ----------------

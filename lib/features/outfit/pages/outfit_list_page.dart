@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:veloura_ai/core/services/supabase_service.dart';
 import 'package:veloura_ai/features/outfit_ai/pages/outfit_ai_page.dart';
 
 import '../providers/outfit_provider.dart';
@@ -23,8 +23,10 @@ class _OutfitListPageState extends State<OutfitListPage> {
     super.initState();
     Future.microtask(() {
       if (mounted) {
-        final userId = Supabase.instance.client.auth.currentUser!.id;
-        context.read<OutfitProvider>().loadOutfits(userId);
+        final userId = SupabaseService.currentUserId ?? '';
+        if (userId.isNotEmpty) {
+          context.read<OutfitProvider>().loadOutfits(userId);
+        }
       }
     });
   }

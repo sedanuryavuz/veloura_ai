@@ -1,11 +1,11 @@
-import '../../wardrobe/models/clothing_item_model.dart';
+import '../../wardrobe/data/models/clothing_model.dart';
 import '../../../core/constants/enums/categories.dart';
 
 class OutfitModel {
   final String id;
   final String userId;
   final String name;
-  final List<ClothingItemModel> items;
+  final List<ClothingModel> items;
   final DateTime createdAt;
 
   const OutfitModel({
@@ -16,15 +16,15 @@ class OutfitModel {
     required this.createdAt,
   });
 
-  ClothingItemModel? get top => items.where((i) => i.category == ClothingCategory.top).firstOrNull;
-  ClothingItemModel? get bottom => items.where((i) => i.category == ClothingCategory.bottom).firstOrNull;
-  ClothingItemModel? get shoes => items.where((i) => i.category == ClothingCategory.shoes).firstOrNull;
+  ClothingModel? get top => items.where((i) => i.category == ClothingCategory.top).firstOrNull;
+  ClothingModel? get bottom => items.where((i) => i.category == ClothingCategory.bottom).firstOrNull;
+  ClothingModel? get shoes => items.where((i) => i.category == ClothingCategory.shoes).firstOrNull;
 
   OutfitModel copyWith({
     String? id,
     String? userId,
     String? name,
-    List<ClothingItemModel>? items,
+    List<ClothingModel>? items,
     DateTime? createdAt,
   }) {
     return OutfitModel(
@@ -47,20 +47,22 @@ class OutfitModel {
 
   factory OutfitModel.fromMap(Map<String, dynamic> map) {
     var rawItems = map['outfit_items'] as List<dynamic>? ?? [];
-    List<ClothingItemModel> parsedItems = [];
+    List<ClothingModel> parsedItems = [];
     
     for (var item in rawItems) {
-      if (item['wardrobe_items'] != null) {
-        parsedItems.add(ClothingItemModel.fromMap(item['wardrobe_items']));
+      if (item is Map && item['wardrobe_items'] != null) {
+        parsedItems.add(ClothingModel.fromMap(item['wardrobe_items']));
       }
     }
 
     return OutfitModel(
-      id: map['id'] as String,
-      userId: map['user_id'] as String,
-      name: map['name'] as String? ?? 'My Outfit',
+      id: map['id']?.toString() ?? '',
+      userId: map['user_id']?.toString() ?? '',
+      name: map['name']?.toString() ?? 'My Outfit',
       items: parsedItems,
-      createdAt: DateTime.parse(map['created_at'] as String),
+      createdAt: map['created_at'] != null 
+          ? DateTime.tryParse(map['created_at'].toString()) ?? DateTime.now()
+          : DateTime.now(),
     );
   }
 

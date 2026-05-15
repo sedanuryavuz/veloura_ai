@@ -1,25 +1,16 @@
 import 'package:flutter/material.dart';
-
+import '../../../domain/usecases/generate_ai_outfit_usecase.dart';
 import '../models/ai_outfit_result.dart';
-import '../services/ai_outfit_service.dart';
-import '../services/location_service.dart';
-import '../services/weather_service.dart';
 
 class OutfitAiController extends ChangeNotifier {
-  final AiOutfitService aiService;
-  final LocationService locationService;
-  final WeatherService weatherService;
+  final GenerateAiOutfitUseCase generateAiOutfitUseCase;
 
   OutfitAiController({
-    required this.aiService,
-    required this.locationService,
-    required this.weatherService,
+    required this.generateAiOutfitUseCase,
   });
 
   bool isLoading = false;
-
   String? error;
-
   AiOutfitResult? result;
 
   Future<void> generateOutfit({
@@ -28,21 +19,10 @@ class OutfitAiController extends ChangeNotifier {
     try {
       isLoading = true;
       error = null;
-
       notifyListeners();
 
-      final position =
-          await locationService.getLocation();
-
-      final weather =
-          await weatherService.getWeather(
-        position.latitude,
-        position.longitude,
-      );
-
-      result = await aiService.generateOutfit(
-        items: wardrobe,
-        weather: weather,
+      result = await generateAiOutfitUseCase.execute(
+        wardrobe: wardrobe,
       );
 
       if (result == null) {
@@ -50,10 +30,7 @@ class OutfitAiController extends ChangeNotifier {
       }
     } catch (e) {
       error = e.toString();
-
-      debugPrint(
-        "OUTFIT AI CONTROLLER ERROR: $e",
-      );
+      debugPrint("OUTFIT AI CONTROLLER ERROR: $e");
     } finally {
       isLoading = false;
       notifyListeners();

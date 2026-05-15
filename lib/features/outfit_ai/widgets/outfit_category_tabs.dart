@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../outfit/providers/outfit_provider.dart';
 import '../../outfit/widgets/outfit_selector_grid.dart';
-import '../../wardrobe/providers/wardrobe_provider.dart';
+import '../../wardrobe/presentation/provider/wardrobe_provider.dart';
 
 class OutfitCategoryTabs extends StatelessWidget {
   final WardrobeProvider wardrobe;
@@ -59,7 +59,7 @@ class OutfitCategoryTabs extends StatelessWidget {
               children: tabs.map((tab) {
                 return OutfitSelectorGrid(
                   items: tab.items,
-                  onTap: tab.onTap,
+                  onTap: (item) => tab.onTap,
                   selectedItem: tab.selected,
                 );
               }).toList(),

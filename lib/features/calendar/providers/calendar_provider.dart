@@ -16,11 +16,16 @@ class CalendarProvider extends ChangeNotifier {
   List<CalendarOutfitModel> _plannedOutfits = [];
   List<CalendarOutfitModel> get plannedOutfits => List.unmodifiable(_plannedOutfits);
 
+  // Optimization: Map for O(1) lookup
+  final Map<String, OutfitModel> _outfitMap = {};
+
   bool _isLoading = false;
   bool get isLoading => _isLoading;
 
   String? _error;
   String? get error => _error;
+
+  String _dateKey(DateTime date) => "${date.year}-${date.month}-${date.day}";
 
   void changeSelectedDay(DateTime day) {
     selectedDay = day;
@@ -35,6 +40,10 @@ class CalendarProvider extends ChangeNotifier {
 
     try {
       _plannedOutfits = await _repository.getOutfits(userId);
+      _outfitMap.clear();
+      for (var p in _plannedOutfits) {
+        _outfitMap[_dateKey(p.date)] = p.outfit;
+      }
     } catch (e) {
       _error = e.toString();
     } finally {
@@ -49,31 +58,11 @@ class CalendarProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final existingIndex = _plannedOutfits.indexWhere(
-        (e) =>
-            e.date.year == selectedDay.year &&
-            e.date.month == selectedDay.month &&
-            e.date.day == selectedDay.day &&
-            e.outfitId == outfit.id, // Support multiple outfits per day if needed
-      );
-
-      if (existingIndex != -1) {
-        // Just delete and re-add or skip if it's the exact same
-        // But for simplicity of calendar: we just add a new calendar record
-        // The user selected an outfit for this day. 
-        // If they "update" it, we might want to drop the old one. 
-        // Actually, the UI allows deleting a specific planned outfit via `removePlannedOutfit`.
-        // Let's assume we want to support multiple outfits per day, so we just add it.
-        // Wait, the previous controller just updated it if it existed.
-        // Let's check: The old code did indexWhere on date only. Which meant ONE outfit per day!
-      }
+      final key = _dateKey(selectedDay);
       
-      // Let's find if there's any outfit for this day to replace it, to match old logic
+      // Find if there's any outfit for this day to replace it
       final replaceIndex = _plannedOutfits.indexWhere(
-        (e) =>
-            e.date.year == selectedDay.year &&
-            e.date.month == selectedDay.month &&
-            e.date.day == selectedDay.day,
+        (e) => _dateKey(e.date) == key,
       );
 
       final newModel = CalendarOutfitModel(
@@ -92,6 +81,7 @@ class CalendarProvider extends ChangeNotifier {
 
       final savedModel = await _repository.addOutfit(newModel);
       _plannedOutfits.add(savedModel);
+      _outfitMap[key] = savedModel.outfit;
       
     } catch (e) {
       _error = e.toString();
@@ -107,8 +97,13 @@ class CalendarProvider extends ChangeNotifier {
     notifyListeners();
     
     try {
-      await _repository.deleteOutfit(calendarOutfitId);
-      _plannedOutfits.removeWhere((e) => e.id == calendarOutfitId);
+      final index = _plannedOutfits.indexWhere((e) => e.id == calendarOutfitId);
+      if (index != -1) {
+        final item = _plannedOutfits[index];
+        await _repository.deleteOutfit(calendarOutfitId);
+        _outfitMap.remove(_dateKey(item.date));
+        _plannedOutfits.removeAt(index);
+      }
     } catch (e) {
       _error = e.toString();
     } finally {
@@ -118,15 +113,6 @@ class CalendarProvider extends ChangeNotifier {
   }
 
   OutfitModel? getOutfitForDay(DateTime day) {
-    try {
-      return _plannedOutfits.firstWhere(
-        (e) =>
-            e.date.year == day.year &&
-            e.date.month == day.month &&
-            e.date.day == day.day,
-      ).outfit;
-    } catch (_) {
-      return null;
-    }
+    return _outfitMap[_dateKey(day)];
   }
 }

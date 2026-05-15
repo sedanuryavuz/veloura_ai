@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import '../../wardrobe/models/clothing_item_model.dart';
+import '../../wardrobe/domain/entities/clothing_item.dart';
 import '../utils/outfit_theme.dart';
 
 class OutfitSelectorGrid extends StatelessWidget {
-  final List<ClothingItemModel> items;
-  final Function(ClothingItemModel) onTap;
-  final ClothingItemModel? selectedItem;
+  final List<ClothingItem> items;
+  final Function(ClothingItem) onTap;
+  final ClothingItem? selectedItem;
 
   const OutfitSelectorGrid({
     super.key,

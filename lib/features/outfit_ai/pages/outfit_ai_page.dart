@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:veloura_ai/core/services/supabase_service.dart';
 
 import '../../outfit/providers/outfit_provider.dart';
 import '../../outfit/utils/outfit_theme.dart';
 import '../../outfit/widgets/outfit_preview.dart';
 
-import '../../wardrobe/providers/wardrobe_provider.dart';
 
+import '../../wardrobe/presentation/provider/wardrobe_provider.dart';
 import '../controllers/outfit_ai_controller.dart';
 import '../helpers/outfit_mapper.dart';
 
@@ -25,18 +26,17 @@ class OutfitAiPage extends StatefulWidget {
 
 class _OutfitAiPageState
     extends State<OutfitAiPage> {
-  String get _userId =>
-      Supabase.instance.client.auth.currentUser!.id;
+  String get _userId => SupabaseService.currentUserId ?? '';
 
   @override
   void initState() {
     super.initState();
 
-    Future.microtask(() {
-      context.read<WardrobeProvider>().loadItems(
-            _userId,
-          );
-    });
+    if (_userId.isNotEmpty) {
+      Future.microtask(() {
+        context.read<WardrobeProvider>().loadItems(_userId);
+      });
+    }
   }
 
   Future<void> _generateAIOutfit() async {

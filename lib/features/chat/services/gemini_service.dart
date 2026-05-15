@@ -9,7 +9,7 @@ class GeminiService {
   final model = GenerativeModel(
     model: 'gemini-2.5-flash',
 
-    apiKey: dotenv.env['GEMINI_API_KEY']!,
+    apiKey: dotenv.env['GEMINI_API_KEY'] ?? '',
   );
 
   Future<String> sendMessage(String message) async {

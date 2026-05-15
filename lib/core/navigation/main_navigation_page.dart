@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import '../../features/calendar/pages/outfit_calendar_page.dart';
 import '../../features/chat/pages/chat_page.dart';
 import '../../features/outfit/pages/outfit_list_page.dart';
-import '../../features/wardrobe/pages/add_clothing_page.dart';
-import '../../features/wardrobe/pages/wardrobe_page.dart';
+import '../../features/wardrobe/presentation/pages/add_clothing_page.dart';
+import '../../features/wardrobe/presentation/pages/wardrobe_page.dart';
 
 class MainNavigationPage extends StatefulWidget {
   const MainNavigationPage({super.key});
