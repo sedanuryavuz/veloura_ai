@@ -38,9 +38,9 @@ class ClothingItemModel {
       name: name ?? this.name,
       category: category ?? this.category,
       createdAt: createdAt ?? this.createdAt,
-      color: color ?? this.color,
-      style: style ?? this.style,
-      description: description ?? this.description,
+      color: color,
+      style: style,
+      description: description,
     );
   }
 
@@ -71,4 +71,13 @@ class ClothingItemModel {
       description: map['description'] as String,
     );
   }
+  Map<String, dynamic> toJson() {
+  return {
+    "id": id,
+    "name": name,
+    "category": category.name,
+    "color": color,
+    "style": style,
+  };
+}
 }

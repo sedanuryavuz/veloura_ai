@@ -7,6 +7,10 @@
 
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>This app needs photo library access</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>This app needs location to suggest outfits based on weather.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>This app needs location to suggest outfits based on weather.</string>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
 	<key>CFBundleDevelopmentRegion</key>

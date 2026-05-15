@@ -30,7 +30,8 @@ $userText
 """;
   }
 
-    static final clothingAnalysis = '''
+  static final clothingAnalysis =
+      '''
 Analyze this clothing item.
 
 Return ONLY valid JSON.

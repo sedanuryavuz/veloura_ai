@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:veloura_ai/features/chat/pages/chat_page.dart';
-import 'package:veloura_ai/features/wardrobe/pages/wardrobe_page.dart';
 
 import '../../../core/navigation/main_navigation_page.dart';
 import '../controllers/auth_controller.dart';

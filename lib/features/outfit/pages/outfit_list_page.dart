@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:veloura_ai/features/outfit_ai/pages/outfit_ai_page.dart';
 
 import '../providers/outfit_provider.dart';
 import '../utils/outfit_theme.dart';
@@ -52,14 +53,27 @@ class _OutfitListPageState extends State<OutfitListPage> {
           return CustomScrollView(
             slivers: [
               const SliverAppBar(
-                title: Text(
-                  "Saved Outfits",
-                  style: OutfitTheme.titleStyle,
-                ),
+                title: Text("Saved Outfits", style: OutfitTheme.titleStyle),
                 backgroundColor: OutfitTheme.background,
                 elevation: 0,
                 floating: true,
                 centerTitle: false,
+              ),
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: ElevatedButton(
+                    child: const Text("AI Outfit ✨"),
+                    onPressed: () {
+                      //final wardrobe = context.read<WardrobeProvider>().items;
+
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => const OutfitAiPage()),
+                      );
+                    },
+                  ),
+                ),
               ),
               if (provider.outfits.isEmpty)
                 const SliverFillRemaining(
@@ -76,22 +90,20 @@ class _OutfitListPageState extends State<OutfitListPage> {
                     vertical: OutfitTheme.spacingS,
                   ),
                   sliver: SliverList(
-                    delegate: SliverChildBuilderDelegate(
-                      (context, index) {
-                        final outfit = provider.outfits[index];
-                        return OutfitCard(
-                          key: ValueKey(outfit.id),
-                          outfit: outfit,
-                        );
-                      },
-                      childCount: provider.outfits.length,
-                    ),
+                    delegate: SliverChildBuilderDelegate((context, index) {
+                      final outfit = provider.outfits[index];
+                      return OutfitCard(
+                        key: ValueKey(outfit.id),
+                        outfit: outfit,
+                      );
+                    }, childCount: provider.outfits.length),
                   ),
                 ),
             ],
           );
         },
       ),
+
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           context.read<OutfitProvider>().clearSelection();
