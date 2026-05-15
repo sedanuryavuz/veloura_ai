@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import '../../../../core/constants/categories.dart';
+import '../../../core/constants/enums/categories.dart';
 
 class ClothingFormController extends ChangeNotifier {
   File? image;

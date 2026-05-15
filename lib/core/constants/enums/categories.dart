@@ -19,3 +19,12 @@ extension ClothingCategoryExt on ClothingCategory {
     );
   }
 }
+
+extension ClothingCategoryPrompt on ClothingCategory {
+  static String get aiCategories {
+    return ClothingCategory.values
+        .where((e) => e != ClothingCategory.all)
+        .map((e) => e.name)
+        .join(', ');
+  }
+}

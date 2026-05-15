@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
-import '../../../core/constants/categories.dart';
+import '../../../core/constants/enums/categories.dart';
 import '../models/clothing_item_model.dart';
 import '../providers/wardrobe_provider.dart';
 import '../widgets/category_dropdown.dart';

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
-import '../../../core/constants/categories.dart';
+import '../../../core/constants/enums/categories.dart';
 import '../models/clothing_item_model.dart';
 import '../pages/edit_clothing_page.dart';
 

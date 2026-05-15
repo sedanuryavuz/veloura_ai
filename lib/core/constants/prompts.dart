@@ -1,3 +1,6 @@
+import 'package:veloura_ai/core/constants/enums/categories.dart';
+import 'package:veloura_ai/core/constants/enums/colors.dart';
+
 class Prompts {
   static String fashionStylist(String userText) {
     return """
@@ -26,4 +29,26 @@ User request:
 $userText
 """;
   }
+
+    static final clothingAnalysis = '''
+Analyze this clothing item.
+
+Return ONLY valid JSON.
+
+Format:
+{
+  "name": "",
+  "category": "",
+  "color": "",
+  "style": ""
+  "description": ""
+}
+
+Category must be one of:
+${ClothingCategoryPrompt.aiCategories}
+Color must be one of:
+${ClothingColor.values.map((e) => e.name).join(", ")}
+description must describe the clothing in 1 sentence
+No markdown.
+''';
 }

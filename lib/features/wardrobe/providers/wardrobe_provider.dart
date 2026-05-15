@@ -2,7 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 
-import '../../../core/constants/categories.dart';
+import '../../../core/constants/enums/categories.dart';
 import '../models/clothing_item_model.dart';
 import '../repositories/wardrobe_repository.dart';
 import '../services/storage_service.dart';
@@ -51,6 +51,9 @@ class WardrobeProvider extends ChangeNotifier {
     required String name,
     required ClothingCategory category,
     required File imageFile,
+      required String color,
+  required String style,
+  required String description,
   }) async {
     _setLoading(true);
     _clearError();
@@ -65,6 +68,9 @@ class WardrobeProvider extends ChangeNotifier {
         name: name,
         category: category,
         createdAt: DateTime.now(),
+        color: color,
+        style: style,
+        description: description,
       );
 
       final addedItem = await _repository.addItem(newItem);

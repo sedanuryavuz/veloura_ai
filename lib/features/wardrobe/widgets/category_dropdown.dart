@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../core/constants/categories.dart';
+import '../../../core/constants/enums/categories.dart';
 
 class CategoryDropdown extends StatelessWidget {
   final ClothingCategory value;

@@ -1,5 +1,5 @@
 import '../../wardrobe/models/clothing_item_model.dart';
-import '../../../core/constants/categories.dart';
+import '../../../core/constants/enums/categories.dart';
 
 class OutfitModel {
   final String id;

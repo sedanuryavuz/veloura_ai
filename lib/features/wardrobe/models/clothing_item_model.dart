@@ -1,4 +1,4 @@
-import '../../../core/constants/categories.dart';
+import '../../../core/constants/enums/categories.dart';
 
 class ClothingItemModel {
   final String id;
@@ -7,6 +7,9 @@ class ClothingItemModel {
   final String name;
   final ClothingCategory category;
   final DateTime createdAt;
+  final String color;
+  final String style;
+  final String description;
 
   const ClothingItemModel({
     required this.id,
@@ -15,6 +18,9 @@ class ClothingItemModel {
     required this.name,
     required this.category,
     required this.createdAt,
+    required this.color,
+    required this.style,
+    required this.description,
   });
 
   ClothingItemModel copyWith({
@@ -32,6 +38,9 @@ class ClothingItemModel {
       name: name ?? this.name,
       category: category ?? this.category,
       createdAt: createdAt ?? this.createdAt,
+      color: color ?? this.color,
+      style: style ?? this.style,
+      description: description ?? this.description,
     );
   }
 
@@ -43,6 +52,9 @@ class ClothingItemModel {
       'name': name,
       'category': category.name,
       'created_at': createdAt.toIso8601String(),
+      'color': color,
+      'style': style,
+      'description': description,
     };
   }
 
@@ -52,8 +64,11 @@ class ClothingItemModel {
       userId: map['user_id'] as String,
       imageUrl: map['image_url'] as String,
       name: map['name'] as String,
-      category: ClothingCategoryExt.fromString(map['category'] as String), 
+      category: ClothingCategoryExt.fromString(map['category'] as String),
       createdAt: DateTime.parse(map['created_at'] as String),
+      color: map['color'] as String,
+      style: map['style'] as String,
+      description: map['description'] as String,
     );
   }
 }
