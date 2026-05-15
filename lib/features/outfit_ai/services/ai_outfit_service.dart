@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:google_generative_ai/google_generative_ai.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:veloura_ai/features/outfit_ai/models/ai_outfit_result.dart';
 
 class AiOutfitService {
   final model = GenerativeModel(
@@ -68,7 +69,7 @@ ${jsonEncode(wardrobeJson)}
   }
 
   // ---------------- MAIN FUNCTION ----------------
-  Future<Map<String, dynamic>?> generateOutfit({
+Future<AiOutfitResult?> generateOutfit({
     required List items,
     required Map weather,
   }) async {
@@ -84,7 +85,9 @@ ${jsonEncode(wardrobeJson)}
 
       final cleaned = cleanJson(text);
 
-      return jsonDecode(cleaned);
+      final json = jsonDecode(cleaned);
+
+    return AiOutfitResult.fromJson(json);
     } catch (e) {
       print("AI ERROR: $e");
       return null;

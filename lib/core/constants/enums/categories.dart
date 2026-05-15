@@ -19,7 +19,29 @@ extension ClothingCategoryExt on ClothingCategory {
     );
   }
 }
+extension ClothingCategorySelector on ClothingCategory {
+  void applySelection(
+    dynamic item,
+    dynamic outfitProvider,
+  ) {
+    switch (this) {
+      case ClothingCategory.top:
+        outfitProvider.selectTop(item);
+        break;
 
+      case ClothingCategory.bottom:
+        outfitProvider.selectBottom(item);
+        break;
+
+      case ClothingCategory.shoes:
+        outfitProvider.selectShoes(item);
+        break;
+
+      default:
+        break;
+    }
+  }
+}
 extension ClothingCategoryPrompt on ClothingCategory {
   static String get aiCategories {
     return ClothingCategory.values
@@ -27,4 +49,5 @@ extension ClothingCategoryPrompt on ClothingCategory {
         .map((e) => e.name)
         .join(', ');
   }
+  
 }

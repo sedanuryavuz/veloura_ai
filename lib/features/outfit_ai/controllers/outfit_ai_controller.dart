@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+
+import '../models/ai_outfit_result.dart';
 import '../services/ai_outfit_service.dart';
 import '../services/location_service.dart';
 import '../services/weather_service.dart';
@@ -15,18 +17,25 @@ class OutfitAiController extends ChangeNotifier {
   });
 
   bool isLoading = false;
-  Map<String, dynamic>? result;
+
+  String? error;
+
+  AiOutfitResult? result;
 
   Future<void> generateOutfit({
     required List wardrobe,
   }) async {
-    isLoading = true;
-    notifyListeners();
-
     try {
-      final position = await locationService.getLocation();
+      isLoading = true;
+      error = null;
 
-      final weather = await weatherService.getWeather(
+      notifyListeners();
+
+      final position =
+          await locationService.getLocation();
+
+      final weather =
+          await weatherService.getWeather(
         position.latitude,
         position.longitude,
       );
@@ -35,11 +44,19 @@ class OutfitAiController extends ChangeNotifier {
         items: wardrobe,
         weather: weather,
       );
-    } catch (e) {
-      print("CONTROLLER ERROR: $e");
-    }
 
-    isLoading = false;
-    notifyListeners();
+      if (result == null) {
+        throw Exception("AI result null");
+      }
+    } catch (e) {
+      error = e.toString();
+
+      debugPrint(
+        "OUTFIT AI CONTROLLER ERROR: $e",
+      );
+    } finally {
+      isLoading = false;
+      notifyListeners();
+    }
   }
 }

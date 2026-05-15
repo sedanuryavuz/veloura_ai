@@ -28,6 +28,31 @@ class WardrobeProvider extends ChangeNotifier {
     return _items.where((item) => item.category == _selectedCategory).toList();
   }
 
+// ---------------- CATEGORY GETTERS ----------------
+
+List<ClothingItemModel> get tops {
+  return _items
+      .where((e) => e.category == ClothingCategory.top)
+      .toList();
+}
+
+List<ClothingItemModel> get bottoms {
+  return _items
+      .where((e) => e.category == ClothingCategory.bottom)
+      .toList();
+}
+
+List<ClothingItemModel> get shoes {
+  return _items
+      .where((e) => e.category == ClothingCategory.shoes)
+      .toList();
+}
+
+List<ClothingItemModel> get accessories {
+  return _items
+      .where((e) => e.category == ClothingCategory.accessories)
+      .toList();
+}
   void changeCategory(ClothingCategory category) {
     _selectedCategory = category;
     notifyListeners();
