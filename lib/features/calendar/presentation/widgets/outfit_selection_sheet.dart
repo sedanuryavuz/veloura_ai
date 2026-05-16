@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
-import '../../outfit/presentation/provider/outfit_provider.dart';
-import '../../outfit/domain/entities/outfit.dart';
+import '../../../outfit/presentation/provider/outfit_provider.dart';
+import '../../../outfit/domain/entities/outfit.dart';
 
 class OutfitSelectionSheet {
   static void show({

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../features/calendar/pages/outfit_calendar_page.dart';
+import '../../features/calendar/presentation/pages/calendar_page.dart';
 import '../../features/chat/pages/chat_page.dart';
 import '../../features/outfit/presentation/pages/outfit_page.dart';
 import '../../features/wardrobe/presentation/pages/wardrobe_page.dart';
@@ -20,7 +20,7 @@ class _MainNavigationPageState
   final List<Widget> pages = const [
     WardrobePage(),
     OutfitPage(),
-    OutfitCalendarPage(),
+    CalendarPage(),
     ChatPage(),
   ];
 
