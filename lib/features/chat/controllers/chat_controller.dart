@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import '../../../core/constants/prompts.dart';
+import '../../outfit/data/datasources/outfit_ai_data_source.dart';
 import '../models/message_model.dart';
-import '../services/gemini_service.dart';
 
 class ChatController extends ChangeNotifier {
-  final GeminiService _geminiService = GeminiService();
+  final OutfitAiDataSource _aiDataSource = OutfitAiDataSourceImpl();
 
   final List<MessageModel> messages = [];
 
@@ -28,9 +28,9 @@ class ChatController extends ChangeNotifier {
     notifyListeners();
 
     try {
-  final response = await sendWithRetry(
-  Prompts.fashionStylist(text),
-);
+      final response = await sendWithRetry(
+        Prompts.fashionStylist(text),
+      );
 
       addAIMessage(response);
     } catch (e) {
@@ -40,12 +40,13 @@ class ChatController extends ChangeNotifier {
     isLoading = false;
     notifyListeners();
   }
+
   Future<String> sendWithRetry(String text) async {
-  try {
-    return await _geminiService.sendMessage(text);
-  } catch (e) {
-    await Future.delayed(const Duration(seconds: 2));
-    return await _geminiService.sendMessage(text);
+    try {
+      return await _aiDataSource.sendMessage(text);
+    } catch (e) {
+      await Future.delayed(const Duration(seconds: 2));
+      return await _aiDataSource.sendMessage(text);
+    }
   }
-}
 }

@@ -1,15 +1,15 @@
 import 'dart:io';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/clothing_model.dart';
-import 'storage_service.dart';
-import 'background_removal_service.dart';
-import '../../../chat/services/gemini_service.dart';
+import '../../../outfit/data/datasources/storage_data_source.dart';
+import '../../../outfit/data/datasources/background_removal_data_source.dart';
+import '../../../outfit/data/datasources/outfit_ai_data_source.dart';
 
 class WardrobeRemoteDataSource {
   final SupabaseClient _client = Supabase.instance.client;
-  final StorageService _storageService = StorageService();
-  final BackgroundRemovalService _bgService = BackgroundRemovalService();
-  final GeminiService _geminiService = GeminiService();
+  final StorageDataSource _storageService = StorageDataSourceImpl(Supabase.instance.client);
+  final BackgroundRemovalDataSource _bgService = BackgroundRemovalDataSourceImpl();
+  final OutfitAiDataSource _aiService = OutfitAiDataSourceImpl();
 
   Future<List<ClothingModel>> getItems(String userId) async {
     final response = await _client
@@ -18,7 +18,7 @@ class WardrobeRemoteDataSource {
         .eq('user_id', userId)
         .order('created_at', ascending: false);
 
-    return response.map((data) => ClothingModel.fromMap(data)).toList();
+    return (response as List).map((data) => ClothingModel.fromMap(data)).toList();
   }
 
   Future<ClothingModel> addItem(ClothingModel item) async {
@@ -55,7 +55,7 @@ class WardrobeRemoteDataSource {
   }
 
   Future<Map<String, dynamic>?> analyzeClothing(File image) {
-    return _geminiService.analyzeClothing(image);
+    return _aiService.analyzeClothing(image);
   }
 
   Future<File?> removeBackground(File image) {

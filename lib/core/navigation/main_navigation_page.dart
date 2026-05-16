@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../features/calendar/pages/outfit_calendar_page.dart';
 import '../../features/chat/pages/chat_page.dart';
-import '../../features/outfit/pages/outfit_list_page.dart';
+import '../../features/outfit/presentation/pages/outfit_page.dart';
 import '../../features/wardrobe/presentation/pages/wardrobe_page.dart';
 
 class MainNavigationPage extends StatefulWidget {
@@ -19,7 +19,7 @@ class _MainNavigationPageState
 
   final List<Widget> pages = const [
     WardrobePage(),
-    OutfitListPage(),
+    OutfitPage(),
     OutfitCalendarPage(),
     ChatPage(),
   ];

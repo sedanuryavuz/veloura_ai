@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 
-import '../../outfit/models/outfit_model.dart';
+import '../../outfit/data/models/outfit_model.dart';
+import '../../outfit/domain/entities/outfit.dart';
 import '../models/calendar_outfit_model.dart';
 import '../repositories/calendar_repository.dart';
 
@@ -52,7 +53,7 @@ class CalendarProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> addOrUpdateOutfit(String userId, OutfitModel outfit) async {
+  Future<void> addOrUpdateOutfit(String userId, Outfit outfit) async {
     _isLoading = true;
     _error = null;
     notifyListeners();
@@ -65,12 +66,14 @@ class CalendarProvider extends ChangeNotifier {
         (e) => _dateKey(e.date) == key,
       );
 
+      final outfitModel = OutfitModel.fromEntity(outfit);
+
       final newModel = CalendarOutfitModel(
         id:  const Uuid().v4(),
         userId: userId,
         outfitId: outfit.id,
         date: selectedDay,
-        outfit: outfit,
+        outfit: outfitModel,
         createdAt: DateTime.now(),
       );
 

@@ -1,4 +1,4 @@
-import '../../outfit/models/outfit_model.dart';
+import '../../outfit/data/models/outfit_model.dart';
 
 class CalendarOutfitModel {
   final String id;

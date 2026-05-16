@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../outfit/domain/entities/outfit.dart';
 
 import 'package:veloura_ai/core/services/supabase_service.dart';
 

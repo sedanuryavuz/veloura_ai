@@ -1,13 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:veloura_ai/domain/usecases/generate_ai_outfit_usecase.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:veloura_ai/features/auth/pages/login_page.dart';
-import 'package:veloura_ai/features/outfit/providers/outfit_provider.dart';
-import 'package:veloura_ai/features/outfit/repositories/outfit_repository.dart';
-import 'package:veloura_ai/features/outfit_ai/controllers/outfit_ai_controller.dart';
-import 'package:veloura_ai/features/outfit_ai/services/ai_outfit_service.dart';
-import 'package:veloura_ai/features/outfit_ai/services/location_service.dart';
-import 'package:veloura_ai/features/outfit_ai/services/weather_service.dart';
+
+import 'package:veloura_ai/features/outfit/presentation/provider/outfit_provider.dart';
+import 'package:veloura_ai/features/outfit/data/repositories/outfit_repository_impl.dart';
+import 'package:veloura_ai/features/outfit/data/datasources/outfit_remote_data_source.dart';
+import 'package:veloura_ai/features/outfit/data/datasources/outfit_ai_data_source.dart';
+import 'package:veloura_ai/features/outfit/data/datasources/background_removal_data_source.dart';
+import 'package:veloura_ai/features/outfit/data/datasources/storage_data_source.dart';
+import 'package:veloura_ai/features/outfit/data/datasources/location_data_source.dart';
+import 'package:veloura_ai/features/outfit/data/datasources/weather_data_source.dart';
+import 'package:veloura_ai/features/outfit/domain/usecases/get_outfits.dart';
+import 'package:veloura_ai/features/outfit/domain/usecases/save_outfit.dart';
+import 'package:veloura_ai/features/outfit/domain/usecases/delete_outfit.dart';
+import 'package:veloura_ai/features/outfit/domain/usecases/generate_outfit.dart';
 
 import '../features/auth/controllers/auth_controller.dart';
 import '../features/calendar/providers/calendar_provider.dart';
@@ -34,7 +41,22 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => ChatController()),
         ChangeNotifierProvider(create: (_) => ClothingFormController()),
-        ChangeNotifierProvider(create: (_) => OutfitProvider(OutfitRepository())),
+        ChangeNotifierProvider(create: (_) {
+          final outfitRepository = OutfitRepositoryImpl(
+            remoteDataSource: OutfitRemoteDataSourceImpl(Supabase.instance.client),
+            aiDataSource: OutfitAiDataSourceImpl(),
+            backgroundRemovalDataSource: BackgroundRemovalDataSourceImpl(),
+            storageDataSource: StorageDataSourceImpl(Supabase.instance.client),
+            locationDataSource: LocationDataSourceImpl(),
+            weatherDataSource: WeatherDataSourceImpl(),
+          );
+          return OutfitProvider(
+            getOutfitsUsecase: GetOutfits(outfitRepository),
+            saveOutfitUsecase: SaveOutfit(outfitRepository),
+            deleteOutfitUsecase: DeleteOutfit(outfitRepository),
+            generateOutfitUsecase: GenerateOutfit(outfitRepository),
+          );
+        }),
         ChangeNotifierProvider(create: (_) => CalendarProvider(CalendarRepository())),
         ChangeNotifierProvider(create: (_) => AuthController()),
         ChangeNotifierProvider(
@@ -48,15 +70,6 @@ class MyApp extends StatelessWidget {
             repository: wardrobeRepository,
           ),
         ),
-        ChangeNotifierProvider(
-          create: (_) => OutfitAiController(
-            generateAiOutfitUseCase: GenerateAiOutfitUseCase(
-              aiService: AiOutfitService(),
-              locationService: LocationService(),
-              weatherService: WeatherService(),
-            ),
-          ),
-        )
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

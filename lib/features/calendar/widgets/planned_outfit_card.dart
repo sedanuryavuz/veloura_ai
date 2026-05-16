@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
-import '../../outfit/models/outfit_model.dart';
+import '../../outfit/data/models/outfit_model.dart';
+
 
 class PlannedOutfitCard extends StatelessWidget {
   final OutfitModel outfit;
