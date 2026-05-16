@@ -45,18 +45,21 @@ class ClothingCard extends StatelessWidget {
                     borderRadius: const BorderRadius.vertical(
                       top: Radius.circular(AppDecorations.cardRadius),
                     ),
-                    child: CachedNetworkImage(
-                      imageUrl: item.imageUrl,
-                      fit: BoxFit.contain,
-                      placeholder: (context, url) => Container(
-                        color: AppColors.primaryLight.withOpacity(0.2),
-                        child: const Center(
-                          child: CircularProgressIndicator(strokeWidth: 2),
+                    child: Hero(
+                      tag: 'clothing_image_${item.id}',
+                      child: CachedNetworkImage(
+                        imageUrl: item.imageUrl,
+                        fit: BoxFit.contain,
+                        placeholder: (context, url) => Container(
+                          color: AppColors.primaryLight.withOpacity(0.2),
+                          child: const Center(
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          ),
                         ),
-                      ),
-                      errorWidget: (context, url, error) => Container(
-                        color: AppColors.primaryLight.withOpacity(0.1),
-                        child: const Icon(Icons.image_not_supported_rounded, color: AppColors.textLight),
+                        errorWidget: (context, url, error) => Container(
+                          color: AppColors.primaryLight.withOpacity(0.1),
+                          child: const Icon(Icons.image_not_supported_rounded, color: AppColors.textLight),
+                        ),
                       ),
                     ),
                   ),

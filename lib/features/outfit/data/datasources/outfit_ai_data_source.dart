@@ -17,7 +17,7 @@ class OutfitAiDataSourceImpl implements OutfitAiDataSource {
 
   OutfitAiDataSourceImpl()
       : _model = GenerativeModel(
-          model: 'gemini-2.0-flash',
+          model: 'gemini-2.5-flash',
           apiKey: dotenv.env['GEMINI_API_KEY'] ?? '',
         );
 
@@ -37,17 +37,44 @@ class OutfitAiDataSourceImpl implements OutfitAiDataSource {
   Future<Map<String, dynamic>?> analyzeClothing(File image) async {
     try {
       final bytes = await image.readAsBytes();
+      
+      const prompt = """
+You are a strict JSON generator. Return ONLY valid JSON.
+No markdown, no explanations, no backticks, no extra text.
+IMPORTANT RULES:
+- category must be one of: top, bottom, shoes, accessories
+- color must be one of: black, white, blue, red, green, beige
+
+Schema:
+{
+  "name": "string",
+  "category": "top | bottom | shoes | accessories",
+  "color": "string",
+  "style": "string",
+  "description": "string"
+}
+
+Analyze this clothing item and return the result in this exact JSON format.
+""";
+
       final response = await _model.generateContent([
         Content.multi([
-          TextPart("Analyze this clothing item and return JSON with: name, category, color, style, description."),
+          TextPart(prompt),
           DataPart('image/jpeg', bytes),
         ]),
       ]);
+
       final text = response.text;
+      print("RAW GEMINI RESPONSE: $text");
+      
       if (text == null) return null;
-      final cleaned = text.replaceAll('```json', '').replaceAll('```', '').trim();
-      return jsonDecode(cleaned);
+      
+      final cleaned = _cleanJson(text);
+      print("CLEANED JSON: $cleaned");
+      
+      return jsonDecode(cleaned) as Map<String, dynamic>;
     } catch (e) {
+      print("GEMINI ANALYSIS ERROR: $e");
       return null;
     }
   }

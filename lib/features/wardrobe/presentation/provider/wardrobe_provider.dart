@@ -86,6 +86,8 @@ class WardrobeProvider extends ChangeNotifier {
   bool _isAnalyzingImage = false;
   bool get isAnalyzingImage => _isAnalyzingImage;
 
+  bool _isAiRunning = false; // Guard flag
+
   final _picker = ImagePicker();
   String? get editImageUrl => _editingItem?.imageUrl;
   // --- Edit Item State ---
@@ -305,7 +307,7 @@ class WardrobeProvider extends ChangeNotifier {
       if (processed != null) {
         _draftImage = processed;
         notifyListeners();
-        await analyzeDraftImage();
+        // REMOVED: Automatic AI analysis. User must tap the button manually.
       }
     } catch (e) {
       _error = 'Image processing failed: $e';
@@ -315,26 +317,64 @@ class WardrobeProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> analyzeDraftImage() async {
-    if (_draftImage == null) return;
+  String _normalizeColor(String c) {
+    final value = c.toLowerCase().trim();
+    if (value.contains("black")) return "black";
+    if (value.contains("white")) return "white";
+    if (value.contains("gray") || value.contains("grey")) return "gray";
+    if (value.contains("blue")) return "blue";
+    if (value.contains("red")) return "red";
+    if (value.contains("green")) return "green";
+    if (value.contains("brown")) return "brown";
+    if (value.contains("beige")) return "beige";
+    if (value.contains("pink")) return "pink";
+    if (value.contains("yellow")) return "yellow";
+    return "black"; // Default fallback
+  }
 
+  Future<void> analyzeDraftImage() async {
+    print("AI BUTTON PRESSED (DRAFT)");
+    if (_draftImage == null) {
+      print("DRAFT IMAGE IS NULL");
+      return;
+    }
+
+    if (_isAiRunning) return; // Guard
+    _isAiRunning = true;
     _isAnalyzingImage = true;
     notifyListeners();
 
     try {
+      print("ANALYZING IMAGE: ${_draftImage!.path}");
       final result = await _analyzeClothing(_draftImage!);
+      print("AI RESULT: $result");
+      
       if (result != null) {
-        _draftName = result['name'] ?? _draftName;
-        _draftStyle = result['style'] ?? _draftStyle;
-        _draftDescription = result['description'] ?? _draftDescription;
-        _draftCategory = ClothingCategoryExt.fromString(
-          result['category'] ?? '',
-        );
-        _draftColor = ClothingColorExt.fromString(result['color'] ?? '');
+        // Protect user-typed values: only fill if empty
+        if (_draftName.isEmpty) {
+          _draftName = (result['name'] ?? '').toString();
+        }
+        if (_draftStyle.isEmpty) {
+          _draftStyle = (result['style'] ?? '').toString();
+        }
+        if (_draftDescription.isEmpty) {
+          _draftDescription = (result['description'] ?? '').toString();
+        }
+
+        final rawCategory = (result['category'] ?? '').toString();
+        _draftCategory = ClothingCategoryExt.fromString(rawCategory);
+        print("MAPPED CATEGORY: $_draftCategory (RAW: $rawCategory)");
+
+        final rawColor = (result['color'] ?? '').toString();
+        final normalizedColor = _normalizeColor(rawColor);
+        _draftColor = ClothingColorExt.fromString(normalizedColor);
+        print("MAPPED COLOR: $_draftColor (RAW: $rawColor, NORM: $normalizedColor)");
       }
     } catch (e) {
       _error = "AI limit reached. Please try again later or enter details manually.";
+      print('AI analysis failed: $e');
     } finally {
+      _isAiRunning = false;
       _isAnalyzingImage = false;
       notifyListeners();
     }
@@ -422,6 +462,53 @@ class WardrobeProvider extends ChangeNotifier {
 
     _editImage = File(picked.path);
     notifyListeners();
+    await analyzeEditImage();
+  }
+
+  Future<void> analyzeEditImage() async {
+    print("AI BUTTON PRESSED (EDIT)");
+    if (_editImage == null) {
+      print("EDIT IMAGE IS NULL");
+      return;
+    }
+
+    if (_isAiRunning) return; // Guard
+    _isAiRunning = true;
+    _isAnalyzingImage = true;
+    notifyListeners();
+
+    try {
+      print("ANALYZING EDIT IMAGE: ${_editImage!.path}");
+      final result = await _analyzeClothing(_editImage!);
+      print("AI RESULT: $result");
+
+      if (result != null) {
+        if (_editName.isEmpty) {
+          _editName = (result['name'] ?? '').toString();
+        }
+        if (_editStyle.isEmpty) {
+          _editStyle = (result['style'] ?? '').toString();
+        }
+        if (_editDescription.isEmpty) {
+          _editDescription = (result['description'] ?? '').toString();
+        }
+
+        final rawCategory = (result['category'] ?? '').toString();
+        _editCategory = ClothingCategoryExt.fromString(rawCategory);
+
+        final rawColor = (result['color'] ?? '').toString();
+        final normalizedColor = _normalizeColor(rawColor);
+        _editColor = ClothingColorExt.fromString(normalizedColor);
+        print("MAPPED EDIT COLOR: $_editColor (RAW: $rawColor, NORM: $normalizedColor)");
+      }
+    } catch (e) {
+      _error = "AI limit reached. Please try again later or enter manually.";
+      print('AI edit analysis failed: $e');
+    } finally {
+      _isAiRunning = false;
+      _isAnalyzingImage = false;
+      notifyListeners();
+    }
   }
 
   Future<bool> saveEdit(String userId) async {
