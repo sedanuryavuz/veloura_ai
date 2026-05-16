@@ -1,7 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:veloura_ai/features/auth/pages/login_page.dart';
+import 'package:veloura_ai/features/auth/presentation/pages/splash_page.dart';
+import 'package:veloura_ai/features/auth/data/datasources/auth_remote_data_source.dart';
+import 'package:veloura_ai/features/auth/data/repositories/auth_repository_impl.dart';
+import 'package:veloura_ai/features/auth/domain/usecases/login.dart';
+import 'package:veloura_ai/features/auth/domain/usecases/register.dart';
+import 'package:veloura_ai/features/auth/domain/usecases/logout.dart';
+import 'package:veloura_ai/features/auth/domain/usecases/get_current_user.dart';
+import 'package:veloura_ai/features/auth/presentation/provider/auth_provider.dart';
 
 import 'package:veloura_ai/features/outfit/presentation/provider/outfit_provider.dart';
 import 'package:veloura_ai/features/outfit/data/repositories/outfit_repository_impl.dart';
@@ -16,7 +23,6 @@ import 'package:veloura_ai/features/outfit/domain/usecases/save_outfit.dart';
 import 'package:veloura_ai/features/outfit/domain/usecases/delete_outfit.dart';
 import 'package:veloura_ai/features/outfit/domain/usecases/generate_outfit.dart';
 
-import '../features/auth/controllers/auth_controller.dart';
 import 'package:veloura_ai/features/calendar/presentation/provider/calendar_provider.dart';
 import 'package:veloura_ai/features/calendar/data/repositories/calendar_repository_impl.dart';
 import 'package:veloura_ai/features/calendar/data/datasources/calendar_remote_data_source.dart';
@@ -26,7 +32,6 @@ import 'package:veloura_ai/features/calendar/data/datasources/notification_data_
 import 'package:veloura_ai/features/calendar/domain/usecases/get_calendar_events.dart';
 import 'package:veloura_ai/features/calendar/domain/usecases/add_calendar_event.dart';
 import 'package:veloura_ai/features/calendar/domain/usecases/delete_calendar_event.dart';
-import 'package:veloura_ai/features/calendar/domain/usecases/update_calendar_event.dart';
 import '../features/chat/controllers/chat_controller.dart';
 import '../domain/controllers/clothing_form_controller.dart';
 import '../features/wardrobe/presentation/provider/wardrobe_provider.dart';
@@ -44,6 +49,8 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final wardrobeRepository = WardrobeRepositoryImpl(WardrobeRemoteDataSource());
+    final supabaseClient = Supabase.instance.client;
+    final authRepository = AuthRepositoryImpl(AuthRemoteDataSourceImpl(supabaseClient));
 
     return MultiProvider(
       providers: [
@@ -51,10 +58,10 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => ClothingFormController()),
         ChangeNotifierProvider(create: (_) {
           final outfitRepository = OutfitRepositoryImpl(
-            remoteDataSource: OutfitRemoteDataSourceImpl(Supabase.instance.client),
+            remoteDataSource: OutfitRemoteDataSourceImpl(supabaseClient),
             aiDataSource: OutfitAiDataSourceImpl(),
             backgroundRemovalDataSource: BackgroundRemovalDataSourceImpl(),
-            storageDataSource: StorageDataSourceImpl(Supabase.instance.client),
+            storageDataSource: StorageDataSourceImpl(supabaseClient),
             locationDataSource: LocationDataSourceImpl(),
             weatherDataSource: WeatherDataSourceImpl(),
           );
@@ -76,10 +83,16 @@ class MyApp extends StatelessWidget {
             getEvents: GetCalendarEvents(calendarRepository),
             addEvent: AddCalendarEvent(calendarRepository),
             deleteEvent: DeleteCalendarEvent(calendarRepository),
-            //updateEvent: UpdateCalendarEvent(calendarRepository),
           );
         }),
-        ChangeNotifierProvider(create: (_) => AuthController()),
+        ChangeNotifierProvider(
+          create: (_) => AuthProvider(
+            loginUsecase: Login(authRepository),
+            registerUsecase: Register(authRepository),
+            logoutUsecase: Logout(authRepository),
+            getCurrentUserUsecase: GetCurrentUser(authRepository),
+          ),
+        ),
         ChangeNotifierProvider(
           create: (_) => WardrobeProvider(
             getWardrobeItems: GetWardrobeItems(wardrobeRepository),
@@ -99,7 +112,7 @@ class MyApp extends StatelessWidget {
           useMaterial3: true,
           colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xffE8B4B8)),
         ),
-        home: const LoginPage(),
+        home: const SplashPage(),
       ),
     );
   }
