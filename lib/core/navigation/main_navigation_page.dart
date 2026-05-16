@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import '../../features/calendar/pages/outfit_calendar_page.dart';
 import '../../features/chat/pages/chat_page.dart';
 import '../../features/outfit/pages/outfit_list_page.dart';
-import '../../features/wardrobe/presentation/pages/add_clothing_page.dart';
 import '../../features/wardrobe/presentation/pages/wardrobe_page.dart';
 
 class MainNavigationPage extends StatefulWidget {
@@ -33,19 +32,7 @@ class _MainNavigationPageState
         children: pages,
       ),
 
-      floatingActionButton: currentIndex == 0
-          ? FloatingActionButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => const AddClothingPage(),
-                  ),
-                );
-              },
-              child: const Icon(Icons.add),
-            )
-          : null,
+
 
       bottomNavigationBar: Container(
         margin: const EdgeInsets.all(16),

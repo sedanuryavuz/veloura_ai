@@ -3,6 +3,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 
 import '../../../../core/constants/enums/categories.dart';
 import '../../domain/entities/clothing_item.dart';
+import '../../domain/enums/clothing_form_mode.dart';
+import '../pages/clothing_form_page.dart';
 import '../pages/edit_clothing_page.dart';
 
 class ClothingCard extends StatelessWidget {
@@ -16,8 +18,11 @@ class ClothingCard extends StatelessWidget {
       onTap: () {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (_) => EditClothingPage(item: item)),
-        );
+          MaterialPageRoute(builder: (_) => ClothingFormPage(
+      mode: ClothingFormMode.edit,
+      item: item, // ✔ burada var
+    ),
+        ),);
       },
       child: Container(
         decoration: BoxDecoration(
