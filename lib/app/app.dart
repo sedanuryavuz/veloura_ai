@@ -9,6 +9,7 @@ import 'package:veloura_ai/features/auth/domain/usecases/register.dart';
 import 'package:veloura_ai/features/auth/domain/usecases/logout.dart';
 import 'package:veloura_ai/features/auth/domain/usecases/get_current_user.dart';
 import 'package:veloura_ai/features/auth/presentation/provider/auth_provider.dart';
+import 'theme/app_theme.dart';
 
 import 'package:veloura_ai/features/outfit/presentation/provider/outfit_provider.dart';
 import 'package:veloura_ai/features/outfit/data/repositories/outfit_repository_impl.dart';
@@ -108,10 +109,7 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'Veloura AI',
-        theme: ThemeData(
-          useMaterial3: true,
-          colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xffE8B4B8)),
-        ),
+        theme: AppTheme.light,
         home: const SplashPage(),
       ),
     );

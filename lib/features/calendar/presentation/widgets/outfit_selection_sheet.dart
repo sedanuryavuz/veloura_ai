@@ -37,7 +37,7 @@ class OutfitSelectionSheet {
                           imageUrl: outfit.top!.imageUrl,
                           width: 50,
                           height: 60,
-                          fit: BoxFit.cover,
+                          fit: BoxFit.contain,
                         ),
                       )
                     : null,

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../../../../app/theme/app_colors.dart';
+import '../../../../app/theme/app_text_styles.dart';
 
 class EmptyEventState extends StatelessWidget {
   const EmptyEventState({super.key});
@@ -6,28 +8,32 @@ class EmptyEventState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(Icons.calendar_today_outlined, size: 64, color: Colors.grey.shade300),
-          const SizedBox(height: 16),
-          Text(
-            "No outfits planned for this day",
-            style: TextStyle(
-              color: Colors.grey.shade500,
-              fontSize: 16,
-              fontWeight: FontWeight.w500,
+      child: Padding(
+        padding: const EdgeInsets.only(bottom: 60), // Fixed: Offsetting for bottom navigation bar
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(24),
+              decoration: BoxDecoration(
+                color: AppColors.primaryLight.withOpacity(0.2),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(Icons.event_note_rounded, size: 48, color: AppColors.primary),
             ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            "Tap the + button to add one",
-            style: TextStyle(
-              color: Colors.grey.shade400,
-              fontSize: 14,
+            const SizedBox(height: 24),
+            Text(
+              "Empty Day",
+              style: AppTextStyles.h3,
             ),
-          ),
-        ],
+            const SizedBox(height: 8),
+            Text(
+              "Plan your perfect outfit for this day",
+              style: AppTextStyles.bodyMedium.copyWith(color: AppColors.textSecondary),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
       ),
     );
   }

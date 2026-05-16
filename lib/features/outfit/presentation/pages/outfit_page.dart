@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../../../app/theme/app_colors.dart';
 import '../../../../core/services/supabase_service.dart';
 import '../provider/outfit_provider.dart';
-import '../../utils/outfit_theme.dart';
 import '../widgets/outfit_grid.dart';
 import '../widgets/outfit_loading.dart';
 import 'create_outfit_page.dart';
@@ -30,14 +30,11 @@ class _OutfitPageState extends State<OutfitPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: OutfitTheme.background,
       appBar: AppBar(
-        title: const Text("My Outfits", style: OutfitTheme.titleStyle),
-        backgroundColor: OutfitTheme.background,
-        elevation: 0,
+        title: const Text("My Outfits"),
         actions: [
           IconButton(
-            icon: const Icon(Icons.auto_awesome, color: OutfitTheme.accentColor),
+            icon: const Icon(Icons.auto_awesome_rounded, color: AppColors.primary),
             onPressed: () => Navigator.push(
               context,
               MaterialPageRoute(builder: (_) => const OutfitResultPage()),
@@ -45,31 +42,49 @@ class _OutfitPageState extends State<OutfitPage> {
           ),
         ],
       ),
-      body: Consumer<OutfitProvider>(
-        builder: (context, provider, child) {
-          if (provider.isLoading && provider.outfits.isEmpty) {
-            return const OutfitLoading();
-          }
-
-          if (provider.outfits.isEmpty) {
-            return const Center(
-              child: Text("No outfits saved yet.", style: OutfitTheme.subtitleStyle),
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.only(bottom: 96), // Fixed: Higher margin from bottom nav
+        child: FloatingActionButton(
+          onPressed: () {
+            context.read<OutfitProvider>().clearSelection();
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const CreateOutfitPage()),
             );
-          }
-
-          return OutfitGrid(outfits: provider.outfits);
-        },
+          },
+          backgroundColor: AppColors.primary,
+          child: const Icon(Icons.add_rounded, color: Colors.white),
+        ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          context.read<OutfitProvider>().clearSelection();
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => const CreateOutfitPage()),
-          );
-        },
-        backgroundColor: OutfitTheme.accentColor,
-        child: const Icon(Icons.add, color: Colors.white),
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: AppColors.backgroundGradient,
+          ),
+        ),
+        child: SafeArea(
+          bottom: false,
+          child: Consumer<OutfitProvider>(
+            builder: (context, provider, child) {
+              if (provider.isLoading && provider.outfits.isEmpty) {
+                return const OutfitLoading();
+              }
+
+              if (provider.outfits.isEmpty) {
+                return const Center(
+                  child: Padding(
+                    padding: EdgeInsets.only(bottom: 60), // Fixed: Offsetting for bottom nav
+                    child: Text("No outfits saved yet."),
+                  ),
+                );
+              }
+
+              return OutfitGrid(outfits: provider.outfits);
+            },
+          ),
+        ),
       ),
     );
   }

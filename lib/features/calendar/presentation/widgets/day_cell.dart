@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../../../../app/theme/app_colors.dart';
+import '../../../../app/theme/app_text_styles.dart';
 
 class DayCell extends StatelessWidget {
   final DateTime date;
@@ -16,13 +18,21 @@ class DayCell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.all(6.0),
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 200),
+      margin: const EdgeInsets.all(4.0),
       decoration: BoxDecoration(
         color: isSelected 
-            ? (isPast ? Colors.grey : Colors.black) 
-            : (isToday ? Colors.grey.shade200 : Colors.transparent),
-        shape: BoxShape.circle,
+            ? AppColors.primary
+            : (isToday ? AppColors.primaryLight.withOpacity(0.3) : Colors.transparent),
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: isSelected ? [
+          BoxShadow(
+            color: AppColors.primary.withOpacity(0.3),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
+          )
+        ] : null,
       ),
       child: Center(
         child: Column(
@@ -30,13 +40,22 @@ class DayCell extends StatelessWidget {
           children: [
             Text(
               '${date.day}',
-              style: TextStyle(
-                color: isSelected ? Colors.white : (isPast ? Colors.grey : Colors.black),
+              style: AppTextStyles.bodyMedium.copyWith(
+                color: isSelected 
+                    ? Colors.white 
+                    : (isPast ? AppColors.textLight : AppColors.textPrimary),
                 fontWeight: isSelected || isToday ? FontWeight.bold : FontWeight.normal,
               ),
             ),
-            if (isPast && !isSelected)
-              const Icon(Icons.lock_outline, size: 10, color: Colors.grey),
+            if (isToday && !isSelected)
+              Container(
+                width: 4,
+                height: 4,
+                decoration: const BoxDecoration(
+                  color: AppColors.primary,
+                  shape: BoxShape.circle,
+                ),
+              ),
           ],
         ),
       ),

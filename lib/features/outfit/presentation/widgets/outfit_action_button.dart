@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../utils/outfit_theme.dart';
+import '../../../../app/theme/app_colors.dart';
+import '../../../../app/theme/app_decorations.dart';
 
 class OutfitActionButton extends StatelessWidget {
   final VoidCallback onPressed;
@@ -22,10 +23,12 @@ class OutfitActionButton extends StatelessWidget {
     return ElevatedButton.icon(
       onPressed: isLoading ? null : onPressed,
       style: ElevatedButton.styleFrom(
-        backgroundColor: color ?? OutfitTheme.accentColor,
+        backgroundColor: color ?? AppColors.primary,
         foregroundColor: Colors.white,
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-        shape: RoundedRectangleBorder(borderRadius: OutfitTheme.borderRadiusM),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppDecorations.buttonRadius),
+        ),
       ),
       icon: isLoading 
         ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))

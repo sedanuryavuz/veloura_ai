@@ -333,7 +333,7 @@ class WardrobeProvider extends ChangeNotifier {
         _draftColor = ClothingColorExt.fromString(result['color'] ?? '');
       }
     } catch (e) {
-      _error = 'AI analysis failed: $e';
+      _error = "AI limit reached. Please try again later or enter details manually.";
     } finally {
       _isAnalyzingImage = false;
       notifyListeners();

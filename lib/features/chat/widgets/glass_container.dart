@@ -20,7 +20,7 @@ class GlassContainer extends StatelessWidget {
         filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
         child: Container(
           padding: padding,
-          decoration: AppDecorations.glass,
+          decoration: AppDecorations.glassCard,
           child: child,
         ),
       ),

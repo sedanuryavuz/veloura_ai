@@ -4,8 +4,11 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../../../app/theme/app_colors.dart';
+import '../../../../app/theme/app_text_styles.dart';
 import '../../../../core/constants/enums/colors.dart';
 import '../../../../core/services/supabase_service.dart';
+import '../../../../core/widgets/v_delete_dialog.dart';
 import '../../domain/entities/clothing_item.dart';
 import '../../domain/enums/clothing_form_mode.dart';
 import '../provider/wardrobe_provider.dart';
@@ -85,13 +88,10 @@ class _ClothingFormPageState extends State<ClothingFormPage> {
 
     ImageSourceSheet.show(
       context: context,
-
       currentImage: currentImage,
-
       networkImageUrl: widget.mode == ClothingFormMode.edit
           ? widget.item?.imageUrl
           : null,
-
       onSourceSelected: (source) {
         if (widget.mode == ClothingFormMode.add) {
           provider.pickAndProcessImage(source);
@@ -112,17 +112,33 @@ class _ClothingFormPageState extends State<ClothingFormPage> {
 
     final selectedColor = isEdit ? provider.editColor : provider.draftColor;
 
-    final selectedImage = isEdit ? provider.editImage : provider.draftImage;
-
     return Scaffold(
-      appBar: AppBar(title: Text(isEdit ? "Edit Clothing" : "Add Clothing")),
+      appBar: AppBar(
+        title: Text(isEdit ? "Edit Clothing" : "Add Clothing"),
+        actions: [
+          if (isEdit)
+            IconButton(
+              icon: const Icon(Icons.delete_outline_rounded, color: AppColors.error),
+              onPressed: () {
+                VDeleteDialog.show(
+                  context,
+                  title: "Delete Item?",
+                  content: "Do you want to permanently remove this item from your wardrobe?",
+                  onDelete: () async {
+                    await provider.deleteItem(widget.item!);
+                    if (mounted) Navigator.pop(context);
+                  },
+                );
+              },
+            ),
+        ],
+      ),
       body: Stack(
         children: [
           SingleChildScrollView(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 40), // Added bottom padding
             child: Column(
               children: [
-                /// IMAGE PREVIEW
                 const SizedBox(height: 16),
 
                 /// IMAGE PICKER BUTTON
@@ -130,21 +146,21 @@ class _ClothingFormPageState extends State<ClothingFormPage> {
                   onTap: _onImageTap,
                   imageWidget: isEdit
                       ? (provider.editImage != null
-                            ? Image.file(provider.editImage!, fit: BoxFit.cover)
+                            ? Image.file(provider.editImage!, fit: BoxFit.contain)
                             : Image.network(
                                 widget.item!.imageUrl,
-                                fit: BoxFit.cover,
+                                fit: BoxFit.contain,
                               ))
                       : (provider.draftImage != null
                             ? Image.file(
                                 provider.draftImage!,
-                                fit: BoxFit.cover,
+                                fit: BoxFit.contain,
                               )
                             : const Center(
                                 child: Icon(Icons.add_a_photo, size: 50),
                               )),
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 24),
 
                 /// NAME
                 TextField(
@@ -159,7 +175,7 @@ class _ClothingFormPageState extends State<ClothingFormPage> {
                   decoration: const InputDecoration(labelText: "Item Name"),
                 ),
 
-                const SizedBox(height: 12),
+                const SizedBox(height: 16),
 
                 /// STYLE
                 TextField(
@@ -174,7 +190,7 @@ class _ClothingFormPageState extends State<ClothingFormPage> {
                   decoration: const InputDecoration(labelText: "Style"),
                 ),
 
-                const SizedBox(height: 12),
+                const SizedBox(height: 16),
 
                 /// COLOR
                 DropdownButtonFormField<ClothingColor>(
@@ -197,7 +213,7 @@ class _ClothingFormPageState extends State<ClothingFormPage> {
                   },
                 ),
 
-                const SizedBox(height: 12),
+                const SizedBox(height: 16),
 
                 /// DESCRIPTION
                 TextField(
@@ -213,7 +229,7 @@ class _ClothingFormPageState extends State<ClothingFormPage> {
                   decoration: const InputDecoration(labelText: "Description"),
                 ),
 
-                const SizedBox(height: 12),
+                const SizedBox(height: 16),
 
                 /// CATEGORY
                 CategoryDropdown(
@@ -227,16 +243,49 @@ class _ClothingFormPageState extends State<ClothingFormPage> {
                   },
                 ),
 
-                const SizedBox(height: 30),
+                const SizedBox(height: 40),
 
                 /// SAVE BUTTON
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
                     onPressed: provider.isLoading ? null : _onSave,
-                    child: Text(isEdit ? "Update Item" : "Save Item"),
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                    ),
+                    child: Text(
+                      isEdit ? "Update Item" : "Save Item",
+                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                    ),
                   ),
                 ),
+                
+                if (isEdit) ...[
+                  const SizedBox(height: 12),
+                  SizedBox(
+                    width: double.infinity,
+                    child: TextButton(
+                      onPressed: () {
+                        VDeleteDialog.show(
+                          context,
+                          title: "Delete Item?",
+                          content: "Do you want to permanently remove this item from your wardrobe?",
+                          onDelete: () async {
+                            await provider.deleteItem(widget.item!);
+                            if (mounted) Navigator.pop(context);
+                          },
+                        );
+                      },
+                      child: const Text(
+                        "Delete Item",
+                        style: TextStyle(color: AppColors.error, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ),
+                ],
               ],
             ),
           ),
@@ -250,37 +299,5 @@ class _ClothingFormPageState extends State<ClothingFormPage> {
         ],
       ),
     );
-  }
-
-  Widget _buildImage(WardrobeProvider provider, bool isEdit) {
-    /// EDIT MODE
-    if (isEdit) {
-      /// NEW SELECTED IMAGE
-      if (provider.editImage != null) {
-        return Image.file(provider.editImage!, fit: BoxFit.cover);
-      }
-
-      /// EXISTING NETWORK IMAGE
-      if (widget.item != null && widget.item!.imageUrl.isNotEmpty) {
-        return CachedNetworkImage(
-          imageUrl: widget.item!.imageUrl,
-          fit: BoxFit.cover,
-          placeholder: (_, __) {
-            return const Center(child: CircularProgressIndicator());
-          },
-          errorWidget: (_, __, ___) {
-            return const Icon(Icons.broken_image, size: 50);
-          },
-        );
-      }
-    }
-
-    /// ADD MODE IMAGE
-    if (provider.draftImage != null) {
-      return Image.file(provider.draftImage!, fit: BoxFit.cover);
-    }
-
-    /// EMPTY STATE
-    return const Center(child: Icon(Icons.image, size: 80, color: Colors.grey));
   }
 }

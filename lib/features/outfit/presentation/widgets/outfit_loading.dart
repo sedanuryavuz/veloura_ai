@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../utils/outfit_theme.dart';
+import '../../../../app/theme/app_colors.dart';
+import '../../../../app/theme/app_decorations.dart';
 
 class OutfitLoading extends StatelessWidget {
   const OutfitLoading({super.key});
@@ -10,22 +11,42 @@ class OutfitLoading extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       itemCount: 5,
       itemBuilder: (context, index) => Container(
-        height: 120,
+        height: 140,
         margin: const EdgeInsets.only(bottom: 16),
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.1),
-          borderRadius: OutfitTheme.borderRadiusL,
+          color: AppColors.surface,
+          borderRadius: BorderRadius.circular(AppDecorations.cardRadius),
+          boxShadow: AppDecorations.softShadow,
         ),
-        child: Row(
-          children: List.generate(3, (i) => Expanded(
-            child: Container(
-              margin: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.05),
-                borderRadius: OutfitTheme.borderRadiusM,
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: 100,
+                height: 16,
+                decoration: BoxDecoration(
+                  color: AppColors.background,
+                  borderRadius: BorderRadius.circular(4),
+                ),
               ),
-            ),
-          )),
+              const SizedBox(height: 16),
+              Expanded(
+                child: Row(
+                  children: List.generate(3, (i) => Expanded(
+                    child: Container(
+                      margin: EdgeInsets.only(right: i == 2 ? 0 : 8),
+                      decoration: BoxDecoration(
+                        color: AppColors.background,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                  )),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

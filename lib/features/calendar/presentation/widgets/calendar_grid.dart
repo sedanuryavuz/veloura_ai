@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
+import '../../../../app/theme/app_colors.dart';
+import '../../../../app/theme/app_text_styles.dart';
+import '../../../../app/theme/app_decorations.dart';
 
 import 'day_cell.dart';
 
@@ -18,10 +21,11 @@ class CalendarGrid extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: .75),
-        borderRadius: BorderRadius.circular(28),
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(AppDecorations.cardRadius),
+        boxShadow: AppDecorations.softShadow,
       ),
       child: TableCalendar(
         focusedDay: focusedDay,
@@ -29,12 +33,25 @@ class CalendarGrid extends StatelessWidget {
         lastDay: DateTime.utc(2035),
         selectedDayPredicate: (day) => isSameDay(selectedDay, day),
         onDaySelected: onDaySelected,
-        headerStyle: const HeaderStyle(
+        headerStyle: HeaderStyle(
           formatButtonVisible: false,
           titleCentered: true,
+          titleTextStyle: AppTextStyles.h3,
+          leftChevronIcon: const Icon(Icons.chevron_left_rounded, color: AppColors.primary),
+          rightChevronIcon: const Icon(Icons.chevron_right_rounded, color: AppColors.primary),
+        ),
+        daysOfWeekStyle: DaysOfWeekStyle(
+          weekdayStyle: AppTextStyles.bodySmall.copyWith(fontWeight: FontWeight.bold),
+          weekendStyle: AppTextStyles.bodySmall.copyWith(fontWeight: FontWeight.bold, color: AppColors.primary),
         ),
         calendarStyle: const CalendarStyle(
           outsideDaysVisible: false,
+          todayDecoration: BoxDecoration(
+            color: Colors.transparent,
+          ),
+          selectedDecoration: BoxDecoration(
+            color: Colors.transparent,
+          ),
         ),
         calendarBuilders: CalendarBuilders(
           defaultBuilder: (context, day, focusedDay) {

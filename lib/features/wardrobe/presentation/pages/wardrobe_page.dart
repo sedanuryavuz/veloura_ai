@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../../../app/theme/app_colors.dart';
 import '../../../../core/services/supabase_service.dart';
 import '../../domain/enums/clothing_form_mode.dart';
 import '../provider/wardrobe_provider.dart';
 import '../widgets/wardrobe_grid.dart';
-import 'add_clothing_page.dart';
 import '../widgets/category_filter.dart';
 import 'clothing_form_page.dart';
 
@@ -36,29 +36,45 @@ class _WardrobePageState extends State<WardrobePage> {
     final provider = context.watch<WardrobeProvider>();
 
     return Scaffold(
-      appBar: AppBar(title: const Text('My Wardrobe'), centerTitle: true),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) =>
-                  const ClothingFormPage(mode: ClothingFormMode.add),
-            ),
-          );
-        },
-        child: const Icon(Icons.add_rounded),
+      appBar: AppBar(title: const Text('My Wardrobe')),
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.only(bottom: 96), // Fixed: Higher margin from bottom nav
+        child: FloatingActionButton(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) =>
+                    const ClothingFormPage(mode: ClothingFormMode.add),
+              ),
+            );
+          },
+          backgroundColor: AppColors.primary,
+          child: const Icon(Icons.add_rounded, color: Colors.white),
+        ),
       ),
-      body: Column(
-        children: [
-          const SizedBox(height: 16),
-          CategoryFilter(
-            selected: provider.selectedCategory,
-            onSelected: (value) => provider.changeCategory(value),
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: AppColors.backgroundGradient,
           ),
-          const SizedBox(height: 8),
-          Expanded(child: _buildBody(provider)),
-        ],
+        ),
+        child: SafeArea(
+          bottom: false,
+          child: Column(
+            children: [
+              const SizedBox(height: 16),
+              CategoryFilter(
+                selected: provider.selectedCategory,
+                onSelected: (value) => provider.changeCategory(value),
+              ),
+              const SizedBox(height: 8),
+              Expanded(child: _buildBody(provider)),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -86,20 +102,20 @@ class _ErrorView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(24.0),
+        padding: const EdgeInsets.only(bottom: 60),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const Icon(
               Icons.error_outline_rounded,
               size: 48,
-              color: Colors.red,
+              color: AppColors.error,
             ),
             const SizedBox(height: 16),
             Text(
               message,
               textAlign: TextAlign.center,
-              style: const TextStyle(color: Colors.red),
+              style: const TextStyle(color: AppColors.error),
             ),
             const SizedBox(height: 24),
             ElevatedButton.icon(

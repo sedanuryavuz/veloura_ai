@@ -5,7 +5,11 @@ import 'package:cached_network_image/cached_network_image.dart';
 import '../provider/outfit_provider.dart';
 import '../../domain/entities/outfit.dart';
 import '../pages/create_outfit_page.dart';
-import '../../utils/outfit_theme.dart';
+import '../../../../app/theme/app_colors.dart';
+import '../../../../app/theme/app_text_styles.dart';
+import '../../../../app/theme/app_decorations.dart';
+import '../../../../core/widgets/v_card.dart';
+import '../../../../core/widgets/v_delete_dialog.dart';
 
 class OutfitCard extends StatelessWidget {
   final Outfit outfit;
@@ -14,92 +18,124 @@ class OutfitCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: OutfitTheme.spacingM),
-      padding: const EdgeInsets.all(OutfitTheme.spacingM),
-      decoration: BoxDecoration(
-        color: OutfitTheme.cardBackground,
-        borderRadius: OutfitTheme.borderRadiusL,
-        boxShadow: OutfitTheme.softShadow,
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
+    return VCard(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Expanded(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                _buildImage(outfit.top?.imageUrl),
-                _buildImage(outfit.bottom?.imageUrl),
-                _buildImage(outfit.shoes?.imageUrl),
-              ],
-            ),
-          ),
-          PopupMenuButton<String>(
-            icon: const Icon(Icons.more_vert, color: OutfitTheme.textSecondary),
-            shape: RoundedRectangleBorder(borderRadius: OutfitTheme.borderRadiusM),
-            elevation: 4,
-            itemBuilder: (context) => [
-              const PopupMenuItem(
-                value: 'edit',
-                child: Row(
-                  children: [
-                    Icon(Icons.edit_outlined, size: 20, color: OutfitTheme.textPrimary),
-                    SizedBox(width: 12),
-                    Text('Edit Outfit'),
-                  ],
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: Text(
+                  outfit.name.isEmpty ? "Unnamed Outfit" : outfit.name,
+                  style: AppTextStyles.h3,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
-              const PopupMenuItem(
-                value: 'delete',
-                child: Row(
-                  children: [
-                    Icon(Icons.delete_outline, size: 20, color: Colors.redAccent),
-                    SizedBox(width: 12),
-                    Text('Delete', style: TextStyle(color: Colors.redAccent)),
-                  ],
-                ),
+              PopupMenuButton<String>(
+                icon: const Icon(Icons.more_horiz_rounded, color: AppColors.textLight),
+                padding: EdgeInsets.zero,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                itemBuilder: (context) => [
+                  const PopupMenuItem(
+                    value: 'edit',
+                    child: Row(
+                      children: [
+                        Icon(Icons.edit_outlined, size: 20),
+                        SizedBox(width: 12),
+                        Text('Edit'),
+                      ],
+                    ),
+                  ),
+                  const PopupMenuItem(
+                    value: 'delete',
+                    child: Row(
+                      children: [
+                        Icon(Icons.delete_outline_rounded, size: 20, color: AppColors.error),
+                        SizedBox(width: 12),
+                        Text('Delete', style: TextStyle(color: AppColors.error)),
+                      ],
+                    ),
+                  ),
+                ],
+                onSelected: (value) {
+                  if (value == 'edit') {
+                    context.read<OutfitProvider>().setEditingOutfit(outfit);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const CreateOutfitPage()),
+                    );
+                  } else if (value == 'delete') {
+                    VDeleteDialog.show(
+                      context,
+                      title: "Delete Outfit?",
+                      content: "Are you sure you want to delete this outfit? This cannot be undone.",
+                      onDelete: () => context.read<OutfitProvider>().deleteOutfit(outfit.id),
+                    );
+                  }
+                },
               ),
             ],
-            onSelected: (value) {
-              if (value == 'edit') {
-                context.read<OutfitProvider>().setEditingOutfit(outfit);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const CreateOutfitPage()),
-                );
-              } else if (value == 'delete') {
-                context.read<OutfitProvider>().deleteOutfit(outfit.id);
-              }
-            },
+          ),
+          const SizedBox(height: 16),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              _buildImage(outfit.top?.imageUrl, "Top"),
+              const SizedBox(width: 8),
+              _buildImage(outfit.bottom?.imageUrl, "Bottom"),
+              const SizedBox(width: 8),
+              _buildImage(outfit.shoes?.imageUrl, "Shoes"),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              const Icon(Icons.checkroom_rounded, size: 14, color: AppColors.textSecondary),
+              const SizedBox(width: 4),
+              Text(
+                'Complete Set',
+                style: AppTextStyles.bodySmall,
+              ),
+              const Spacer(),
+              const Icon(Icons.arrow_forward_rounded, size: 14, color: AppColors.primary),
+            ],
           ),
         ],
       ),
     );
   }
 
-  Widget _buildImage(String? url) {
-    if (url == null) {
-      return Container(
-        width: 70,
-        height: 90,
-        decoration: BoxDecoration(
-          color: OutfitTheme.background,
-          borderRadius: OutfitTheme.borderRadiusM,
-          border: Border.all(color: OutfitTheme.borderSubtle, width: 1),
-        ),
-      );
-    }
-
-    return Container(
-      width: 70,
-      height: 90,
-      decoration: BoxDecoration(
-        borderRadius: OutfitTheme.borderRadiusM,
-        border: Border.all(color: OutfitTheme.borderSubtle, width: 0.5),
-        image: DecorationImage(
-          image: CachedNetworkImageProvider(url),
-          fit: BoxFit.cover,
+  Widget _buildImage(String? url, String label) {
+    return Expanded(
+      child: AspectRatio(
+        aspectRatio: 1,
+        child: Container(
+          decoration: BoxDecoration(
+            color: AppColors.primaryLight.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: AppColors.primaryLight.withOpacity(0.2)),
+          ),
+          child: url != null
+              ? ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: CachedNetworkImage(
+                    imageUrl: url,
+                    fit: BoxFit.contain,
+                    placeholder: (context, url) => const Center(
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    ),
+                    errorWidget: (context, url, error) => const Icon(Icons.image_not_supported_rounded, color: AppColors.textLight),
+                  ),
+                )
+              : Center(
+                  child: Text(
+                    label,
+                    style: AppTextStyles.bodySmall.copyWith(fontSize: 10, color: AppColors.textLight),
+                  ),
+                ),
         ),
       ),
     );

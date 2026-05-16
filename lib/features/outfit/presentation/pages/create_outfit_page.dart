@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../../../app/theme/app_colors.dart';
+import '../../../../app/theme/app_decorations.dart';
+import '../../../../app/theme/app_text_styles.dart';
 import '../../../../core/services/supabase_service.dart';
 import '../../../wardrobe/presentation/provider/wardrobe_provider.dart';
-import '../../utils/outfit_theme.dart';
 import '../provider/outfit_provider.dart';
 import '../../domain/entities/clothing_item.dart';
 
@@ -31,84 +33,98 @@ class _CreateOutfitPageState extends State<CreateOutfitPage> {
     final outfit = context.watch<OutfitProvider>();
 
     return Scaffold(
-      backgroundColor: OutfitTheme.background,
       appBar: AppBar(
-        title: Text(
-          outfit.editingOutfitId != null ? "Edit Outfit" : "Create Outfit",
-          style: OutfitTheme.titleStyle,
-        ),
-        backgroundColor: OutfitTheme.background,
-        elevation: 0,
+        title: Text(outfit.editingOutfitId != null ? "Edit Outfit" : "Create Outfit"),
       ),
-      body: Column(
-        children: [
-          Expanded(
-            flex: 3,
-            child: _OutfitPreviewWidget(outfit: outfit),
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: AppColors.backgroundGradient,
           ),
-          Expanded(
-            flex: 4,
-            child: DefaultTabController(
-              length: 3,
-              child: Column(
-                children: [
-                  const TabBar(
-                    labelColor: OutfitTheme.accentColor,
-                    unselectedLabelColor: OutfitTheme.textSecondary,
-                    indicatorColor: OutfitTheme.accentColor,
-                    tabs: [
-                      Tab(text: "Tops"),
-                      Tab(text: "Bottoms"),
-                      Tab(text: "Shoes"),
+        ),
+        child: Column(
+          children: [
+            Expanded(
+              flex: 3,
+              child: _OutfitPreviewWidget(outfit: outfit),
+            ),
+            Expanded(
+              flex: 4,
+              child: Container(
+                decoration: const BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
+                ),
+                child: DefaultTabController(
+                  length: 3,
+                  child: Column(
+                    children: [
+                      const SizedBox(height: 16),
+                      TabBar(
+                        dividerColor: Colors.transparent,
+                        labelColor: AppColors.primary,
+                        unselectedLabelColor: AppColors.textLight,
+                        indicatorColor: AppColors.primary,
+                        indicatorSize: TabBarIndicatorSize.label,
+                        labelStyle: AppTextStyles.bodyMedium.copyWith(fontWeight: FontWeight.bold),
+                        tabs: const [
+                          Tab(text: "Tops"),
+                          Tab(text: "Bottoms"),
+                          Tab(text: "Shoes"),
+                        ],
+                      ),
+                      Expanded(
+                        child: TabBarView(
+                          children: [
+                            _ClothingSelector(
+                              items: wardrobe.items.where((i) => i.category.name == 'top').toList(),
+                              onSelect: (item) => outfit.selectTop(_mapToClothingItem(item)),
+                              selectedId: outfit.selectedTop?.id,
+                            ),
+                            _ClothingSelector(
+                              items: wardrobe.items.where((i) => i.category.name == 'bottom').toList(),
+                              onSelect: (item) => outfit.selectBottom(_mapToClothingItem(item)),
+                              selectedId: outfit.selectedBottom?.id,
+                            ),
+                            _ClothingSelector(
+                              items: wardrobe.items.where((i) => i.category.name == 'shoes').toList(),
+                              onSelect: (item) => outfit.selectShoes(_mapToClothingItem(item)),
+                              selectedId: outfit.selectedShoes?.id,
+                            ),
+                          ],
+                        ),
+                      ),
                     ],
                   ),
-                  Expanded(
-                    child: TabBarView(
-                      children: [
-                        _ClothingSelector(
-                          items: wardrobe.items.where((i) => i.category.name == 'top').toList(),
-                          onSelect: (item) => outfit.selectTop(_mapToClothingItem(item)),
-                          selectedId: outfit.selectedTop?.id,
-                        ),
-                        _ClothingSelector(
-                          items: wardrobe.items.where((i) => i.category.name == 'bottom').toList(),
-                          onSelect: (item) => outfit.selectBottom(_mapToClothingItem(item)),
-                          selectedId: outfit.selectedBottom?.id,
-                        ),
-                        _ClothingSelector(
-                          items: wardrobe.items.where((i) => i.category.name == 'shoes').toList(),
-                          onSelect: (item) => outfit.selectShoes(_mapToClothingItem(item)),
-                          selectedId: outfit.selectedShoes?.id,
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: outfit.isLoading ? null : () async {
-          final userId = SupabaseService.currentUserId ?? '';
-          await outfit.saveOutfit(userId);
-          if (mounted && outfit.error == null) {
-            Navigator.pop(context);
-          }
-        },
-        backgroundColor: OutfitTheme.accentColor,
-        label: outfit.isLoading 
-            ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white))
-            : const Text("Save Outfit", style: TextStyle(color: Colors.white)),
-        icon: const Icon(Icons.check, color: Colors.white),
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.only(bottom: 20),
+        child: FloatingActionButton.extended(
+          onPressed: outfit.isLoading ? null : () async {
+            final userId = SupabaseService.currentUserId ?? '';
+            await outfit.saveOutfit(userId);
+            if (mounted && outfit.error == null) {
+              Navigator.pop(context);
+            }
+          },
+          backgroundColor: AppColors.primary,
+          label: outfit.isLoading 
+              ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white))
+              : const Text("Save Outfit", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+          icon: const Icon(Icons.check_rounded, color: Colors.white),
+        ),
       ),
     );
   }
 
   ClothingItem _mapToClothingItem(dynamic item) {
-    // Mapping from Wardrobe entity to Outfit entity if they are different
-    // Assuming they have same fields for now or use specific mapping
     return ClothingItem(
       id: item.id,
       userId: item.userId,
@@ -130,10 +146,11 @@ class _OutfitPreviewWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.all(16),
+      margin: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: OutfitTheme.cardBackground,
-        borderRadius: OutfitTheme.borderRadiusL,
+        color: AppColors.glass,
+        borderRadius: BorderRadius.circular(AppDecorations.cardRadius),
+        border: Border.all(color: Colors.white.withOpacity(0.5)),
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -151,15 +168,20 @@ class _OutfitPreviewWidget extends StatelessWidget {
       height: 80,
       width: 120,
       decoration: BoxDecoration(
-        color: OutfitTheme.background,
-        borderRadius: OutfitTheme.borderRadiusM,
-        border: Border.all(color: OutfitTheme.borderSubtle),
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: AppDecorations.softShadow,
       ),
       child: imageUrl == null 
-          ? Center(child: Text(label, style: OutfitTheme.labelStyle))
+          ? Center(
+              child: Text(
+                label,
+                style: AppTextStyles.bodySmall.copyWith(color: AppColors.textLight),
+              ),
+            )
           : ClipRRect(
-              borderRadius: OutfitTheme.borderRadiusM,
-              child: Image.network(imageUrl, fit: BoxFit.cover),
+              borderRadius: BorderRadius.circular(16),
+              child: Image.network(imageUrl, fit: BoxFit.contain),
             ),
     );
   }
@@ -179,11 +201,12 @@ class _ClothingSelector extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GridView.builder(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(20),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 3,
         crossAxisSpacing: 12,
         mainAxisSpacing: 12,
+        childAspectRatio: 0.8,
       ),
       itemCount: items.length,
       itemBuilder: (context, index) {
@@ -191,17 +214,22 @@ class _ClothingSelector extends StatelessWidget {
         final isSelected = item.id == selectedId;
         return GestureDetector(
           onTap: () => onSelect(item),
-          child: Container(
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
             decoration: BoxDecoration(
-              borderRadius: OutfitTheme.borderRadiusM,
+              color: AppColors.surface,
+              borderRadius: BorderRadius.circular(12),
               border: Border.all(
-                color: isSelected ? OutfitTheme.accentColor : OutfitTheme.borderSubtle,
-                width: isSelected ? 2 : 1,
+                color: isSelected ? AppColors.primary : Colors.transparent,
+                width: 2,
               ),
+              boxShadow: isSelected ? [
+                BoxShadow(color: AppColors.primary.withOpacity(0.2), blurRadius: 8)
+              ] : AppDecorations.softShadow,
             ),
             child: ClipRRect(
-              borderRadius: OutfitTheme.borderRadiusM,
-              child: Image.network(item.imageUrl, fit: BoxFit.cover),
+              borderRadius: BorderRadius.circular(isSelected ? 10 : 12),
+              child: Image.network(item.imageUrl, fit: BoxFit.contain),
             ),
           ),
         );
