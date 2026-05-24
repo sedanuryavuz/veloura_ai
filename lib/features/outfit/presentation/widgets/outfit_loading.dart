@@ -1,53 +1,118 @@
 import 'package:flutter/material.dart';
+import 'dart:async';
 import '../../../../app/theme/app_colors.dart';
-import '../../../../app/theme/app_decorations.dart';
+import '../../../../app/theme/app_text_styles.dart';
 
-class OutfitLoading extends StatelessWidget {
+class OutfitLoading extends StatefulWidget {
   const OutfitLoading({super.key});
 
   @override
+  State<OutfitLoading> createState() => _OutfitLoadingState();
+}
+
+class _OutfitLoadingState extends State<OutfitLoading> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  int _messageIndex = 0;
+  final List<String> _messages = [
+    "Analyzing your style...",
+    "Scanning wardrobe items...",
+    "Considering color harmony...",
+    "Balancing silhouettes...",
+    "Checking seasonal trends...",
+    "Finalizing your look...",
+  ];
+
+  late Timer _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 2),
+    )..repeat();
+
+    _timer = Timer.periodic(const Duration(seconds: 2), (timer) {
+      if (mounted) {
+        setState(() {
+          _messageIndex = (_messageIndex + 1) % _messages.length;
+        });
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    _timer.cancel();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-      padding: const EdgeInsets.all(16),
-      itemCount: 5,
-      itemBuilder: (context, index) => Container(
-        height: 140,
-        margin: const EdgeInsets.only(bottom: 16),
-        decoration: BoxDecoration(
-          color: AppColors.surface,
-          borderRadius: BorderRadius.circular(AppDecorations.cardRadius),
-          boxShadow: AppDecorations.softShadow,
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Stack(
+            alignment: Alignment.center,
             children: [
-              Container(
-                width: 100,
-                height: 16,
-                decoration: BoxDecoration(
-                  color: AppColors.background,
-                  borderRadius: BorderRadius.circular(4),
+              RotationTransition(
+                turns: _controller,
+                child: Container(
+                  width: 120,
+                  height: 120,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: SweepGradient(
+                      colors: [
+                        AppColors.accent.withOpacity(0.1),
+                        AppColors.accent,
+                        AppColors.accent.withOpacity(0.1),
+                      ],
+                    ),
+                  ),
                 ),
               ),
-              const SizedBox(height: 16),
-              Expanded(
-                child: Row(
-                  children: List.generate(3, (i) => Expanded(
-                    child: Container(
-                      margin: EdgeInsets.only(right: i == 2 ? 0 : 8),
-                      decoration: BoxDecoration(
-                        color: AppColors.background,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                  )),
+              Container(
+                width: 100,
+                height: 100,
+                decoration: const BoxDecoration(
+                  color: Color(0xFF1A1A2E),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.auto_awesome_rounded,
+                  color: AppColors.accent,
+                  size: 40,
                 ),
               ),
             ],
           ),
-        ),
+          const SizedBox(height: 32),
+          AnimatedSwitcher(
+            duration: const Duration(milliseconds: 500),
+            child: Text(
+              _messages[_messageIndex],
+              key: ValueKey(_messageIndex),
+              style: AppTextStyles.bodyLarge.copyWith(
+                color: Colors.black.withOpacity(0.9),
+                letterSpacing: 1.2,
+                fontWeight: FontWeight.w300,
+              ),
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            "AI STYLIST",
+            style: AppTextStyles.bodySmall.copyWith(
+              color: AppColors.accent.withOpacity(0.5),
+              letterSpacing: 4,
+              fontSize: 10,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ],
       ),
     );
   }

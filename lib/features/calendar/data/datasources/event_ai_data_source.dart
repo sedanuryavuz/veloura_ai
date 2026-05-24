@@ -1,5 +1,3 @@
-import 'package:google_generative_ai/google_generative_ai.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import '../models/calendar_event_model.dart';
 
 abstract class EventAIDataSource {

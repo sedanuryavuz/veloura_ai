@@ -52,10 +52,8 @@ class OutfitRepositoryImpl implements OutfitRepository {
   Future<Outfit?> generateAiOutfit({
     required List<ClothingItem> wardrobe,
     required Map<String, dynamic> weather,
+    List<String> previousOutfitIds = const [],
   }) async {
-    // We can use the passed weather or fetch it here if needed.
-    // The existing GenerateAiOutfitUseCase fetches it.
-    
     final location = await locationDataSource.getLocation();
     final currentWeather = await weatherDataSource.getWeather(location.latitude, location.longitude);
 
@@ -63,6 +61,7 @@ class OutfitRepositoryImpl implements OutfitRepository {
     final result = await aiDataSource.generateOutfit(
       items: wardrobeJson,
       weather: currentWeather,
+      previousOutfitIds: previousOutfitIds,
     );
 
     if (result == null) return null;
@@ -77,6 +76,8 @@ class OutfitRepositoryImpl implements OutfitRepository {
       id: DateTime.now().millisecondsSinceEpoch.toString(),
       userId: wardrobe.isNotEmpty ? wardrobe.first.userId : '',
       name: result['outfit_name'] ?? 'AI Outfit',
+      style: result['style'],
+      reason: result['reason'],
       items: selectedItems,
       createdAt: DateTime.now(),
     );

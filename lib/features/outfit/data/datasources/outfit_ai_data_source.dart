@@ -7,6 +7,7 @@ abstract class OutfitAiDataSource {
   Future<Map<String, dynamic>?> generateOutfit({
     required List<Map<String, dynamic>> items,
     required Map<String, dynamic> weather,
+    List<String> previousOutfitIds = const [],
   });
   Future<Map<String, dynamic>?> analyzeClothing(File image);
   Future<String> sendMessage(String message);
@@ -83,9 +84,10 @@ Analyze this clothing item and return the result in this exact JSON format.
   Future<Map<String, dynamic>?> generateOutfit({
     required List<Map<String, dynamic>> items,
     required Map<String, dynamic> weather,
+    List<String> previousOutfitIds = const [],
   }) async {
     try {
-      final prompt = _buildPrompt(items, weather);
+      final prompt = _buildPrompt(items, weather, previousOutfitIds);
       final response = await _model.generateContent([Content.text(prompt)]);
       
       final text = response.text;
@@ -98,35 +100,39 @@ Analyze this clothing item and return the result in this exact JSON format.
     }
   }
 
-  String _buildPrompt(List<Map<String, dynamic>> items, Map<String, dynamic> weather) {
+  String _buildPrompt(List<Map<String, dynamic>> items, Map<String, dynamic> weather, List<String> previousOutfitIds) {
     final temp = weather['temperature'] ?? 0;
     final desc = weather['description'] ?? "unknown";
 
     return '''
-You are a fashion AI stylist.
-Create ONE outfit using ONLY wardrobe items.
+You are a high-end Fashion Stylist and AI Consultant.
+Your goal is to create ONE visually balanced, modern, and aesthetically harmonious outfit using ONLY the items provided in the user's wardrobe.
 
-IMPORTANT:
-Return ONLY valid JSON.
-NO markdown.
-NO ```json.
+STYLING RULES:
+1. VISUAL HARMONY: Prioritize color compatibility and silhouette balance (e.g., if the top is oversized, the bottom should be more fitted, unless it's a specific streetwear look).
+2. DRESS LOGIC: If you choose a "dress" (from top or specific category), the "bottom" category MUST be empty. Never suggest pants or jeans under a dress.
+3. NO CLASHING: Avoid visually awkward combinations like dress + pants or duplicate layers that don't make sense (e.g., two heavy coats).
+4. ACCESSORIES: Include accessories ONLY if they improve the outfit's aesthetic. They are optional.
+5. SEASONAL APPROPRIATENESS: The outfit must suit the current weather ($temp°C - $desc).
+6. FRESHNESS: Avoid these specific combinations (IDs): ${previousOutfitIds.join(', ')}. Try to be diverse and creative.
 
-JSON FORMAT:
+JSON OUTPUT FORMAT:
+Return ONLY valid JSON. No markdown, no extra text.
 {
-  "outfit_name": "",
-  "style": "",
-  "reason": "",
+  "outfit_name": "A creative, premium name for the look",
+  "style": "The aesthetic style (e.g., Quiet Luxury, Streetwear, Minimalist)",
+  "reason": "Brief professional fashion advice on why this works",
   "items": [
     {
-      "id": "",
-      "name": "",
-      "category": ""
+      "id": "must match wardrobe id",
+      "name": "item name",
+      "category": "top | bottom | shoes | accessories"
     }
   ]
 }
 
-Weather: $temp°C - $desc
-Wardrobe: ${jsonEncode(items)}
+Current Weather: $temp°C - $desc
+Wardrobe Items: ${jsonEncode(items)}
 ''';
   }
 

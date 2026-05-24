@@ -7,7 +7,6 @@ import '../../domain/entities/outfit.dart';
 import '../pages/create_outfit_page.dart';
 import '../../../../app/theme/app_colors.dart';
 import '../../../../app/theme/app_text_styles.dart';
-import '../../../../app/theme/app_decorations.dart';
 import '../../../../core/widgets/v_card.dart';
 import '../../../../core/widgets/v_delete_dialog.dart';
 
@@ -88,6 +87,8 @@ class OutfitCard extends StatelessWidget {
               _buildImage(outfit.bottom?.imageUrl, "Bottom"),
               const SizedBox(width: 8),
               _buildImage(outfit.shoes?.imageUrl, "Shoes"),
+              const SizedBox(width: 8),
+              _buildImage(outfit.accessory?.imageUrl, "Acc"),
             ],
           ),
           const SizedBox(height: 12),

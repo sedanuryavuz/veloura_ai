@@ -10,6 +10,7 @@ abstract class OutfitRepository {
   Future<Outfit?> generateAiOutfit({
     required List<ClothingItem> wardrobe,
     required Map<String, dynamic> weather,
+    List<String> previousOutfitIds = const [],
   });
 
   Future<File?> removeBackground(File image);

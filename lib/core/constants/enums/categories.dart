@@ -37,6 +37,10 @@ extension ClothingCategorySelector on ClothingCategory {
         outfitProvider.selectShoes(item);
         break;
 
+      case ClothingCategory.accessories:
+        outfitProvider.selectAccessory(item);
+        break;
+
       default:
         break;
     }

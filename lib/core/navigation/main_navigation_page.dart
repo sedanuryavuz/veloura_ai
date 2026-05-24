@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../features/calendar/presentation/pages/calendar_page.dart';
-import '../../features/chat/pages/chat_page.dart';
+import '../../features/chat/presentation/pages/chat_page.dart';
 import '../../features/outfit/presentation/pages/outfit_page.dart';
 import '../../features/wardrobe/presentation/pages/wardrobe_page.dart';
 

@@ -33,8 +33,10 @@ import 'package:veloura_ai/features/calendar/data/datasources/notification_data_
 import 'package:veloura_ai/features/calendar/domain/usecases/get_calendar_events.dart';
 import 'package:veloura_ai/features/calendar/domain/usecases/add_calendar_event.dart';
 import 'package:veloura_ai/features/calendar/domain/usecases/delete_calendar_event.dart';
-import '../features/chat/controllers/chat_controller.dart';
-import '../domain/controllers/clothing_form_controller.dart';
+import 'package:veloura_ai/features/chat/presentation/providers/chat_provider.dart';
+import 'package:veloura_ai/features/chat/domain/usecases/send_chat_message_usecase.dart';
+import 'package:veloura_ai/features/chat/data/repositories/chat_repository_impl.dart';
+import 'package:veloura_ai/features/chat/data/datasources/chat_remote_data_source.dart';
 import '../features/wardrobe/presentation/provider/wardrobe_provider.dart';
 import '../features/wardrobe/domain/usecases/get_wardrobe_items.dart';
 import '../features/wardrobe/domain/usecases/add_clothing_item.dart';
@@ -55,8 +57,18 @@ class MyApp extends StatelessWidget {
 
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => ChatController()),
-        ChangeNotifierProvider(create: (_) => ClothingFormController()),
+        ChangeNotifierProvider(create: (_) {
+          final chatRemoteDataSource = ChatRemoteDataSourceImpl();
+          final chatRepository = ChatRepositoryImpl(
+            chatRemoteDataSource: chatRemoteDataSource,
+            locationDataSource: LocationDataSourceImpl(),
+            weatherDataSource: WeatherDataSourceImpl(),
+          );
+          return ChatProvider(
+            sendChatMessageUseCase: SendChatMessageUseCase(chatRepository: chatRepository),
+          );
+        }),
+       //ChangeNotifierProvider(create: (_) => ClothingFormController()),
         ChangeNotifierProvider(create: (_) {
           final outfitRepository = OutfitRepositoryImpl(
             remoteDataSource: OutfitRemoteDataSourceImpl(supabaseClient),

@@ -6,6 +6,8 @@ class OutfitModel extends Outfit {
     required super.id,
     required super.userId,
     required super.name,
+    super.style,
+    super.reason,
     required super.items,
     required super.createdAt,
   });
@@ -18,6 +20,8 @@ class OutfitModel extends Outfit {
       'id': id,
       'user_id': userId,
       'name': name,
+      'style': style,
+      'reason': reason,
       'created_at': createdAt.toIso8601String(),
     };
   }
@@ -36,6 +40,8 @@ class OutfitModel extends Outfit {
       id: map['id']?.toString() ?? '',
       userId: map['user_id']?.toString() ?? '',
       name: map['name']?.toString() ?? 'My Outfit',
+      style: map['style']?.toString(),
+      reason: map['reason']?.toString(),
       items: parsedItems,
       createdAt: map['created_at'] != null 
           ? DateTime.tryParse(map['created_at'].toString()) ?? DateTime.now()
@@ -48,6 +54,8 @@ class OutfitModel extends Outfit {
       id: entity.id,
       userId: entity.userId,
       name: entity.name,
+      style: entity.style,
+      reason: entity.reason,
       items: entity.items.map((e) => ClothingItemModel.fromEntity(e)).toList(),
       createdAt: entity.createdAt,
     );
@@ -58,6 +66,8 @@ class OutfitModel extends Outfit {
       id: id,
       userId: userId,
       name: name,
+      style: style,
+      reason: reason,
       items: items.map((e) => e.toEntity()).toList(),
       createdAt: createdAt,
     );

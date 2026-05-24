@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/constants/enums/categories.dart';
 import '../../domain/entities/outfit.dart';
 import '../../domain/entities/clothing_item.dart';
 import '../../domain/usecases/get_outfits.dart';
@@ -28,9 +29,16 @@ class OutfitProvider extends ChangeNotifier {
   String? _error;
   String? get error => _error;
 
+  String? aiStyle;
+  String? aiReason;
+  String? aiName;
+
   ClothingItem? selectedTop;
   ClothingItem? selectedBottom;
   ClothingItem? selectedShoes;
+  ClothingItem? selectedAccessory;
+
+  final List<String> _suggestedOutfitIds = [];
 
   String? editingOutfitId;
 
@@ -49,11 +57,12 @@ class OutfitProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> saveOutfit(String userId) async {
+  Future<void> saveOutfit(String userId, String name) async {
     final List<ClothingItem> items = [];
     if (selectedTop != null) items.add(selectedTop!);
     if (selectedBottom != null) items.add(selectedBottom!);
     if (selectedShoes != null) items.add(selectedShoes!);
+    if (selectedAccessory != null) items.add(selectedAccessory!);
 
     if (items.isEmpty) return;
 
@@ -65,7 +74,7 @@ class OutfitProvider extends ChangeNotifier {
       final outfit = Outfit(
         id: editingOutfitId ?? DateTime.now().millisecondsSinceEpoch.toString(),
         userId: userId,
-        name: 'My Outfit',
+        name: name,
         items: items,
         createdAt: DateTime.now(),
       );
@@ -116,12 +125,22 @@ class OutfitProvider extends ChangeNotifier {
       final aiOutfit = await generateOutfitUsecase.execute(
         wardrobe: wardrobe,
         weather: weather,
+        previousOutfitIds: _suggestedOutfitIds,
       );
 
       if (aiOutfit != null) {
-        selectedTop = aiOutfit.items.where((i) => i.category.name == 'top').firstOrNull;
-        selectedBottom = aiOutfit.items.where((i) => i.category.name == 'bottom').firstOrNull;
-        selectedShoes = aiOutfit.items.where((i) => i.category.name == 'shoes').firstOrNull;
+        selectedTop = aiOutfit.items.where((i) => i.category == ClothingCategory.top).firstOrNull;
+        selectedBottom = aiOutfit.items.where((i) => i.category == ClothingCategory.bottom).firstOrNull;
+        selectedShoes = aiOutfit.items.where((i) => i.category == ClothingCategory.shoes).firstOrNull;
+        selectedAccessory = aiOutfit.items.where((i) => i.category == ClothingCategory.accessories).firstOrNull;
+
+        aiStyle = aiOutfit.style;
+        aiReason = aiOutfit.reason;
+        aiName = aiOutfit.name;
+
+        // Add to suggestion history to avoid repetition
+        final combinationId = aiOutfit.items.map((e) => e.id).join('-');
+        _suggestedOutfitIds.add(combinationId);
       } else {
         _error = "AI could not generate an outfit.";
       }
@@ -131,6 +150,11 @@ class OutfitProvider extends ChangeNotifier {
       _isLoading = false;
       notifyListeners();
     }
+  }
+
+  void selectAccessory(ClothingItem item) {
+    selectedAccessory = item;
+    notifyListeners();
   }
 
   void selectTop(ClothingItem item) {
@@ -150,9 +174,10 @@ class OutfitProvider extends ChangeNotifier {
 
   void setEditingOutfit(Outfit outfit) {
     editingOutfitId = outfit.id;
-    selectedTop = outfit.items.where((i) => i.category.name == 'top').firstOrNull;
-    selectedBottom = outfit.items.where((i) => i.category.name == 'bottom').firstOrNull;
-    selectedShoes = outfit.items.where((i) => i.category.name == 'shoes').firstOrNull;
+    selectedTop = outfit.items.where((i) => i.category == ClothingCategory.top).firstOrNull;
+    selectedBottom = outfit.items.where((i) => i.category == ClothingCategory.bottom).firstOrNull;
+    selectedShoes = outfit.items.where((i) => i.category == ClothingCategory.shoes).firstOrNull;
+    selectedAccessory = outfit.items.where((i) => i.category == ClothingCategory.accessories).firstOrNull;
     notifyListeners();
   }
 
@@ -160,6 +185,7 @@ class OutfitProvider extends ChangeNotifier {
     selectedTop = null;
     selectedBottom = null;
     selectedShoes = null;
+    selectedAccessory = null;
     editingOutfitId = null;
     notifyListeners();
   }

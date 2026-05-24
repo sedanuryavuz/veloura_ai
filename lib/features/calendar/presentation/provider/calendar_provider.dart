@@ -3,7 +3,6 @@ import '../../domain/entities/calendar_event.dart';
 import '../../domain/usecases/get_calendar_events.dart';
 import '../../domain/usecases/add_calendar_event.dart';
 import '../../domain/usecases/delete_calendar_event.dart';
-import '../../domain/usecases/update_calendar_event.dart';
 import '../../../outfit/domain/entities/outfit.dart';
 import 'package:uuid/uuid.dart';
 

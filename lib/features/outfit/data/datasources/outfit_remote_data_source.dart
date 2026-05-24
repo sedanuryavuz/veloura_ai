@@ -26,14 +26,22 @@ class OutfitRemoteDataSourceImpl implements OutfitRemoteDataSource {
 
   @override
   Future<OutfitModel> createOutfit(OutfitModel outfit) async {
+    // Remove ID if it's a new outfit to let database generate it (if needed)
+    final map = outfit.toMap();
+    if (outfit.id.isEmpty || outfit.id.length > 20) { // Simple check for auto-gen IDs
+       // map.remove('id'); // Keep it if we want to try our generated ID first
+    }
+
     final outfitResponse = await _client
         .from('outfits')
-        .insert(outfit.toMap())
+        .insert(map)
         .select()
         .single();
     
+    final savedId = outfitResponse['id'];
+    
     final outfitItems = outfit.items.map((item) => {
-      'outfit_id': outfit.id,
+      'outfit_id': savedId,
       'clothing_item_id': item.id,
     }).toList();
     

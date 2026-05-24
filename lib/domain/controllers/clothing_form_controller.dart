@@ -1,4 +1,4 @@
-import 'dart:io';
+/*import 'dart:io';
 import 'package:flutter/material.dart';
 import '../../core/constants/enums/categories.dart';
 
@@ -23,3 +23,4 @@ class ClothingFormController extends ChangeNotifier {
 
   bool get isValid => image != null && name.trim().isNotEmpty;
 }
+*/
