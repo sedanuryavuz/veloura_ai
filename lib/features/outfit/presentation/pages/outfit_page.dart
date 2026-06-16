@@ -19,7 +19,7 @@ class _OutfitPageState extends State<OutfitPage> {
   @override
   void initState() {
     super.initState();
-    Future.microtask(() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       final userId = SupabaseService.currentUserId ?? '';
       if (userId.isNotEmpty) {
         context.read<OutfitProvider>().loadOutfits(userId);

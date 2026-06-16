@@ -31,17 +31,21 @@ class _ClothingFormPageState extends State<ClothingFormPage> {
   void initState() {
     super.initState();
 
-    final provider = context.read<WardrobeProvider>();
-
-    if (widget.mode == ClothingFormMode.add) {
-      provider.clearDraft();
-    } else {
+    if (widget.mode == ClothingFormMode.edit) {
       final item = widget.item!;
-      provider.startEditing(item);
       nameController.text = item.name;
       styleController.text = item.style;
       descriptionController.text = item.description;
     }
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final provider = context.read<WardrobeProvider>();
+      if (widget.mode == ClothingFormMode.add) {
+        provider.clearDraft();
+      } else {
+        provider.startEditing(widget.item!);
+      }
+    });
   }
 
   @override

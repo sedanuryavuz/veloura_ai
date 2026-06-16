@@ -23,8 +23,10 @@ class _ChatPageState extends State<ChatPage> {
   @override
   void initState() {
     super.initState();
-    _loadWardrobeIfNeeded();
-    WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToBottom(immediate: true));
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadWardrobeIfNeeded();
+      _scrollToBottom(immediate: true);
+    });
   }
 
   void _loadWardrobeIfNeeded() {
