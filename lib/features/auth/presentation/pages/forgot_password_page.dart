@@ -4,21 +4,66 @@ import '../provider/auth_provider.dart';
 import '../widgets/auth_button.dart';
 import '../widgets/auth_textfield.dart';
 import '../widgets/auth_header.dart';
-import 'register_page.dart';
-import 'forgot_password_page.dart';
-import '../../../../core/navigation/main_navigation_page.dart';
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+class ForgotPasswordPage extends StatefulWidget {
+  const ForgotPasswordPage({super.key});
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  State<ForgotPasswordPage> createState() => _ForgotPasswordPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
   final emailController = TextEditingController();
-  final passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+
+  @override
+  void dispose() {
+    emailController.dispose();
+    super.dispose();
+  }
+
+  void _showSuccessDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          title: const Row(
+            children: [
+              Icon(Icons.check_circle_outline, color: Color(0xffE8B4B8)),
+              SizedBox(width: 10),
+              Text(
+                "Check Your Inbox",
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+            ],
+          ),
+          content: const Text(
+            "If an account exists for this email, a password reset link has been sent. Please check your inbox.",
+            style: TextStyle(fontSize: 16),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // pop dialog
+                Navigator.of(context).pop(); // navigate back to login page
+              },
+              child: const Text(
+                "Back to Login",
+                style: TextStyle(
+                  color: Color(0xffE8B4B8),
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -45,9 +90,17 @@ class _LoginPageState extends State<LoginPage> {
               key: _formKey,
               child: Column(
                 children: [
+                  Align(
+                    alignment: Alignment.topLeft,
+                    child: IconButton(
+                      icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Color(0xff2D3436)),
+                      onPressed: () => Navigator.pop(context),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
                   const AuthHeader(
-                    title: "Welcome Back",
-                    subtitle: "Sign in to access your digital wardrobe",
+                    title: "Forgot Password",
+                    subtitle: "Get a link to regain access to your account",
                   ),
                   const SizedBox(height: 50),
                   AuthTextField(
@@ -55,41 +108,16 @@ class _LoginPageState extends State<LoginPage> {
                     hint: "Email Address",
                     icon: Icons.email_outlined,
                     validator: (value) {
-                      if (value == null || value.isEmpty) return "Please enter your email";
-                      if (!value.contains('@')) return "Please enter a valid email";
+                      if (value == null || value.trim().isEmpty) {
+                        return "Please enter your email";
+                      }
+                      if (!value.contains('@') || !value.contains('.')) {
+                        return "Please enter a valid email address";
+                      }
                       return null;
                     },
                   ),
-                  const SizedBox(height: 20),
-                  AuthTextField(
-                    controller: passwordController,
-                    hint: "Password",
-                    icon: Icons.lock_outline,
-                    obscure: true,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) return "Please enter your password";
-                      if (value.length < 6) return "Password must be at least 6 characters";
-                      return null;
-                    },
-                  ),
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: TextButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => const ForgotPasswordPage(),
-                          ),
-                        );
-                      },
-                      child: Text(
-                        "Forgot Password?",
-                        style: TextStyle(color: const Color(0xff2D3436).withOpacity(0.6)),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 30),
                   if (authProvider.error != null)
                     Padding(
                       padding: const EdgeInsets.only(bottom: 20),
@@ -100,19 +128,15 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     ),
                   AuthButton(
-                    text: "LOGIN",
+                    text: "SEND RESET LINK",
                     isLoading: authProvider.isLoading,
                     onTap: () async {
                       if (_formKey.currentState!.validate()) {
-                        final success = await authProvider.login(
+                        final success = await authProvider.sendPasswordResetEmail(
                           emailController.text.trim(),
-                          passwordController.text.trim(),
                         );
                         if (success && mounted) {
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(builder: (_) => const MainNavigationPage()),
-                          );
+                          _showSuccessDialog();
                         }
                       }
                     },
@@ -122,18 +146,15 @@ class _LoginPageState extends State<LoginPage> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        "Don't have an account? ",
+                        "Remembered your password? ",
                         style: TextStyle(color: const Color(0xff2D3436).withOpacity(0.6)),
                       ),
                       GestureDetector(
                         onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (_) => const RegisterPage()),
-                          );
+                          Navigator.pop(context);
                         },
                         child: const Text(
-                          "Sign Up",
+                          "Back to Login",
                           style: TextStyle(
                             color: Color(0xffE8B4B8),
                             fontWeight: FontWeight.bold,

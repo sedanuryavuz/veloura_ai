@@ -15,6 +15,10 @@ abstract class AuthRemoteDataSource {
   Future<void> logout();
 
   Future<UserModel?> getCurrentUser();
+
+  Future<void> sendPasswordResetEmail({required String email});
+
+  Future<void> updatePassword({required String newPassword});
 }
 
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
@@ -81,6 +85,21 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       email: user.email!,
       name: user.userMetadata?['name'],
       avatarUrl: user.userMetadata?['avatar_url'],
+    );
+  }
+
+  @override
+  Future<void> sendPasswordResetEmail({required String email}) async {
+    await client.auth.resetPasswordForEmail(
+      email,
+      redirectTo: 'veloura-ai://login-callback',
+    );
+  }
+
+  @override
+  Future<void> updatePassword({required String newPassword}) async {
+    await client.auth.updateUser(
+      supabase.UserAttributes(password: newPassword),
     );
   }
 }

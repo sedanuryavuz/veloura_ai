@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -8,7 +9,10 @@ import 'package:veloura_ai/features/auth/domain/usecases/login.dart';
 import 'package:veloura_ai/features/auth/domain/usecases/register.dart';
 import 'package:veloura_ai/features/auth/domain/usecases/logout.dart';
 import 'package:veloura_ai/features/auth/domain/usecases/get_current_user.dart';
+import 'package:veloura_ai/features/auth/domain/usecases/send_password_reset_email.dart';
+import 'package:veloura_ai/features/auth/domain/usecases/update_password.dart';
 import 'package:veloura_ai/features/auth/presentation/provider/auth_provider.dart';
+import 'package:veloura_ai/features/auth/presentation/pages/reset_password_page.dart';
 import 'theme/app_theme.dart';
 
 import 'package:veloura_ai/features/outfit/presentation/provider/outfit_provider.dart';
@@ -48,18 +52,51 @@ import '../features/wardrobe/data/datasources/wardrobe_remote_data_source.dart';
 
 import 'package:veloura_ai/features/auth/presentation/pages/initialization_error_page.dart';
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   final String? initError;
   const MyApp({super.key, this.initError});
 
+  static final navigatorKey = GlobalKey<NavigatorState>();
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  StreamSubscription<AuthState>? _authSubscription;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.initError == null) {
+      _authSubscription = Supabase.instance.client.auth.onAuthStateChange.listen((data) {
+        final AuthChangeEvent event = data.event;
+        if (event == AuthChangeEvent.passwordRecovery) {
+          MyApp.navigatorKey.currentState?.push(
+            MaterialPageRoute(
+              builder: (_) => const ResetPasswordPage(),
+            ),
+          );
+        }
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _authSubscription?.cancel();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
-    if (initError != null) {
+    if (widget.initError != null) {
       return MaterialApp(
+        navigatorKey: MyApp.navigatorKey,
         debugShowCheckedModeBanner: false,
         title: 'Veloura AI',
         theme: AppTheme.light,
-        home: InitializationErrorPage(error: initError!),
+        home: InitializationErrorPage(error: widget.initError!),
       );
     }
 
@@ -116,6 +153,8 @@ class MyApp extends StatelessWidget {
             registerUsecase: Register(authRepository),
             logoutUsecase: Logout(authRepository),
             getCurrentUserUsecase: GetCurrentUser(authRepository),
+            sendPasswordResetEmailUsecase: SendPasswordResetEmail(authRepository),
+            updatePasswordUsecase: UpdatePassword(authRepository),
           ),
         ),
         ChangeNotifierProvider(
@@ -131,6 +170,7 @@ class MyApp extends StatelessWidget {
         ),
       ],
       child: MaterialApp(
+        navigatorKey: MyApp.navigatorKey,
         debugShowCheckedModeBanner: false,
         title: 'Veloura AI',
         theme: AppTheme.light,
