@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../../../../app/theme/app_colors.dart';
 import '../../../../core/constants/enums/colors.dart';
 import '../../../../core/services/supabase_service.dart';
+import '../../../../core/services/permission_service.dart';
 import '../../../../core/widgets/v_delete_dialog.dart';
 import '../../domain/entities/clothing_item.dart';
 import '../../domain/enums/clothing_form_mode.dart';
@@ -109,7 +111,17 @@ class _ClothingFormPageState extends State<ClothingFormPage> {
       networkImageUrl: widget.mode == ClothingFormMode.edit
           ? widget.item?.imageUrl
           : null,
-      onSourceSelected: (source) {
+      onSourceSelected: (source) async {
+        bool hasPermission = false;
+        if (source == ImageSource.gallery) {
+          hasPermission = await PermissionService.instance.requestGalleryPermission(context);
+        } else if (source == ImageSource.camera) {
+          hasPermission = await PermissionService.instance.requestCameraPermission(context);
+        }
+
+        if (!context.mounted) return;
+        if (!hasPermission) return;
+
         if (widget.mode == ClothingFormMode.add) {
           provider.pickAndProcessImage(source);
         } else {

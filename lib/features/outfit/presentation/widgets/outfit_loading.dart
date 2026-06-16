@@ -66,9 +66,9 @@ class _OutfitLoadingState extends State<OutfitLoading> with SingleTickerProvider
                     shape: BoxShape.circle,
                     gradient: SweepGradient(
                       colors: [
-                        AppColors.accent.withOpacity(0.1),
-                        AppColors.accent,
-                        AppColors.accent.withOpacity(0.1),
+                        AppColors.primary.withOpacity(0.1),
+                        AppColors.primary,
+                        AppColors.primary.withOpacity(0.1),
                       ],
                     ),
                   ),
@@ -77,13 +77,20 @@ class _OutfitLoadingState extends State<OutfitLoading> with SingleTickerProvider
               Container(
                 width: 100,
                 height: 100,
-                decoration: const BoxDecoration(
-                  color: Color(0xFF1A1A2E),
+                decoration: BoxDecoration(
+                  color: Colors.white,
                   shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppColors.primary.withOpacity(0.15),
+                      blurRadius: 12,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
                 ),
                 child: const Icon(
                   Icons.auto_awesome_rounded,
-                  color: AppColors.accent,
+                  color: AppColors.primary,
                   size: 40,
                 ),
               ),
@@ -106,7 +113,7 @@ class _OutfitLoadingState extends State<OutfitLoading> with SingleTickerProvider
           Text(
             "AI STYLIST",
             style: AppTextStyles.bodySmall.copyWith(
-              color: AppColors.accent.withOpacity(0.5),
+              color: AppColors.primary.withOpacity(0.7),
               letterSpacing: 4,
               fontSize: 10,
               fontWeight: FontWeight.bold,
