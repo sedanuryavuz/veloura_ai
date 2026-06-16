@@ -6,6 +6,7 @@ import '../../../../app/theme/app_colors.dart';
 import '../../../../core/constants/enums/colors.dart';
 import '../../../../core/services/supabase_service.dart';
 import '../../../../core/services/permission_service.dart';
+import '../../../../core/services/preferences_service.dart';
 import '../../../../core/widgets/v_delete_dialog.dart';
 import '../../domain/entities/clothing_item.dart';
 import '../../domain/enums/clothing_form_mode.dart';
@@ -13,6 +14,7 @@ import '../provider/wardrobe_provider.dart';
 import '../widgets/category_selector.dart';
 import '../widgets/image_picker_field.dart';
 import '../widgets/image_source_sheet.dart';
+import 'clothing_photo_tutorial_page.dart';
 
 class ClothingFormPage extends StatefulWidget {
   final ClothingFormMode mode;
@@ -122,13 +124,39 @@ class _ClothingFormPageState extends State<ClothingFormPage> {
         if (!context.mounted) return;
         if (!hasPermission) return;
 
-        if (widget.mode == ClothingFormMode.add) {
-          provider.pickAndProcessImage(source);
-        } else {
-          provider.pickEditImage(source);
+        if (source == ImageSource.camera) {
+          final completed = PreferencesService.instance.getBool('camera_onboarding_completed', defaultValue: false);
+          if (!completed) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => ClothingPhotoTutorialPage(
+                  onCompleted: () async {
+                    await PreferencesService.instance.setBool('camera_onboarding_completed', true);
+                    if (context.mounted) {
+                      Navigator.pop(context); // Dismiss tutorial page
+                      _triggerImagePick(source);
+                    }
+                  },
+                ),
+              ),
+            );
+            return;
+          }
         }
+
+        _triggerImagePick(source);
       },
     );
+  }
+
+  void _triggerImagePick(ImageSource source) {
+    final provider = context.read<WardrobeProvider>();
+    if (widget.mode == ClothingFormMode.add) {
+      provider.pickAndProcessImage(source);
+    } else {
+      provider.pickEditImage(source);
+    }
   }
 
   @override
