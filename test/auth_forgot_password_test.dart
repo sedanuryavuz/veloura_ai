@@ -9,6 +9,7 @@ import 'package:veloura_ai/features/auth/domain/usecases/logout.dart';
 import 'package:veloura_ai/features/auth/domain/usecases/get_current_user.dart';
 import 'package:veloura_ai/features/auth/domain/usecases/send_password_reset_email.dart';
 import 'package:veloura_ai/features/auth/domain/usecases/update_password.dart';
+import 'package:veloura_ai/features/auth/domain/usecases/delete_account.dart';
 import 'package:veloura_ai/features/auth/presentation/provider/auth_provider.dart';
 import 'package:veloura_ai/features/auth/presentation/pages/forgot_password_page.dart';
 
@@ -45,6 +46,9 @@ class FakeAuthRepository implements AuthRepository {
   }
 
   @override
+  Future<void> deleteAccount() async {}
+
+  @override
   Future<User> login({required String email, required String password}) async => throw UnimplementedError();
   @override
   Future<User> register({required String email, required String password}) async => throw UnimplementedError();
@@ -67,6 +71,7 @@ void main() {
       getCurrentUserUsecase: GetCurrentUser(fakeAuthRepository),
       sendPasswordResetEmailUsecase: SendPasswordResetEmail(fakeAuthRepository),
       updatePasswordUsecase: UpdatePassword(fakeAuthRepository),
+      deleteAccountUsecase: DeleteAccount(fakeAuthRepository),
     );
   });
 

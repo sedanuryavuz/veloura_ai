@@ -11,8 +11,10 @@ import 'package:veloura_ai/features/auth/domain/usecases/logout.dart';
 import 'package:veloura_ai/features/auth/domain/usecases/get_current_user.dart';
 import 'package:veloura_ai/features/auth/domain/usecases/send_password_reset_email.dart';
 import 'package:veloura_ai/features/auth/domain/usecases/update_password.dart';
+import 'package:veloura_ai/features/auth/domain/usecases/delete_account.dart';
 import 'package:veloura_ai/features/auth/presentation/provider/auth_provider.dart';
 import 'package:veloura_ai/features/auth/presentation/pages/reset_password_page.dart';
+import 'package:veloura_ai/core/providers/language_provider.dart';
 import 'theme/app_theme.dart';
 
 import 'package:veloura_ai/features/outfit/presentation/provider/outfit_provider.dart';
@@ -155,7 +157,11 @@ class _MyAppState extends State<MyApp> {
             getCurrentUserUsecase: GetCurrentUser(authRepository),
             sendPasswordResetEmailUsecase: SendPasswordResetEmail(authRepository),
             updatePasswordUsecase: UpdatePassword(authRepository),
+            deleteAccountUsecase: DeleteAccount(authRepository),
           ),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => LanguageProvider(),
         ),
         ChangeNotifierProvider(
           create: (_) => WardrobeProvider(

@@ -6,6 +6,7 @@ import '../../domain/usecases/logout.dart';
 import '../../domain/usecases/get_current_user.dart';
 import '../../domain/usecases/send_password_reset_email.dart';
 import '../../domain/usecases/update_password.dart';
+import '../../domain/usecases/delete_account.dart';
 
 class AuthProvider extends ChangeNotifier {
   final Login loginUsecase;
@@ -14,6 +15,7 @@ class AuthProvider extends ChangeNotifier {
   final GetCurrentUser getCurrentUserUsecase;
   final SendPasswordResetEmail sendPasswordResetEmailUsecase;
   final UpdatePassword updatePasswordUsecase;
+  final DeleteAccount deleteAccountUsecase;
 
   AuthProvider({
     required this.loginUsecase,
@@ -22,6 +24,7 @@ class AuthProvider extends ChangeNotifier {
     required this.getCurrentUserUsecase,
     required this.sendPasswordResetEmailUsecase,
     required this.updatePasswordUsecase,
+    required this.deleteAccountUsecase,
   });
 
   User? _user;
@@ -131,6 +134,23 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
+  Future<bool> deleteAccount() async {
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      await deleteAccountUsecase();
+      return true;
+    } catch (e) {
+      _error = _formatError(e.toString());
+      return false;
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
   String _formatError(String error) {
     if (error.contains('invalid-credential') || error.contains('Invalid login credentials')) {
       return 'Invalid email or password.';
@@ -140,6 +160,8 @@ class AuthProvider extends ChangeNotifier {
       return 'Network error. Please check your connection.';
     } else if (error.contains('rate') || error.contains('limit exceeded')) {
       return 'Rate limit exceeded. Please try again later.';
+    } else if (error.contains('UnimplementedError') || error.contains('administrative')) {
+      return 'Delete account functionality requires administrative setup and is not yet available.';
     }
     return 'An unexpected error occurred. Please try again.';
   }

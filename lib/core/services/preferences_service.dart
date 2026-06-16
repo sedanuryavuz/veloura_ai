@@ -44,4 +44,18 @@ class PreferencesService {
       // Ignored
     }
   }
+
+  String getString(String key, {String defaultValue = ''}) {
+    return _prefs[key] as String? ?? defaultValue;
+  }
+
+  Future<void> setString(String key, String value) async {
+    _prefs[key] = value;
+    try {
+      final file = await _getFile();
+      await file.writeAsString(jsonEncode(_prefs));
+    } catch (_) {
+      // Ignored
+    }
+  }
 }

@@ -19,6 +19,8 @@ abstract class AuthRemoteDataSource {
   Future<void> sendPasswordResetEmail({required String email});
 
   Future<void> updatePassword({required String newPassword});
+
+  Future<void> deleteAccount();
 }
 
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
@@ -101,5 +103,12 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     await client.auth.updateUser(
       supabase.UserAttributes(password: newPassword),
     );
+  }
+
+  @override
+  Future<void> deleteAccount() async {
+    // Under Clean Architecture, user self-deletion requires an administrative function.
+    // We throw UnimplementedError here to prepare the architecture path.
+    throw UnimplementedError('Delete account functionality requires an administrative API or Edge Function configuration.');
   }
 }
