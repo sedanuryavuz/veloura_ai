@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import '../../../../core/l10n/app_localizations.dart';
 import '../../../../app/theme/app_colors.dart';
 import 'package:provider/provider.dart';
+
 import '../../../../core/services/supabase_service.dart';
 import '../../../../core/widgets/v_delete_dialog.dart';
 import '../provider/calendar_provider.dart';
@@ -32,6 +34,7 @@ class _CalendarPageState extends State<CalendarPage> {
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<CalendarProvider>();
+    final l10n = AppLocalizations.of(context)!;
     final today = DateUtils.dateOnly(DateTime.now());
     final selectedDay = DateUtils.dateOnly(provider.selectedDay);
     final isPast = selectedDay.isBefore(today);
@@ -39,7 +42,7 @@ class _CalendarPageState extends State<CalendarPage> {
     final dayEvents = provider.getEventsForDay(provider.selectedDay);
 
     return Scaffold(
-      appBar: const CalendarHeader(title: "Outfit Planner"),
+      appBar: CalendarHeader(title: l10n.outfitPlanner),
       floatingActionButton: isPast ? null : Padding(
         padding: const EdgeInsets.only(bottom: 96), // Fixed: Higher margin from bottom nav
         child: FloatingActionButton(
@@ -110,8 +113,8 @@ class _CalendarPageState extends State<CalendarPage> {
                                     onDelete: isPast ? null : () {
                                       VDeleteDialog.show(
                                         context,
-                                        title: "Delete Plan?",
-                                        content: "Do you want to remove this outfit from your calendar?",
+                                        title: l10n.deletePlanTitle,
+                                        content: l10n.deletePlanConfirm,
                                         onDelete: () => provider.removeEvent(event.id),
                                       );
                                     },

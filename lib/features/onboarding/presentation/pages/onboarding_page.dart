@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:veloura_ai/core/l10n/app_localizations.dart';
 import 'package:veloura_ai/app/theme/app_colors.dart';
 import 'package:veloura_ai/app/theme/app_text_styles.dart';
 import 'package:veloura_ai/core/services/preferences_service.dart';
 import 'package:veloura_ai/features/auth/presentation/pages/login_page.dart';
+
 
 class OnboardingPage extends StatefulWidget {
   const OnboardingPage({super.key});
@@ -14,29 +16,6 @@ class OnboardingPage extends StatefulWidget {
 class _OnboardingPageState extends State<OnboardingPage> {
   final PageController _pageController = PageController();
   int _currentPage = 0;
-
-  final List<OnboardingStep> _steps = [
-    const OnboardingStep(
-      title: "Curate Your Style",
-      description: "AI-powered wardrobe organization and style suggestions tailored just for you.",
-      icon: Icons.auto_awesome_rounded,
-    ),
-    const OnboardingStep(
-      title: "Virtual Canvas",
-      description: "Mix and match tops, bottoms, shoes, and accessories on our interactive canvas to create the perfect look.",
-      icon: Icons.palette_outlined,
-    ),
-    const OnboardingStep(
-      title: "Weather Smart",
-      description: "Get real-time outfit suggestions matched specifically to the temperature and weather in your location.",
-      icon: Icons.wb_sunny_outlined,
-    ),
-    const OnboardingStep(
-      title: "AI Stylist Chat",
-      description: "Ask your virtual stylist anything! Get immediate styling advice, tips, and custom outfit combinations.",
-      icon: Icons.chat_bubble_outline_rounded,
-    ),
-  ];
 
   Future<void> _completeOnboarding() async {
     await PreferencesService.instance.setBool('onboarding_completed', true);
@@ -50,7 +29,32 @@ class _OnboardingPageState extends State<OnboardingPage> {
 
   @override
   Widget build(BuildContext context) {
-    final isLastPage = _currentPage == _steps.length - 1;
+    final l10n = AppLocalizations.of(context)!;
+
+    final List<OnboardingStep> steps = [
+      OnboardingStep(
+        title: l10n.curateYourStyle,
+        description: l10n.curateYourStyleDesc,
+        icon: Icons.auto_awesome_rounded,
+      ),
+      OnboardingStep(
+        title: l10n.virtualCanvas,
+        description: l10n.virtualCanvasDesc,
+        icon: Icons.palette_outlined,
+      ),
+      OnboardingStep(
+        title: l10n.weatherSmart,
+        description: l10n.weatherSmartDesc,
+        icon: Icons.wb_sunny_outlined,
+      ),
+      OnboardingStep(
+        title: l10n.aiStylistChat,
+        description: l10n.aiStylistChatDesc,
+        icon: Icons.chat_bubble_outline_rounded,
+      ),
+    ];
+
+    final isLastPage = _currentPage == steps.length - 1;
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -79,7 +83,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                     child: TextButton(
                       onPressed: _completeOnboarding,
                       child: Text(
-                        "Skip",
+                        l10n.skip,
                         style: AppTextStyles.bodyLarge.copyWith(
                           color: AppColors.primaryDark,
                           fontWeight: FontWeight.bold,
@@ -93,14 +97,14 @@ class _OnboardingPageState extends State<OnboardingPage> {
                 Expanded(
                   child: PageView.builder(
                     controller: _pageController,
-                    itemCount: _steps.length,
+                    itemCount: steps.length,
                     onPageChanged: (int index) {
                       setState(() {
                         _currentPage = index;
                       });
                     },
                     itemBuilder: (context, index) {
-                      final step = _steps[index];
+                      final step = steps[index];
                       return Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 40.0),
                         child: Column(
@@ -165,7 +169,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                       // Dots Indicator
                       Row(
                         children: List.generate(
-                          _steps.length,
+                          steps.length,
                           (index) => AnimatedContainer(
                             duration: const Duration(milliseconds: 300),
                             margin: const EdgeInsets.only(right: 8),
@@ -203,7 +207,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                           elevation: 4,
                         ),
                         child: Text(
-                          isLastPage ? "Get Started" : "Next",
+                          isLastPage ? l10n.getStarted : l10n.next,
                           style: AppTextStyles.button,
                         ),
                       ),

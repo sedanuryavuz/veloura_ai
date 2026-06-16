@@ -15,7 +15,10 @@ import 'package:veloura_ai/features/auth/domain/usecases/delete_account.dart';
 import 'package:veloura_ai/features/auth/presentation/provider/auth_provider.dart';
 import 'package:veloura_ai/features/auth/presentation/pages/reset_password_page.dart';
 import 'package:veloura_ai/core/providers/language_provider.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:veloura_ai/core/l10n/app_localizations.dart';
 import 'theme/app_theme.dart';
+
 
 import 'package:veloura_ai/features/outfit/presentation/provider/outfit_provider.dart';
 import 'package:veloura_ai/features/outfit/data/repositories/outfit_repository_impl.dart';
@@ -98,6 +101,8 @@ class _MyAppState extends State<MyApp> {
         debugShowCheckedModeBanner: false,
         title: 'Veloura AI',
         theme: AppTheme.light,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
         home: InitializationErrorPage(error: widget.initError!),
       );
     }
@@ -175,12 +180,19 @@ class _MyAppState extends State<MyApp> {
           ),
         ),
       ],
-      child: MaterialApp(
-        navigatorKey: MyApp.navigatorKey,
-        debugShowCheckedModeBanner: false,
-        title: 'Veloura AI',
-        theme: AppTheme.light,
-        home: const SplashPage(),
+      child: Consumer<LanguageProvider>(
+        builder: (context, languageProvider, _) {
+          return MaterialApp(
+            navigatorKey: MyApp.navigatorKey,
+            debugShowCheckedModeBanner: false,
+            title: 'Veloura AI',
+            theme: AppTheme.light,
+            locale: languageProvider.locale,
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: const SplashPage(),
+          );
+        },
       ),
     );
   }

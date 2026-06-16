@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import '../../../../core/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import '../../../../app/theme/app_colors.dart';
 import '../../../../core/services/supabase_service.dart';
+
 import '../../domain/enums/clothing_form_mode.dart';
 import '../provider/wardrobe_provider.dart';
 import '../widgets/wardrobe_grid.dart';
@@ -34,9 +36,10 @@ class _WardrobePageState extends State<WardrobePage> {
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<WardrobeProvider>();
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('My Wardrobe')),
+      appBar: AppBar(title: Text(l10n.myWardrobe)),
       floatingActionButton: Padding(
         padding: const EdgeInsets.only(bottom: 96), // Fixed: Higher margin from bottom nav
         child: FloatingActionButton(
@@ -100,6 +103,7 @@ class _ErrorView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Center(
       child: Padding(
         padding: const EdgeInsets.only(bottom: 60),
@@ -121,7 +125,7 @@ class _ErrorView extends StatelessWidget {
             ElevatedButton.icon(
               onPressed: onRetry,
               icon: const Icon(Icons.refresh_rounded),
-              label: const Text('Try Again'),
+              label: Text(l10n.tryAgain),
             ),
           ],
         ),

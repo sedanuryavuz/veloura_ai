@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import '../../../../core/l10n/app_localizations.dart';
 import 'package:veloura_ai/app/theme/app_colors.dart';
+
 
 class MessageInput extends StatelessWidget {
   final TextEditingController controller;
@@ -23,7 +25,7 @@ class MessageInput extends StatelessWidget {
               onSubmitted: (_) => onSend(),
               style: const TextStyle(color: AppColors.textPrimary),
               decoration: InputDecoration(
-                hintText: "Ask for an outfit suggestion...",
+                hintText: AppLocalizations.of(context)!.askOutfitSuggestion,
                 hintStyle: const TextStyle(color: AppColors.textLight),
                 filled: true,
                 fillColor: Colors.white,

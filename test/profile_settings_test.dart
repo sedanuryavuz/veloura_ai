@@ -15,6 +15,7 @@ import 'package:veloura_ai/core/providers/language_provider.dart';
 import 'package:veloura_ai/features/profile/presentation/pages/profile_page.dart';
 import 'package:veloura_ai/features/profile/presentation/pages/change_password_page.dart';
 import 'package:veloura_ai/core/services/preferences_service.dart';
+import 'package:veloura_ai/core/l10n/app_localizations.dart';
 
 class FakeAuthRepository implements AuthRepository {
   bool throwNetworkError = false;
@@ -71,27 +72,29 @@ void main() {
   });
 
   group('LanguageProvider Tests', () {
-    test('Translates keys correctly for en and tr locales', () async {
-      expect(languageProvider.locale, 'en');
-      expect(languageProvider.translate('profile'), 'Profile');
-      expect(languageProvider.translate('change_password'), 'Change Password');
+    test('Updates and persists locale correctly', () async {
+      expect(languageProvider.localeCode, 'en');
+      expect(languageProvider.locale, const Locale('en'));
 
       await languageProvider.setLocale('tr');
-      expect(languageProvider.locale, 'tr');
-      expect(languageProvider.translate('profile'), 'Profil');
-      expect(languageProvider.translate('change_password'), 'Şifre Değiştir');
+      expect(languageProvider.localeCode, 'tr');
+      expect(languageProvider.locale, const Locale('tr'));
+      expect(PreferencesService.instance.getString('selected_locale'), 'tr');
     });
   });
 
   group('ProfilePage & ChangePasswordPage Widget Tests', () {
-    Widget buildTestWidget() {
+    Widget buildTestWidget({Widget? home}) {
       return MultiProvider(
         providers: [
           ChangeNotifierProvider<AuthProvider>.value(value: authProvider),
           ChangeNotifierProvider<LanguageProvider>.value(value: languageProvider),
         ],
-        child: const MaterialApp(
-          home: ProfilePage(),
+        child: MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          locale: languageProvider.locale,
+          home: home ?? const ProfilePage(),
         ),
       );
     }
@@ -130,15 +133,7 @@ void main() {
 
     testWidgets('ChangePasswordPage validates password length', (WidgetTester tester) async {
       await tester.pumpWidget(
-        MultiProvider(
-          providers: [
-            ChangeNotifierProvider<AuthProvider>.value(value: authProvider),
-            ChangeNotifierProvider<LanguageProvider>.value(value: languageProvider),
-          ],
-          child: const MaterialApp(
-            home: ChangePasswordPage(),
-          ),
-        ),
+        buildTestWidget(home: const ChangePasswordPage()),
       );
 
       // Enter short password

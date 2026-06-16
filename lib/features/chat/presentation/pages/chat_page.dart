@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import '../../../../core/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:veloura_ai/app/theme/app_colors.dart';
 import 'package:veloura_ai/app/theme/app_text_styles.dart';
+
 import 'package:veloura_ai/core/services/supabase_service.dart';
 import '../../../wardrobe/presentation/provider/wardrobe_provider.dart';
 import '../providers/chat_provider.dart';
@@ -72,6 +74,7 @@ class _ChatPageState extends State<ChatPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Consumer<ChatProvider>(
       builder: (context, provider, _) {
         // Automatically scroll to bottom if loading state changes (typing indicator displays/hides)
@@ -81,7 +84,7 @@ class _ChatPageState extends State<ChatPage> {
         return Scaffold(
           backgroundColor: AppColors.background,
           appBar: AppBar(
-            title: Text("Veloura AI ✨", style: AppTextStyles.h3),
+            title: Text(l10n.velouraAiChatTitle, style: AppTextStyles.h3),
             centerTitle: true,
             backgroundColor: Colors.transparent,
             elevation: 0,
@@ -90,7 +93,7 @@ class _ChatPageState extends State<ChatPage> {
                 IconButton(
                   icon: const Icon(Icons.delete_outline_rounded, color: AppColors.primaryDark),
                   onPressed: () => provider.clearChat(),
-                  tooltip: "Clear chat",
+                  tooltip: l10n.clearChatTooltip,
                 ),
             ],
           ),
@@ -107,7 +110,7 @@ class _ChatPageState extends State<ChatPage> {
                 children: [
                   Expanded(
                     child: provider.messages.isEmpty
-                        ? _buildEmptyState()
+                        ? _buildEmptyState(context)
                         : ListView.builder(
                             controller: _scrollController,
                             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
@@ -143,7 +146,8 @@ class _ChatPageState extends State<ChatPage> {
     );
   }
 
-  Widget _buildEmptyState() {
+  Widget _buildEmptyState(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Center(
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
@@ -157,20 +161,20 @@ class _ChatPageState extends State<ChatPage> {
             ),
             const SizedBox(height: 24),
             Text(
-              "Your Personal AI Stylist",
+              l10n.aiStylistTitle,
               style: AppTextStyles.h2.copyWith(color: AppColors.primaryDark),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 12),
             Text(
-              "Ask me anything! I will look through your wardrobe items and suggest visually harmonized outfits for the weather.",
+              l10n.aiStylistDesc,
               style: AppTextStyles.bodyMedium.copyWith(color: AppColors.textSecondary),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 32),
-            _buildSuggestionCard("What should I wear for a sunny weekend picnic?"),
-            _buildSuggestionCard("Recommend a streetwear look from my clothes."),
-            _buildSuggestionCard("Help me style a minimalist outfit for a date."),
+            _buildSuggestionCard(l10n.suggestionPicnic),
+            _buildSuggestionCard(l10n.suggestionStreetwear),
+            _buildSuggestionCard(l10n.suggestionDate),
           ],
         ),
       ),

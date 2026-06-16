@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/l10n/app_localizations.dart';
 import '../../../../app/theme/app_colors.dart';
 import '../../../../app/theme/app_text_styles.dart';
 
@@ -7,6 +8,7 @@ class EmptyEventState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Center(
       child: Padding(
         padding: const EdgeInsets.only(bottom: 60), // Fixed: Offsetting for bottom navigation bar
@@ -23,12 +25,12 @@ class EmptyEventState extends StatelessWidget {
             ),
             const SizedBox(height: 24),
             Text(
-              "Empty Day",
+              l10n.emptyDay,
               style: AppTextStyles.h3,
             ),
             const SizedBox(height: 8),
             Text(
-              "Plan your perfect outfit for this day",
+              l10n.planOutfitForDay,
               style: AppTextStyles.bodyMedium.copyWith(color: AppColors.textSecondary),
               textAlign: TextAlign.center,
             ),

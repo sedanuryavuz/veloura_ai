@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import '../../../../core/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import '../provider/auth_provider.dart';
 import '../widgets/auth_button.dart';
 import '../widgets/auth_textfield.dart';
 import '../widgets/auth_header.dart';
+
 import '../../../../core/navigation/main_navigation_page.dart';
 
 class RegisterPage extends StatefulWidget {
@@ -22,6 +24,7 @@ class _RegisterPageState extends State<RegisterPage> {
   @override
   Widget build(BuildContext context) {
     final authProvider = context.watch<AuthProvider>();
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       body: Container(
@@ -51,40 +54,40 @@ class _RegisterPageState extends State<RegisterPage> {
                       icon: const Icon(Icons.arrow_back_ios_new, size: 20),
                     ),
                   ),
-                  const AuthHeader(
-                    title: "Create Account",
-                    subtitle: "Join Veloura AI to manage your style",
+                  AuthHeader(
+                    title: l10n.createAccount,
+                    subtitle: l10n.joinVelouraSubtitle,
                   ),
                   const SizedBox(height: 50),
                   AuthTextField(
                     controller: nameController,
-                    hint: "Full Name",
+                    hint: l10n.fullName,
                     icon: Icons.person_outline,
                     validator: (value) {
-                      if (value == null || value.isEmpty) return "Please enter your name";
+                      if (value == null || value.isEmpty) return l10n.pleaseEnterName;
                       return null;
                     },
                   ),
                   const SizedBox(height: 20),
                   AuthTextField(
                     controller: emailController,
-                    hint: "Email Address",
+                    hint: l10n.emailAddress,
                     icon: Icons.email_outlined,
                     validator: (value) {
-                      if (value == null || value.isEmpty) return "Please enter your email";
-                      if (!value.contains('@')) return "Please enter a valid email";
+                      if (value == null || value.isEmpty) return l10n.pleaseEnterEmail;
+                      if (!value.contains('@')) return l10n.pleaseEnterValidEmail;
                       return null;
                     },
                   ),
                   const SizedBox(height: 20),
                   AuthTextField(
                     controller: passwordController,
-                    hint: "Password",
+                    hint: l10n.password,
                     icon: Icons.lock_outline,
                     obscure: true,
                     validator: (value) {
-                      if (value == null || value.isEmpty) return "Please enter your password";
-                      if (value.length < 6) return "Password must be at least 6 characters";
+                      if (value == null || value.isEmpty) return l10n.pleaseEnterPassword;
+                      if (value.length < 6) return l10n.passwordLengthError;
                       return null;
                     },
                   ),
@@ -99,7 +102,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       ),
                     ),
                   AuthButton(
-                    text: "REGISTER",
+                    text: l10n.registerButton,
                     isLoading: authProvider.isLoading,
                     onTap: () async {
                       if (_formKey.currentState!.validate()) {
@@ -121,14 +124,14 @@ class _RegisterPageState extends State<RegisterPage> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        "Already have an account? ",
+                        l10n.alreadyHaveAccount,
                         style: TextStyle(color: const Color(0xff2D3436).withOpacity(0.6)),
                       ),
                       GestureDetector(
                         onTap: () => Navigator.pop(context),
-                        child: const Text(
-                          "Sign In",
-                          style: TextStyle(
+                        child: Text(
+                          l10n.signIn,
+                          style: const TextStyle(
                             color: Color(0xffE8B4B8),
                             fontWeight: FontWeight.bold,
                           ),

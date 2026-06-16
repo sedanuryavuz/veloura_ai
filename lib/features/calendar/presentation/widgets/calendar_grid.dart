@@ -28,6 +28,7 @@ class CalendarGrid extends StatelessWidget {
         boxShadow: AppDecorations.softShadow,
       ),
       child: TableCalendar(
+        locale: Localizations.localeOf(context).toString(),
         focusedDay: focusedDay,
         firstDay: DateTime.utc(2024),
         lastDay: DateTime.utc(2035),

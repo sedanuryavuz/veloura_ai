@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:veloura_ai/core/l10n/app_localizations.dart';
 import 'package:veloura_ai/app/theme/app_colors.dart';
 import 'package:veloura_ai/app/theme/app_decorations.dart';
 import 'package:veloura_ai/app/theme/app_text_styles.dart';
@@ -13,6 +14,7 @@ import '../widgets/settings_section.dart';
 import 'change_password_page.dart';
 import 'legal_document_page.dart';
 
+
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
 
@@ -22,6 +24,7 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   void _showLanguageBottomSheet(BuildContext context, LanguageProvider lp) {
+    final l10n = AppLocalizations.of(context)!;
     showModalBottomSheet(
       context: context,
       shape: const RoundedRectangleBorder(
@@ -34,19 +37,19 @@ class _ProfilePageState extends State<ProfilePage> {
             children: [
               const SizedBox(height: 16),
               Text(
-                lp.translate('language'),
+                l10n.language,
                 style: AppTextStyles.h3,
               ),
               const SizedBox(height: 16),
               ListTile(
                 leading: const Text("🇺🇸", style: TextStyle(fontSize: 24)),
                 title: Text(
-                  lp.translate('english'),
+                  l10n.english,
                   style: TextStyle(
-                    fontWeight: lp.locale == 'en' ? FontWeight.bold : FontWeight.normal,
+                    fontWeight: lp.localeCode == 'en' ? FontWeight.bold : FontWeight.normal,
                   ),
                 ),
-                trailing: lp.locale == 'en' ? const Icon(Icons.check, color: AppColors.primary) : null,
+                trailing: lp.localeCode == 'en' ? const Icon(Icons.check, color: AppColors.primary) : null,
                 onTap: () {
                   lp.setLocale('en');
                   Navigator.pop(context);
@@ -56,12 +59,12 @@ class _ProfilePageState extends State<ProfilePage> {
               ListTile(
                 leading: const Text("🇹🇷", style: TextStyle(fontSize: 24)),
                 title: Text(
-                  lp.translate('turkish'),
+                  l10n.turkish,
                   style: TextStyle(
-                    fontWeight: lp.locale == 'tr' ? FontWeight.bold : FontWeight.normal,
+                    fontWeight: lp.localeCode == 'tr' ? FontWeight.bold : FontWeight.normal,
                   ),
                 ),
-                trailing: lp.locale == 'tr' ? const Icon(Icons.check, color: AppColors.primary) : null,
+                trailing: lp.localeCode == 'tr' ? const Icon(Icons.check, color: AppColors.primary) : null,
                 onTap: () {
                   lp.setLocale('tr');
                   Navigator.pop(context);
@@ -76,21 +79,22 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   void _showNotificationSettingsDialog(BuildContext context, LanguageProvider lp) {
+    final l10n = AppLocalizations.of(context)!;
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
           title: Text(
-            lp.translate('notifications_dialog_title'),
+            l10n.notificationsDialogTitle,
             style: const TextStyle(fontWeight: FontWeight.bold),
           ),
-          content: Text(lp.translate('notifications_dialog_message')),
+          content: Text(l10n.notificationsDialogMessage),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
               child: Text(
-                lp.translate('cancel'),
+                l10n.cancel,
                 style: const TextStyle(color: Colors.grey),
               ),
             ),
@@ -100,7 +104,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 await PermissionService.instance.requestCameraPermission(context); // Triggers permission handler open settings internally if denied
               },
               child: Text(
-                lp.translate('open_settings'),
+                l10n.openSettings,
                 style: const TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold),
               ),
             ),
@@ -111,21 +115,22 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   void _showDeleteAccountDialog(BuildContext context, AuthProvider authProvider, LanguageProvider lp) {
+    final l10n = AppLocalizations.of(context)!;
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
           title: Text(
-            lp.translate('confirm_delete_title'),
+            l10n.confirmDeleteTitle,
             style: const TextStyle(fontWeight: FontWeight.bold, color: AppColors.error),
           ),
-          content: Text(lp.translate('confirm_delete_message')),
+          content: Text(l10n.confirmDeleteMessage),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
               child: Text(
-                lp.translate('cancel'),
+                l10n.cancel,
                 style: const TextStyle(color: Colors.grey),
               ),
             ),
@@ -143,7 +148,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 }
               },
               child: Text(
-                lp.translate('delete_account_confirm'),
+                l10n.deleteAccountConfirm,
                 style: const TextStyle(color: AppColors.error, fontWeight: FontWeight.bold),
               ),
             ),
@@ -154,21 +159,22 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   void _showAboutDialog(BuildContext context, LanguageProvider lp) {
+    final l10n = AppLocalizations.of(context)!;
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
           title: Text(
-            lp.translate('about_title'),
+            l10n.aboutTitle,
             style: const TextStyle(fontWeight: FontWeight.bold),
           ),
-          content: Text(lp.translate('about_message')),
+          content: Text(l10n.aboutMessage),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
               child: Text(
-                lp.translate('ok'),
+                l10n.ok,
                 style: const TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold),
               ),
             ),
@@ -237,7 +243,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Text(
-                        lp.translate('free_tier').toUpperCase(),
+                        AppLocalizations.of(context)!.freeTier.toUpperCase(),
                         style: AppTextStyles.label.copyWith(fontSize: 11),
                       ),
                     ),
@@ -271,7 +277,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             const Icon(Icons.local_fire_department_rounded, color: Colors.orangeAccent),
                             const SizedBox(height: 4),
                             Text(
-                              lp.translate('streaks'),
+                              AppLocalizations.of(context)!.streaks,
                               style: AppTextStyles.bodySmall.copyWith(fontWeight: FontWeight.bold),
                             ),
                             const Text("1", style: TextStyle(fontWeight: FontWeight.bold)),
@@ -282,7 +288,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             const Icon(Icons.favorite_rounded, color: AppColors.primary),
                             const SizedBox(height: 4),
                             Text(
-                              lp.translate('favorites'),
+                              AppLocalizations.of(context)!.favorites,
                               style: AppTextStyles.bodySmall.copyWith(fontWeight: FontWeight.bold),
                             ),
                             const Text("0", style: TextStyle(fontWeight: FontWeight.bold)),
@@ -293,7 +299,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             const Icon(Icons.emoji_events_rounded, color: Colors.amber),
                             const SizedBox(height: 4),
                             Text(
-                              lp.translate('badges'),
+                              AppLocalizations.of(context)!.badges,
                               style: AppTextStyles.bodySmall.copyWith(fontWeight: FontWeight.bold),
                             ),
                             const Text("0", style: TextStyle(fontWeight: FontWeight.bold)),
@@ -303,7 +309,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                     const Divider(height: 24, thickness: 0.5),
                     Text(
-                      lp.translate('future_features'),
+                      AppLocalizations.of(context)!.futureFeatures,
                       style: AppTextStyles.bodySmall.copyWith(
                         fontStyle: FontStyle.italic,
                         color: AppColors.textSecondary,
@@ -315,11 +321,11 @@ class _ProfilePageState extends State<ProfilePage> {
 
               // Settings Sections
               SettingsSection(
-                title: lp.translate('account'),
+                title: AppLocalizations.of(context)!.account,
                 children: [
                   SettingsTile(
                     icon: Icons.lock_outline_rounded,
-                    title: lp.translate('change_password'),
+                    title: AppLocalizations.of(context)!.changePassword,
                     onTap: () {
                       Navigator.push(
                         context,
@@ -329,7 +335,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                   SettingsTile(
                     icon: Icons.logout_rounded,
-                    title: lp.translate('sign_out'),
+                    title: AppLocalizations.of(context)!.signOut,
                     iconColor: AppColors.error,
                     onTap: () async {
                       await authProvider.logout();
@@ -344,7 +350,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                   SettingsTile(
                     icon: Icons.delete_forever_rounded,
-                    title: lp.translate('delete_account'),
+                    title: AppLocalizations.of(context)!.deleteAccount,
                     iconColor: AppColors.error,
                     onTap: () => _showDeleteAccountDialog(context, authProvider, lp),
                   ),
@@ -352,34 +358,34 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
 
               SettingsSection(
-                title: lp.translate('app'),
+                title: AppLocalizations.of(context)!.app,
                 children: [
                   SettingsTile(
                     icon: Icons.language_rounded,
-                    title: lp.translate('language'),
-                    subtitle: lp.locale == 'en' ? 'English' : 'Türkçe',
+                    title: AppLocalizations.of(context)!.language,
+                    subtitle: lp.localeCode == 'en' ? 'English' : 'Türkçe',
                     onTap: () => _showLanguageBottomSheet(context, lp),
                   ),
                   SettingsTile(
                     icon: Icons.notifications_none_rounded,
-                    title: lp.translate('notifications'),
+                    title: AppLocalizations.of(context)!.notifications,
                     onTap: () => _showNotificationSettingsDialog(context, lp),
                   ),
                 ],
               ),
 
               SettingsSection(
-                title: lp.translate('legal'),
+                title: AppLocalizations.of(context)!.legal,
                 children: [
                   SettingsTile(
                     icon: Icons.gavel_rounded,
-                    title: lp.translate('terms_of_service'),
+                    title: AppLocalizations.of(context)!.termsOfService,
                     onTap: () {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (_) => LegalDocumentPage(
-                            title: lp.translate('terms_of_service'),
+                            title: AppLocalizations.of(context)!.termsOfService,
                             centralUrl: AppConfig.termsOfServiceUrl,
                             documentText: "Welcome to Veloura AI!\n\nThese terms of service govern your usage of the Veloura AI application. By creating an account and uploading content, you agree to comply with all copyright and styling guidelines. We reserve the right to ban accounts violating guidelines or hosting malicious materials.\n\nUsage limits and features are subject to change.",
                           ),
@@ -389,13 +395,13 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                   SettingsTile(
                     icon: Icons.privacy_tip_outlined,
-                    title: lp.translate('privacy_policy'),
+                    title: AppLocalizations.of(context)!.privacyPolicy,
                     onTap: () {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (_) => LegalDocumentPage(
-                            title: lp.translate('privacy_policy'),
+                            title: AppLocalizations.of(context)!.privacyPolicy,
                             centralUrl: AppConfig.privacyPolicyUrl,
                             documentText: "Privacy Policy of Veloura AI\n\nYour privacy is important to us. We securely store wardrobe photographs, metadata, styling prompts, and outfit history in encrypted Supabase storage instances. We do not sell or share wardrobe assets to third-party advertizers. You retain full ownership of the digital representations of your clothes.",
                           ),
@@ -407,18 +413,18 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
 
               SettingsSection(
-                title: lp.translate('other'),
+                title: AppLocalizations.of(context)!.other,
                 children: [
                   SettingsTile(
                     icon: Icons.info_outline_rounded,
-                    title: lp.translate('about'),
+                    title: AppLocalizations.of(context)!.about,
                     onTap: () => _showAboutDialog(context, lp),
                   ),
                   SettingsTile(
                     icon: Icons.phone_android_rounded,
-                    title: lp.translate('app_version'),
+                    title: AppLocalizations.of(context)!.appVersion,
                     trailing: Text(
-                      "${lp.translate('profile')} App v${AppConfig.appVersion}",
+                      "${AppLocalizations.of(context)!.profile} App v${AppConfig.appVersion}",
                       style: AppTextStyles.bodySmall,
                     ),
                   ),

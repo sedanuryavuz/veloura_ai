@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:veloura_ai/core/l10n/app_localizations.dart';
 import 'package:veloura_ai/features/auth/presentation/provider/auth_provider.dart';
 import 'package:veloura_ai/features/auth/presentation/widgets/auth_button.dart';
 import 'package:veloura_ai/features/auth/presentation/widgets/auth_textfield.dart';
@@ -25,7 +26,8 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
     super.dispose();
   }
 
-  void _showSuccessDialog(LanguageProvider lp) {
+  void _showSuccessDialog() {
+    final l10n = AppLocalizations.of(context)!;
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -39,13 +41,13 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
               const Icon(Icons.check_circle_outline, color: Color(0xffE8B4B8)),
               const SizedBox(width: 10),
               Text(
-                lp.translate('coming_soon'),
+                l10n.passwordUpdatedTitle,
                 style: const TextStyle(fontWeight: FontWeight.bold),
               ),
             ],
           ),
           content: Text(
-            lp.translate('password_updated_success'),
+            l10n.passwordUpdatedSuccess,
             style: const TextStyle(fontSize: 16),
           ),
           actions: [
@@ -55,7 +57,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                 Navigator.of(context).pop(); // pop change password page
               },
               child: Text(
-                lp.translate('ok'),
+                l10n.ok,
                 style: const TextStyle(
                   color: Color(0xffE8B4B8),
                   fontWeight: FontWeight.bold,
@@ -71,7 +73,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
   @override
   Widget build(BuildContext context) {
     final authProvider = context.watch<AuthProvider>();
-    final lp = context.watch<LanguageProvider>();
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       body: Container(
@@ -103,21 +105,21 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                   ),
                   const SizedBox(height: 10),
                   AuthHeader(
-                    title: lp.translate('change_password'),
-                    subtitle: lp.translate('new_password'),
+                    title: l10n.changePassword,
+                    subtitle: l10n.newPassword,
                   ),
                   const SizedBox(height: 50),
                   AuthTextField(
                     controller: passwordController,
-                    hint: lp.translate('new_password'),
+                    hint: l10n.newPassword,
                     icon: Icons.lock_outline,
                     obscure: true,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return "Password cannot be empty";
+                        return l10n.pleaseEnterNewPassword;
                       }
                       if (value.length < 6) {
-                        return "Password must be at least 6 characters";
+                        return l10n.passwordLengthError;
                       }
                       return null;
                     },
@@ -125,15 +127,15 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                   const SizedBox(height: 20),
                   AuthTextField(
                     controller: confirmPasswordController,
-                    hint: lp.translate('confirm_password'),
+                    hint: l10n.confirmNewPassword,
                     icon: Icons.lock_outline,
                     obscure: true,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return "Please confirm password";
+                        return l10n.pleaseConfirmPassword;
                       }
                       if (value != passwordController.text) {
-                        return "Passwords do not match";
+                        return l10n.passwordsDoNotMatch;
                       }
                       return null;
                     },
@@ -149,7 +151,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                       ),
                     ),
                   AuthButton(
-                    text: lp.translate('update_password').toUpperCase(),
+                    text: l10n.updatePassword.toUpperCase(),
                     isLoading: authProvider.isLoading,
                     onTap: () async {
                       if (_formKey.currentState!.validate()) {
@@ -157,7 +159,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                           passwordController.text.trim(),
                         );
                         if (success && mounted) {
-                          _showSuccessDialog(lp);
+                          _showSuccessDialog();
                         }
                       }
                     },

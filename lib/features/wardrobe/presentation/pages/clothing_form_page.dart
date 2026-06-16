@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import '../../../../core/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:image_picker/image_picker.dart';
+
 
 import '../../../../app/theme/app_colors.dart';
 import '../../../../core/constants/enums/colors.dart';
@@ -185,7 +187,7 @@ class _ClothingFormPageState extends State<ClothingFormPage> {
     return Scaffold(
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
-        title: Text(isEdit ? "Edit Clothing" : "Add Clothing"),
+        title: Text(isEdit ? AppLocalizations.of(context)!.editClothing : AppLocalizations.of(context)!.addClothing),
         actions: [
           if (isEdit)
             IconButton(
@@ -193,8 +195,8 @@ class _ClothingFormPageState extends State<ClothingFormPage> {
               onPressed: () {
                 VDeleteDialog.show(
                   context,
-                  title: "Delete Item?",
-                  content: "Do you want to permanently remove this item from your wardrobe?",
+                  title: AppLocalizations.of(context)!.deleteItemTitle,
+                  content: AppLocalizations.of(context)!.deleteItemConfirm,
                   onDelete: () async {
                     await provider.deleteItem(widget.item!);
                     if (mounted) Navigator.pop(context);
@@ -259,7 +261,7 @@ class _ClothingFormPageState extends State<ClothingFormPage> {
                                       ),
                                       const SizedBox(height: 8),
                                       Text(
-                                        provider.isAnalyzingImage ? "AI Analyzing..." : "Processing...",
+                                        provider.isAnalyzingImage ? AppLocalizations.of(context)!.aiAnalyzing : AppLocalizations.of(context)!.processing,
                                         style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
                                       ),
                                     ],
@@ -290,7 +292,7 @@ class _ClothingFormPageState extends State<ClothingFormPage> {
                               if (mounted) _syncControllersWithProvider();
                             },
                             icon: const Icon(Icons.auto_awesome, size: 16),
-                            label: const Text("AI Auto-Fill", style: TextStyle(fontSize: 13)),
+                            label: Text(AppLocalizations.of(context)!.aiAutoFill, style: const TextStyle(fontSize: 13)),
                             style: OutlinedButton.styleFrom(
                               foregroundColor: AppColors.primary,
                               padding: EdgeInsets.zero,
@@ -311,7 +313,7 @@ class _ClothingFormPageState extends State<ClothingFormPage> {
                           TextField(
                             controller: nameController,
                             onChanged: (v) => isEdit ? provider.updateEditName(v) : provider.updateDraftName(v),
-                            decoration: const InputDecoration(labelText: "Item Name", prefixIcon: Icon(Icons.title, size: 20)),
+                            decoration: InputDecoration(labelText: AppLocalizations.of(context)!.itemName, prefixIcon: const Icon(Icons.title, size: 20)),
                           ),
                           const SizedBox(height: 8),
                           Row(
@@ -320,15 +322,15 @@ class _ClothingFormPageState extends State<ClothingFormPage> {
                                 child: TextField(
                                   controller: styleController,
                                   onChanged: (v) => isEdit ? provider.updateEditStyle(v) : provider.updateDraftStyle(v),
-                                  decoration: const InputDecoration(labelText: "Style", prefixIcon: Icon(Icons.style, size: 20)),
+                                  decoration: InputDecoration(labelText: AppLocalizations.of(context)!.style, prefixIcon: const Icon(Icons.style, size: 20)),
                                 ),
                               ),
                               const SizedBox(width: 8),
                               Expanded(
                                 child: DropdownButtonFormField<ClothingColor>(
                                   value: selectedColor,
-                                  decoration: const InputDecoration(labelText: "Color", prefixIcon: Icon(Icons.color_lens, size: 20)),
-                                  items: ClothingColor.values.map((c) => DropdownMenuItem(value: c, child: Text(c.displayName))).toList(),
+                                  decoration: InputDecoration(labelText: AppLocalizations.of(context)!.color, prefixIcon: const Icon(Icons.color_lens, size: 20)),
+                                  items: ClothingColor.values.map((c) => DropdownMenuItem(value: c, child: Text(c.localizedName(context)))).toList(),
                                   onChanged: (v) {
                                     if (v != null) isEdit ? provider.updateEditColor(v) : provider.updateDraftColor(v);
                                   },
@@ -341,7 +343,7 @@ class _ClothingFormPageState extends State<ClothingFormPage> {
                             controller: descriptionController,
                             onChanged: (v) => isEdit ? provider.updateEditDescription(v) : provider.updateDraftDescription(v),
                             maxLines: 2,
-                            decoration: const InputDecoration(labelText: "Description", prefixIcon: Icon(Icons.description, size: 20)),
+                            decoration: InputDecoration(labelText: AppLocalizations.of(context)!.description, prefixIcon: const Icon(Icons.description, size: 20)),
                           ),
                           const SizedBox(height: 12),
                           CategorySelector(
@@ -370,7 +372,7 @@ class _ClothingFormPageState extends State<ClothingFormPage> {
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                         ),
                         child: Text(
-                          isEdit ? "Update Clothing" : "Save to Wardrobe",
+                          isEdit ? AppLocalizations.of(context)!.updateClothing : AppLocalizations.of(context)!.saveToWardrobe,
                           style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                         ),
                       ),
@@ -380,15 +382,15 @@ class _ClothingFormPageState extends State<ClothingFormPage> {
                         onPressed: () {
                           VDeleteDialog.show(
                             context,
-                            title: "Delete Item?",
-                            content: "Do you want to permanently remove this item?",
+                            title: AppLocalizations.of(context)!.deleteItemTitle,
+                            content: AppLocalizations.of(context)!.deleteItemGeneralConfirm,
                             onDelete: () async {
                               await provider.deleteItem(widget.item!);
                               if (mounted) Navigator.pop(context);
                             },
                           );
                         },
-                        child: const Text("Delete Item", style: TextStyle(color: AppColors.error, fontWeight: FontWeight.bold)),
+                        child: Text(AppLocalizations.of(context)!.deleteItem, style: const TextStyle(color: AppColors.error, fontWeight: FontWeight.bold)),
                       ),
                   ],
                 ),

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import '../../../../core/l10n/app_localizations.dart';
 import 'package:veloura_ai/app/theme/app_colors.dart';
 import 'package:veloura_ai/app/theme/app_text_styles.dart';
+
 
 class InitializationErrorPage extends StatelessWidget {
   final String error;
@@ -12,6 +14,7 @@ class InitializationErrorPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       body: Container(
         width: double.infinity,
@@ -43,13 +46,13 @@ class InitializationErrorPage extends StatelessWidget {
                 ),
                 const SizedBox(height: 32),
                 Text(
-                  "Connection Error",
+                  l10n.connectionError,
                   style: AppTextStyles.h2.copyWith(color: AppColors.textPrimary),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 16),
                 Text(
-                  "Veloura AI was unable to establish a secure connection to our styling servers. Please verify your internet connection and try again.",
+                  l10n.connectionErrorDesc,
                   style: AppTextStyles.bodyLarge.copyWith(
                     color: AppColors.textSecondary,
                     height: 1.5,
@@ -92,7 +95,7 @@ class InitializationErrorPage extends StatelessWidget {
                     elevation: 0,
                   ),
                   child: Text(
-                    "Retry Connection",
+                    l10n.retryConnection,
                     style: AppTextStyles.button,
                   ),
                 ),

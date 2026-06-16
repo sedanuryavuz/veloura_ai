@@ -1,3 +1,6 @@
+import 'package:flutter/material.dart';
+import '../../l10n/app_localizations.dart';
+
 enum ClothingCategory {
   all,
   top,
@@ -10,6 +13,38 @@ extension ClothingCategoryExt on ClothingCategory {
   String get displayName {
     if (this == ClothingCategory.all) return 'All';
     return name[0].toUpperCase() + name.substring(1); 
+  }
+
+  String localizedName(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    switch (this) {
+      case ClothingCategory.all:
+        return l10n.categoryAll;
+      case ClothingCategory.top:
+        return l10n.categoryTop;
+      case ClothingCategory.bottom:
+        return l10n.categoryBottom;
+      case ClothingCategory.shoes:
+        return l10n.categoryShoes;
+      case ClothingCategory.accessories:
+        return l10n.categoryAccessories;
+    }
+  }
+
+  String localizedDescription(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    switch (this) {
+      case ClothingCategory.all:
+        return '';
+      case ClothingCategory.top:
+        return l10n.categoryTopDesc;
+      case ClothingCategory.bottom:
+        return l10n.categoryBottomDesc;
+      case ClothingCategory.shoes:
+        return l10n.categoryShoesDesc;
+      case ClothingCategory.accessories:
+        return l10n.categoryAccessoriesDesc;
+    }
   }
 
   static ClothingCategory fromString(String category) {

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:veloura_ai/core/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import '../provider/auth_provider.dart';
 import '../widgets/auth_button.dart';
@@ -7,6 +8,7 @@ import '../widgets/auth_header.dart';
 import 'register_page.dart';
 import 'forgot_password_page.dart';
 import '../../../../core/navigation/main_navigation_page.dart';
+
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -23,6 +25,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     final authProvider = context.watch<AuthProvider>();
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       body: Container(
@@ -45,30 +48,30 @@ class _LoginPageState extends State<LoginPage> {
               key: _formKey,
               child: Column(
                 children: [
-                  const AuthHeader(
-                    title: "Welcome Back",
-                    subtitle: "Sign in to access your digital wardrobe",
+                  AuthHeader(
+                    title: l10n.welcomeBack,
+                    subtitle: l10n.welcomeBackSubtitle,
                   ),
                   const SizedBox(height: 50),
                   AuthTextField(
                     controller: emailController,
-                    hint: "Email Address",
+                    hint: l10n.emailAddress,
                     icon: Icons.email_outlined,
                     validator: (value) {
-                      if (value == null || value.isEmpty) return "Please enter your email";
-                      if (!value.contains('@')) return "Please enter a valid email";
+                      if (value == null || value.isEmpty) return l10n.pleaseEnterEmail;
+                      if (!value.contains('@')) return l10n.pleaseEnterValidEmail;
                       return null;
                     },
                   ),
                   const SizedBox(height: 20),
                   AuthTextField(
                     controller: passwordController,
-                    hint: "Password",
+                    hint: l10n.password,
                     icon: Icons.lock_outline,
                     obscure: true,
                     validator: (value) {
-                      if (value == null || value.isEmpty) return "Please enter your password";
-                      if (value.length < 6) return "Password must be at least 6 characters";
+                      if (value == null || value.isEmpty) return l10n.pleaseEnterPassword;
+                      if (value.length < 6) return l10n.passwordLengthError;
                       return null;
                     },
                   ),
@@ -84,7 +87,7 @@ class _LoginPageState extends State<LoginPage> {
                         );
                       },
                       child: Text(
-                        "Forgot Password?",
+                        l10n.forgotPasswordLink,
                         style: TextStyle(color: const Color(0xff2D3436).withOpacity(0.6)),
                       ),
                     ),
@@ -100,7 +103,7 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     ),
                   AuthButton(
-                    text: "LOGIN",
+                    text: l10n.loginButton,
                     isLoading: authProvider.isLoading,
                     onTap: () async {
                       if (_formKey.currentState!.validate()) {
@@ -122,7 +125,7 @@ class _LoginPageState extends State<LoginPage> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        "Don't have an account? ",
+                        l10n.dontHaveAccount,
                         style: TextStyle(color: const Color(0xff2D3436).withOpacity(0.6)),
                       ),
                       GestureDetector(
@@ -132,9 +135,9 @@ class _LoginPageState extends State<LoginPage> {
                             MaterialPageRoute(builder: (_) => const RegisterPage()),
                           );
                         },
-                        child: const Text(
-                          "Sign Up",
-                          style: TextStyle(
+                        child: Text(
+                          l10n.signUp,
+                          style: const TextStyle(
                             color: Color(0xffE8B4B8),
                             fontWeight: FontWeight.bold,
                           ),

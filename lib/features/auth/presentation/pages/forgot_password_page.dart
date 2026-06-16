@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:veloura_ai/core/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import '../provider/auth_provider.dart';
 import '../widgets/auth_button.dart';
 import '../widgets/auth_textfield.dart';
 import '../widgets/auth_header.dart';
+
 
 class ForgotPasswordPage extends StatefulWidget {
   const ForgotPasswordPage({super.key});
@@ -23,6 +25,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
   }
 
   void _showSuccessDialog() {
+    final l10n = AppLocalizations.of(context)!;
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -31,19 +34,19 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
           ),
-          title: const Row(
+          title: Row(
             children: [
-              Icon(Icons.check_circle_outline, color: Color(0xffE8B4B8)),
-              SizedBox(width: 10),
+              const Icon(Icons.check_circle_outline, color: Color(0xffE8B4B8)),
+              const SizedBox(width: 10),
               Text(
-                "Check Your Inbox",
-                style: TextStyle(fontWeight: FontWeight.bold),
+                l10n.checkInbox,
+                style: const TextStyle(fontWeight: FontWeight.bold),
               ),
             ],
           ),
-          content: const Text(
-            "If an account exists for this email, a password reset link has been sent. Please check your inbox.",
-            style: TextStyle(fontSize: 16),
+          content: Text(
+            l10n.resetLinkSentMessage,
+            style: const TextStyle(fontSize: 16),
           ),
           actions: [
             TextButton(
@@ -51,9 +54,9 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                 Navigator.of(context).pop(); // pop dialog
                 Navigator.of(context).pop(); // navigate back to login page
               },
-              child: const Text(
-                "Back to Login",
-                style: TextStyle(
+              child: Text(
+                l10n.backToLogin,
+                style: const TextStyle(
                   color: Color(0xffE8B4B8),
                   fontWeight: FontWeight.bold,
                 ),
@@ -68,6 +71,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
   @override
   Widget build(BuildContext context) {
     final authProvider = context.watch<AuthProvider>();
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       body: Container(
@@ -98,21 +102,21 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                     ),
                   ),
                   const SizedBox(height: 10),
-                  const AuthHeader(
-                    title: "Forgot Password",
-                    subtitle: "Get a link to regain access to your account",
+                  AuthHeader(
+                    title: l10n.forgotPasswordTitle,
+                    subtitle: l10n.forgotPasswordSubtitle,
                   ),
                   const SizedBox(height: 50),
                   AuthTextField(
                     controller: emailController,
-                    hint: "Email Address",
+                    hint: l10n.emailAddress,
                     icon: Icons.email_outlined,
                     validator: (value) {
                       if (value == null || value.trim().isEmpty) {
-                        return "Please enter your email";
+                        return l10n.pleaseEnterEmail;
                       }
                       if (!value.contains('@') || !value.contains('.')) {
-                        return "Please enter a valid email address";
+                        return l10n.pleaseEnterValidEmail;
                       }
                       return null;
                     },
@@ -128,7 +132,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                       ),
                     ),
                   AuthButton(
-                    text: "SEND RESET LINK",
+                    text: l10n.sendResetLink,
                     isLoading: authProvider.isLoading,
                     onTap: () async {
                       if (_formKey.currentState!.validate()) {
@@ -146,16 +150,16 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        "Remembered your password? ",
+                        l10n.rememberedPassword,
                         style: TextStyle(color: const Color(0xff2D3436).withOpacity(0.6)),
                       ),
                       GestureDetector(
                         onTap: () {
                           Navigator.pop(context);
                         },
-                        child: const Text(
-                          "Back to Login",
-                          style: TextStyle(
+                        child: Text(
+                          l10n.backToLogin,
+                          style: const TextStyle(
                             color: Color(0xffE8B4B8),
                             fontWeight: FontWeight.bold,
                           ),

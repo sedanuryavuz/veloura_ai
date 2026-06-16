@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:veloura_ai/core/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:veloura_ai/core/providers/language_provider.dart';
 import 'package:veloura_ai/features/profile/presentation/pages/profile_page.dart';
@@ -31,7 +32,7 @@ class _MainNavigationPageState
 
   @override
   Widget build(BuildContext context) {
-    final languageProvider = context.watch<LanguageProvider>();
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       extendBody: true,
@@ -47,11 +48,11 @@ class _MainNavigationPageState
           });
         },
         items: [
-          VBottomNavItem(icon: Icons.checkroom_rounded, label: languageProvider.translate('wardrobe')),
-          VBottomNavItem(icon: Icons.auto_awesome, label: languageProvider.translate('outfits')),
-          VBottomNavItem(icon: Icons.calendar_month_rounded, label: languageProvider.translate('calendar')),
-          VBottomNavItem(icon: Icons.psychology_rounded, label: languageProvider.translate('ai_chat')),
-          VBottomNavItem(icon: Icons.person_rounded, label: languageProvider.translate('profile')),
+          VBottomNavItem(icon: Icons.checkroom_rounded, label: l10n.wardrobe),
+          VBottomNavItem(icon: Icons.auto_awesome, label: l10n.outfits),
+          VBottomNavItem(icon: Icons.calendar_month_rounded, label: l10n.calendar),
+          VBottomNavItem(icon: Icons.psychology_rounded, label: l10n.aiChat),
+          VBottomNavItem(icon: Icons.person_rounded, label: l10n.profile),
         ],
       ),
     );

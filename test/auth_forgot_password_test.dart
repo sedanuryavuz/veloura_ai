@@ -12,6 +12,7 @@ import 'package:veloura_ai/features/auth/domain/usecases/update_password.dart';
 import 'package:veloura_ai/features/auth/domain/usecases/delete_account.dart';
 import 'package:veloura_ai/features/auth/presentation/provider/auth_provider.dart';
 import 'package:veloura_ai/features/auth/presentation/pages/forgot_password_page.dart';
+import 'package:veloura_ai/core/l10n/app_localizations.dart';
 
 class FakeAuthRepository implements AuthRepository {
   bool throwNetworkError = false;
@@ -111,6 +112,9 @@ void main() {
   group('ForgotPasswordPage Widget/Validation tests', () {
     Widget buildTestWidget() {
       return MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('en'),
         home: ChangeNotifierProvider<AuthProvider>.value(
           value: authProvider,
           child: const ForgotPasswordPage(),
@@ -136,7 +140,7 @@ void main() {
       await tester.tap(find.text('SEND RESET LINK'));
       await tester.pumpAndSettle();
 
-      expect(find.text('Please enter a valid email address'), findsOneWidget);
+      expect(find.text('Please enter a valid email'), findsOneWidget);
     });
 
     testWidgets('Successful reset shows Check Your Inbox dialog', (WidgetTester tester) async {
