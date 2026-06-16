@@ -9,12 +9,10 @@ class GenerateOutfit {
 
   Future<Outfit?> execute({
     required List<ClothingItem> wardrobe,
-    required Map<String, dynamic> weather,
     List<String> previousOutfitIds = const [],
   }) {
     return repository.generateAiOutfit(
       wardrobe: wardrobe,
-      weather: weather,
       previousOutfitIds: previousOutfitIds,
     );
   }

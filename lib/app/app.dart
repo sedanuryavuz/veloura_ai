@@ -46,11 +46,23 @@ import '../features/wardrobe/domain/usecases/remove_background.dart';
 import '../features/wardrobe/data/repositories/wardrobe_repository_impl.dart';
 import '../features/wardrobe/data/datasources/wardrobe_remote_data_source.dart';
 
+import 'package:veloura_ai/features/auth/presentation/pages/initialization_error_page.dart';
+
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final String? initError;
+  const MyApp({super.key, this.initError});
 
   @override
   Widget build(BuildContext context) {
+    if (initError != null) {
+      return MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'Veloura AI',
+        theme: AppTheme.light,
+        home: InitializationErrorPage(error: initError!),
+      );
+    }
+
     final wardrobeRepository = WardrobeRepositoryImpl(WardrobeRemoteDataSource());
     final supabaseClient = Supabase.instance.client;
     final authRepository = AuthRepositoryImpl(AuthRemoteDataSourceImpl(supabaseClient));

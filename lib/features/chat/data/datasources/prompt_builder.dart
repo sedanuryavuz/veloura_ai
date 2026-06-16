@@ -37,8 +37,11 @@ Every response must follow this exact schema:
     required Map<String, dynamic> weather,
   }) {
     final temp = weather['temperature'];
-    final desc = weather['description'];
-    final weatherString = temp != null ? "$temp°C, $desc" : "Unknown";
+    final condition = weather['condition'] ?? weather['description'] ?? 'Sunny';
+    final category = weather['category'] ?? 'sunny';
+    final weatherString = temp != null
+        ? "Temperature: $temp°C\nCondition: $condition (Category: $category)"
+        : "Unknown";
 
     final wardrobeItemsStr = wardrobe.isNotEmpty
         ? wardrobe.map((item) {

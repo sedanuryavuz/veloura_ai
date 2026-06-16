@@ -49,8 +49,8 @@ class _OutfitResultPageState extends State<OutfitResultPage> {
 
     await provider.generateAiOutfit(
       wardrobe: domainWardrobe,
-      weather: {"temperature": 22, "description": "Sunny"},
     );
+    
   }
 
   Future<void> _saveOutfit() async {

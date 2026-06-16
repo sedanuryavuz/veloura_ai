@@ -115,7 +115,6 @@ class OutfitProvider extends ChangeNotifier {
 
   Future<void> generateAiOutfit({
     required List<ClothingItem> wardrobe,
-    required Map<String, dynamic> weather,
   }) async {
     _isLoading = true;
     _error = null;
@@ -124,7 +123,6 @@ class OutfitProvider extends ChangeNotifier {
     try {
       final aiOutfit = await generateOutfitUsecase.execute(
         wardrobe: wardrobe,
-        weather: weather,
         previousOutfitIds: _suggestedOutfitIds,
       );
 

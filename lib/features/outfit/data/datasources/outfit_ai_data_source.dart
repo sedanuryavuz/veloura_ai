@@ -102,7 +102,8 @@ Analyze this clothing item and return the result in this exact JSON format.
 
   String _buildPrompt(List<Map<String, dynamic>> items, Map<String, dynamic> weather, List<String> previousOutfitIds) {
     final temp = weather['temperature'] ?? 0;
-    final desc = weather['description'] ?? "unknown";
+    final condition = weather['condition'] ?? weather['description'] ?? 'Sunny';
+    final category = weather['category'] ?? 'sunny';
 
     return '''
 You are a high-end Fashion Stylist and AI Consultant.
@@ -113,7 +114,7 @@ STYLING RULES:
 2. DRESS LOGIC: If you choose a "dress" (from top or specific category), the "bottom" category MUST be empty. Never suggest pants or jeans under a dress.
 3. NO CLASHING: Avoid visually awkward combinations like dress + pants or duplicate layers that don't make sense (e.g., two heavy coats).
 4. ACCESSORIES: Include accessories ONLY if they improve the outfit's aesthetic. They are optional.
-5. SEASONAL APPROPRIATENESS: The outfit must suit the current weather ($temp°C - $desc).
+5. SEASONAL APPROPRIATENESS: The outfit must suit the current weather (Temperature: $temp°C, Condition: $condition, Category: $category).
 6. FRESHNESS: Avoid these specific combinations (IDs): ${previousOutfitIds.join(', ')}. Try to be diverse and creative.
 
 JSON OUTPUT FORMAT:
@@ -131,7 +132,7 @@ Return ONLY valid JSON. No markdown, no extra text.
   ]
 }
 
-Current Weather: $temp°C - $desc
+Current Weather: Temperature: $temp°C, Condition: $condition, Category: $category
 Wardrobe Items: ${jsonEncode(items)}
 ''';
   }

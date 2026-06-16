@@ -4,6 +4,7 @@ import '../../features/calendar/presentation/pages/calendar_page.dart';
 import '../../features/chat/presentation/pages/chat_page.dart';
 import '../../features/outfit/presentation/pages/outfit_page.dart';
 import '../../features/wardrobe/presentation/pages/wardrobe_page.dart';
+import '../widgets/lazy_indexed_stack.dart';
 
 import 'widgets/v_bottom_navigation_bar.dart';
 
@@ -30,7 +31,7 @@ class _MainNavigationPageState
   Widget build(BuildContext context) {
     return Scaffold(
       extendBody: true,
-      body: IndexedStack(
+      body: LazyIndexedStack(
         index: currentIndex,
         children: pages,
       ),

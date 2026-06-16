@@ -51,7 +51,6 @@ class OutfitRepositoryImpl implements OutfitRepository {
   @override
   Future<Outfit?> generateAiOutfit({
     required List<ClothingItem> wardrobe,
-    required Map<String, dynamic> weather,
     List<String> previousOutfitIds = const [],
   }) async {
     final location = await locationDataSource.getLocation();

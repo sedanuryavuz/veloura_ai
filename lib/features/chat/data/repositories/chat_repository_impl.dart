@@ -30,7 +30,12 @@ class ChatRepositoryImpl implements ChatRepository {
         currentWeather = await weatherDataSource.getWeather(location.latitude, location.longitude);
       } catch (e) {
         // Fallback default weather
-        currentWeather = {"temperature": 20, "description": "clear"};
+        currentWeather = {
+          "temperature": 20.0,
+          "condition": "Sunny",
+          "category": "sunny",
+          "description": "Sunny",
+        };
       }
     }
 
