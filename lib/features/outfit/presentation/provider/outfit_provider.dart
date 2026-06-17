@@ -46,8 +46,13 @@ class OutfitProvider extends ChangeNotifier {
   UserAiLimit? get aiLimit => _aiLimit;
 
   final List<String> _suggestedOutfitIds = [];
-
   String? editingOutfitId;
+
+  Map<String, dynamic>? _currentWeather;
+  Map<String, dynamic>? get currentWeather => _currentWeather;
+
+  bool _isLoadingWeather = false;
+  bool get isLoadingWeather => _isLoadingWeather;
 
   Future<void> loadOutfits(String userId) async {
     _isLoading = true;
@@ -220,5 +225,100 @@ class OutfitProvider extends ChangeNotifier {
     selectedAccessory = null;
     editingOutfitId = null;
     notifyListeners();
+  }
+
+  Future<void> fetchWeather() async {
+    if (_currentWeather != null) return;
+    _isLoadingWeather = true;
+    notifyListeners();
+    try {
+      _currentWeather = await outfitRepository.getCurrentWeather();
+    } catch (e) {
+      debugPrint("Error fetching weather in provider: $e");
+      _currentWeather = null;
+    } finally {
+      _isLoadingWeather = false;
+      notifyListeners();
+    }
+  }
+
+  bool isAiGenerated(Outfit outfit) {
+    return outfit.style != null && outfit.style!.isNotEmpty;
+  }
+
+  double calculateWeatherSuitability(Outfit outfit, Map<String, dynamic> weather) {
+    final category = (weather['category'] as String?)?.toLowerCase() ?? 'sunny';
+    final temp = (weather['temperature'] as num?)?.toDouble() ?? 20.0;
+
+    double score = 0.0;
+
+    // Combine all relevant text fields of the outfit and its items to search for keywords
+    final outfitText = [
+      outfit.name,
+      outfit.style ?? '',
+      outfit.reason ?? '',
+      ...outfit.items.map((i) => '${i.name} ${i.style} ${i.description}'),
+    ].join(' ').toLowerCase();
+
+    bool hasAny(List<String> keywords) {
+      return keywords.any((k) => outfitText.contains(k));
+    }
+
+    // Category matching logic
+    if (category == 'rainy' || category == 'stormy') {
+      if (hasAny(['waterproof', 'rain', 'jacket', 'hoodie', 'coat', 'boots', 'trench', 'windbreaker', 'umbrella', 'leather'])) {
+        score += 5.0;
+      }
+      if (hasAny(['shorts', 'sandals', 'tank top', 'slides', 'flip flops', 'skirt'])) {
+        score -= 3.0;
+      }
+    } else if (category == 'sunny') {
+      if (hasAny(['light', 'summer', 'sun', 'shorts', 'sandals', 't-shirt', 'skirt', 'linen', 'sunglasses', 'tank', 'breezy', 'cotton'])) {
+        score += 5.0;
+      }
+      if (hasAny(['heavy coat', 'snow boots', 'puffer', 'winter coat', 'wool coat', 'cashmere'])) {
+        score -= 4.0;
+      }
+    } else if (category == 'snowy') {
+      if (hasAny(['snow', 'boots', 'heavy', 'coat', 'jacket', 'puffer', 'wool', 'gloves', 'scarf', 'knit', 'sweater', 'thermal', 'warm'])) {
+        score += 6.0;
+      }
+      if (hasAny(['shorts', 'sandals', 't-shirt', 'skirt'])) {
+        score -= 5.0;
+      }
+    } else if (category == 'cloudy' || category == 'foggy') {
+      if (hasAny(['cardigan', 'sweater', 'jeans', 'sneakers', 'hoodie', 'jacket', 'pants'])) {
+        score += 2.0;
+      }
+    }
+
+    // Temperature matching logic
+    if (temp < 12.0) {
+      // Very cold
+      if (hasAny(['coat', 'puffer', 'wool', 'sweater', 'heavy', 'boots', 'scarf', 'gloves', 'thermal', 'warm'])) {
+        score += 5.0;
+      }
+      if (hasAny(['shorts', 'sandals', 'skirt', 'tank', 'short sleeve'])) {
+        score -= 5.0;
+      }
+    } else if (temp < 18.0) {
+      // Cool/Moderate
+      if (hasAny(['jacket', 'sweater', 'cardigan', 'pants', 'jeans', 'long sleeve', 'hoodie'])) {
+        score += 3.0;
+      }
+      if (hasAny(['sandals', 'shorts', 'tank'])) {
+        score -= 2.0;
+      }
+    } else if (temp > 24.0) {
+      // Hot
+      if (hasAny(['shorts', 'sandals', 't-shirt', 'skirt', 'tank', 'linen', 'short sleeve', 'light', 'breezy'])) {
+        score += 5.0;
+      }
+      if (hasAny(['coat', 'puffer', 'boots', 'wool', 'sweater', 'heavy', 'jacket'])) {
+        score -= 5.0;
+      }
+    }
+
+    return score;
   }
 }

@@ -18,4 +18,5 @@ abstract class OutfitRepository {
 
   Future<UserAiLimit?> getOrCreateAiLimit(String userId);
   Future<UserAiLimit> incrementAiLimit(String userId);
+  Future<Map<String, dynamic>?> getCurrentWeather();
 }

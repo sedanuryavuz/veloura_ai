@@ -140,4 +140,14 @@ class OutfitRepositoryImpl implements OutfitRepository {
     final updated = await remoteDataSource.updateAiLimit(updatedModel);
     return updated.toEntity();
   }
+
+  @override
+  Future<Map<String, dynamic>?> getCurrentWeather() async {
+    try {
+      final location = await locationDataSource.getLocation();
+      return await weatherDataSource.getWeather(location.latitude, location.longitude);
+    } catch (e) {
+      return null;
+    }
+  }
 }

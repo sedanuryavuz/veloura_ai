@@ -97,6 +97,7 @@ class _CalendarPageState extends State<CalendarPage> {
                                     onTap: isPast ? null : () {
                                       OutfitSelectionSheet.show(
                                         context: context,
+                                        selectedOutfit: event.outfit,
                                         onSelect: (newOutfit) async {
                                           final userId = SupabaseService.currentUserId ?? '';
                                           if (userId.isNotEmpty) {

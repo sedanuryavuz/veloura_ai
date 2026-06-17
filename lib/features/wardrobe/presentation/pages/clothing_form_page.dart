@@ -342,8 +342,13 @@ class _ClothingFormPageState extends State<ClothingFormPage> {
                           TextField(
                             controller: descriptionController,
                             onChanged: (v) => isEdit ? provider.updateEditDescription(v) : provider.updateDraftDescription(v),
-                            maxLines: 2,
-                            decoration: InputDecoration(labelText: AppLocalizations.of(context)!.description, prefixIcon: const Icon(Icons.description, size: 20)),
+                            maxLines: null,
+                            minLines: 3,
+                            keyboardType: TextInputType.multiline,
+                            decoration: InputDecoration(
+                              labelText: AppLocalizations.of(context)!.description,
+                              prefixIcon: const Icon(Icons.description, size: 20),
+                            ),
                           ),
                           const SizedBox(height: 12),
                           CategorySelector(
