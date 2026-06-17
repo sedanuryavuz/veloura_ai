@@ -3,18 +3,20 @@ import 'package:table_calendar/table_calendar.dart';
 import '../../../../app/theme/app_colors.dart';
 import '../../../../app/theme/app_text_styles.dart';
 import '../../../../app/theme/app_decorations.dart';
-
+import '../../domain/entities/calendar_event.dart';
 import 'day_cell.dart';
 
 class CalendarGrid extends StatelessWidget {
   final DateTime focusedDay;
   final DateTime selectedDay;
+  final List<CalendarEvent> events;
   final Function(DateTime, DateTime) onDaySelected;
 
   const CalendarGrid({
     super.key,
     required this.focusedDay,
     required this.selectedDay,
+    required this.events,
     required this.onDaySelected,
   });
 
@@ -59,29 +61,35 @@ class CalendarGrid extends StatelessWidget {
             final now = DateTime.now();
             final today = DateUtils.dateOnly(now);
             final cellDate = DateUtils.dateOnly(day);
+            final hasEvent = events.any((e) => isSameDay(e.date, day));
             
             return DayCell(
               date: day,
               isToday: isSameDay(day, now),
               isPast: cellDate.isBefore(today),
+              hasEvent: hasEvent,
             );
           },
           selectedBuilder: (context, day, focusedDay) {
             final now = DateTime.now();
             final today = DateUtils.dateOnly(now);
             final cellDate = DateUtils.dateOnly(day);
+            final hasEvent = events.any((e) => isSameDay(e.date, day));
 
             return DayCell(
               date: day,
               isSelected: true,
               isToday: isSameDay(day, now),
               isPast: cellDate.isBefore(today),
+              hasEvent: hasEvent,
             );
           },
           todayBuilder: (context, day, focusedDay) {
+            final hasEvent = events.any((e) => isSameDay(e.date, day));
             return DayCell(
               date: day,
               isToday: true,
+              hasEvent: hasEvent,
             );
           },
         ),

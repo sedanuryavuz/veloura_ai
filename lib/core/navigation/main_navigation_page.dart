@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:veloura_ai/core/l10n/app_localizations.dart';
-import 'package:provider/provider.dart';
-import 'package:veloura_ai/core/providers/language_provider.dart';
 import 'package:veloura_ai/features/profile/presentation/pages/profile_page.dart';
+import 'package:veloura_ai/app/theme/app_colors.dart';
 import '../../features/calendar/presentation/pages/calendar_page.dart';
 import '../../features/chat/presentation/pages/chat_page.dart';
 import '../../features/outfit/presentation/pages/outfit_page.dart';
@@ -26,7 +25,6 @@ class _MainNavigationPageState
     WardrobePage(),
     OutfitPage(),
     CalendarPage(),
-    ChatPage(),
     ProfilePage(),
   ];
 
@@ -40,6 +38,26 @@ class _MainNavigationPageState
         index: currentIndex,
         children: pages,
       ),
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.only(bottom: 84.0), // Floating cleanly above the custom bottom nav bar
+        child: FloatingActionButton(
+          onPressed: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => const ChatPage(),
+              ),
+            );
+          },
+          backgroundColor: AppColors.primary,
+          shape: const CircleBorder(),
+          child: const Icon(
+            Icons.psychology_rounded,
+            color: Colors.white,
+            size: 28,
+          ),
+        ),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       bottomNavigationBar: VBottomNavigationBar(
         currentIndex: currentIndex,
         onTap: (index) {
@@ -51,7 +69,6 @@ class _MainNavigationPageState
           VBottomNavItem(icon: Icons.checkroom_rounded, label: l10n.wardrobe),
           VBottomNavItem(icon: Icons.auto_awesome, label: l10n.outfits),
           VBottomNavItem(icon: Icons.calendar_month_rounded, label: l10n.calendar),
-          VBottomNavItem(icon: Icons.psychology_rounded, label: l10n.aiChat),
           VBottomNavItem(icon: Icons.person_rounded, label: l10n.profile),
         ],
       ),

@@ -43,24 +43,6 @@ class _CalendarPageState extends State<CalendarPage> {
 
     return Scaffold(
       appBar: CalendarHeader(title: l10n.outfitPlanner),
-      floatingActionButton: isPast ? null : Padding(
-        padding: const EdgeInsets.only(bottom: 96), // Fixed: Higher margin from bottom nav
-        child: FloatingActionButton(
-          onPressed: provider.isLoading ? null : () {
-            OutfitSelectionSheet.show(
-              context: context,
-              onSelect: (outfit) async {
-                final userId = SupabaseService.currentUserId ?? '';
-                if (userId.isNotEmpty) {
-                  await context.read<CalendarProvider>().addOrUpdateOutfit(userId, outfit);
-                }
-              },
-            );
-          },
-          backgroundColor: AppColors.primary,
-          child: const Icon(Icons.add_rounded, color: Colors.white),
-        ),
-      ),
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
@@ -78,6 +60,7 @@ class _CalendarPageState extends State<CalendarPage> {
                 CalendarGrid(
                   focusedDay: provider.focusedDay,
                   selectedDay: provider.selectedDay,
+                  events: provider.events,
                   onDaySelected: (selected, focused) {
                     context.read<CalendarProvider>().changeSelectedDay(selected);
                   },
@@ -87,7 +70,19 @@ class _CalendarPageState extends State<CalendarPage> {
                   child: provider.isLoading && provider.events.isEmpty
                       ? const Center(child: CircularProgressIndicator())
                       : dayEvents.isEmpty
-                          ? const EmptyEventState()
+                          ? EmptyEventState(
+                              onTap: isPast ? null : () {
+                                OutfitSelectionSheet.show(
+                                  context: context,
+                                  onSelect: (outfit) async {
+                                    final userId = SupabaseService.currentUserId ?? '';
+                                    if (userId.isNotEmpty) {
+                                      await context.read<CalendarProvider>().addOrUpdateOutfit(userId, outfit);
+                                    }
+                                  },
+                                );
+                              },
+                            )
                           : ListView.builder(
                               padding: const EdgeInsets.only(bottom: 120), // Fixed: Clear space for bottom nav
                               itemCount: dayEvents.length,

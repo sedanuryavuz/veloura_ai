@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import '../../../../core/l10n/app_localizations.dart';
 import '../../../../app/theme/app_colors.dart';
 import '../../../../app/theme/app_text_styles.dart';
+import '../../../../core/widgets/v_button.dart';
 
 class EmptyEventState extends StatelessWidget {
-  const EmptyEventState({super.key});
+  final VoidCallback? onTap;
+  const EmptyEventState({super.key, this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -34,6 +36,13 @@ class EmptyEventState extends StatelessWidget {
               style: AppTextStyles.bodyMedium.copyWith(color: AppColors.textSecondary),
               textAlign: TextAlign.center,
             ),
+            if (onTap != null) ...[
+              const SizedBox(height: 24),
+              VButton(
+                text: l10n.newLook,
+                onPressed: onTap,
+              ),
+            ],
           ],
         ),
       ),

@@ -7,6 +7,7 @@ class DayCell extends StatelessWidget {
   final bool isSelected;
   final bool isToday;
   final bool isPast;
+  final bool hasEvent;
 
   const DayCell({
     super.key,
@@ -14,6 +15,7 @@ class DayCell extends StatelessWidget {
     this.isSelected = false,
     this.isToday = false,
     this.isPast = false,
+    this.hasEvent = false,
   });
 
   @override
@@ -47,7 +49,18 @@ class DayCell extends StatelessWidget {
                 fontWeight: isSelected || isToday ? FontWeight.bold : FontWeight.normal,
               ),
             ),
-            if (isToday && !isSelected)
+            if (hasEvent) ...[
+              const SizedBox(height: 2),
+              Container(
+                width: 5,
+                height: 5,
+                decoration: BoxDecoration(
+                  color: isSelected ? Colors.white : AppColors.primary,
+                  shape: BoxShape.circle,
+                ),
+              ),
+            ] else if (isToday && !isSelected) ...[
+              const SizedBox(height: 2),
               Container(
                 width: 4,
                 height: 4,
@@ -56,6 +69,7 @@ class DayCell extends StatelessWidget {
                   shape: BoxShape.circle,
                 ),
               ),
+            ],
           ],
         ),
       ),
