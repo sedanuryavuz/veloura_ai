@@ -1,6 +1,7 @@
 import 'dart:io';
 import '../../domain/entities/outfit.dart';
 import '../../domain/entities/clothing_item.dart';
+import '../../domain/entities/user_ai_limit.dart';
 import '../../domain/repositories/outfit_repository.dart';
 import '../datasources/outfit_remote_data_source.dart';
 import '../datasources/outfit_ai_data_source.dart';
@@ -8,6 +9,7 @@ import '../datasources/background_removal_data_source.dart';
 import '../datasources/storage_data_source.dart';
 import '../models/outfit_model.dart';
 import '../models/clothing_item_model.dart';
+import '../models/user_ai_limit_model.dart';
 
 // Assuming we add these to datasources folder as well
 import '../datasources/location_data_source.dart';
@@ -90,5 +92,52 @@ class OutfitRepositoryImpl implements OutfitRepository {
   @override
   Future<String> uploadImage(File file, String userId) async {
     return await storageDataSource.uploadImage(file, userId);
+  }
+
+  @override
+  Future<UserAiLimit?> getOrCreateAiLimit(String userId) async {
+    final model = await remoteDataSource.getAiLimit(userId);
+    final now = DateTime.now();
+
+    if (model == null) {
+      final newModel = UserAiLimitModel(
+        userId: userId,
+        dailyAiOutfitCount: 0,
+        lastAiResetDate: now,
+        createdAt: now,
+      );
+      final created = await remoteDataSource.createAiLimit(newModel);
+      return created.toEntity();
+    }
+
+    // Check if reset is needed (if last reset was a different day)
+    final lastReset = model.lastAiResetDate;
+    final isNewDay = lastReset.year != now.year ||
+                     lastReset.month != now.month ||
+                     lastReset.day != now.day;
+
+    if (isNewDay) {
+      final updatedModel = model.copyWith(
+        dailyAiOutfitCount: 0,
+        lastAiResetDate: now,
+      );
+      final updated = await remoteDataSource.updateAiLimit(updatedModel);
+      return updated.toEntity();
+    }
+
+    return model.toEntity();
+  }
+
+  @override
+  Future<UserAiLimit> incrementAiLimit(String userId) async {
+    final model = await remoteDataSource.getAiLimit(userId);
+    if (model == null) {
+      throw Exception("AI limit record not found.");
+    }
+    final updatedModel = model.copyWith(
+      dailyAiOutfitCount: model.dailyAiOutfitCount + 1,
+    );
+    final updated = await remoteDataSource.updateAiLimit(updatedModel);
+    return updated.toEntity();
   }
 }

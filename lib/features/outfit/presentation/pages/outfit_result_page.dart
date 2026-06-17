@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../../app/theme/app_colors.dart';
-import '../../../../app/theme/app_decorations.dart';
 import '../../../../app/theme/app_text_styles.dart';
 import '../../../../core/services/supabase_service.dart';
 import '../../../wardrobe/presentation/provider/wardrobe_provider.dart';
@@ -27,6 +26,7 @@ class _OutfitResultPageState extends State<OutfitResultPage> {
       final userId = SupabaseService.currentUserId ?? '';
       if (userId.isNotEmpty) {
         context.read<WardrobeProvider>().loadItems(userId);
+        context.read<OutfitProvider>().loadAiLimits(userId);
       }
     });
   }
@@ -87,6 +87,47 @@ class _OutfitResultPageState extends State<OutfitResultPage> {
     }
   }
 
+  Widget _buildCreditsCard(OutfitProvider outfit) {
+    final limit = outfit.aiLimit;
+    final remaining = limit?.remainingCredits ?? 2;
+    final maxCredits = limit?.maxCredits ?? 2;
+
+    return Padding(
+      padding: const EdgeInsets.only(left: 24, right: 24, top: 12, bottom: 8),
+      child: GlassContainer(
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(Icons.auto_awesome, color: AppColors.primaryDark, size: 16),
+                const SizedBox(width: 8),
+                Text(
+                  "AI OUTFIT CREDITS",
+                  style: AppTextStyles.label.copyWith(
+                    fontSize: 11,
+                    letterSpacing: 1.5,
+                    color: AppColors.primaryDark,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 6),
+            Text(
+              "$remaining / $maxCredits remaining today",
+              style: AppTextStyles.bodyMedium.copyWith(
+                fontWeight: FontWeight.bold,
+                color: AppColors.textPrimary,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final outfit = context.watch<OutfitProvider>();
@@ -118,6 +159,7 @@ class _OutfitResultPageState extends State<OutfitResultPage> {
             : SafeArea(
                 child: Column(
                   children: [
+                    _buildCreditsCard(outfit),
                     if (outfit.error != null)
                       Padding(
                         padding: const EdgeInsets.all(16.0),

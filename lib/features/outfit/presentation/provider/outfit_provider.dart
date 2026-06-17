@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import '../../../../core/constants/enums/categories.dart';
 import '../../domain/entities/outfit.dart';
 import '../../domain/entities/clothing_item.dart';
+import '../../domain/entities/user_ai_limit.dart';
+import '../../domain/repositories/outfit_repository.dart';
 import '../../domain/usecases/get_outfits.dart';
 import '../../domain/usecases/save_outfit.dart';
 import '../../domain/usecases/delete_outfit.dart';
@@ -12,12 +14,14 @@ class OutfitProvider extends ChangeNotifier {
   final SaveOutfit saveOutfitUsecase;
   final DeleteOutfit deleteOutfitUsecase;
   final GenerateOutfit generateOutfitUsecase;
+  final OutfitRepository outfitRepository;
 
   OutfitProvider({
     required this.getOutfitsUsecase,
     required this.saveOutfitUsecase,
     required this.deleteOutfitUsecase,
     required this.generateOutfitUsecase,
+    required this.outfitRepository,
   });
 
   List<Outfit> _outfits = [];
@@ -38,6 +42,9 @@ class OutfitProvider extends ChangeNotifier {
   ClothingItem? selectedShoes;
   ClothingItem? selectedAccessory;
 
+  UserAiLimit? _aiLimit;
+  UserAiLimit? get aiLimit => _aiLimit;
+
   final List<String> _suggestedOutfitIds = [];
 
   String? editingOutfitId;
@@ -54,6 +61,15 @@ class OutfitProvider extends ChangeNotifier {
     } finally {
       _isLoading = false;
       notifyListeners();
+    }
+  }
+
+  Future<void> loadAiLimits(String userId) async {
+    try {
+      _aiLimit = await outfitRepository.getOrCreateAiLimit(userId);
+      notifyListeners();
+    } catch (e) {
+      debugPrint("Error loading AI limits: $e");
     }
   }
 
@@ -121,6 +137,19 @@ class OutfitProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
+      final userId = wardrobe.isNotEmpty ? wardrobe.first.userId : '';
+      if (userId.isEmpty) {
+        throw Exception("User ID not found in wardrobe items.");
+      }
+
+      // Check limits before sending the AI request
+      final currentLimit = await outfitRepository.getOrCreateAiLimit(userId);
+      _aiLimit = currentLimit;
+
+      if (currentLimit != null && !currentLimit.hasCredits) {
+        throw Exception("You've reached your daily limit of 2 outfit generations today.");
+      }
+
       final aiOutfit = await generateOutfitUsecase.execute(
         wardrobe: wardrobe,
         previousOutfitIds: _suggestedOutfitIds,
@@ -139,11 +168,16 @@ class OutfitProvider extends ChangeNotifier {
         // Add to suggestion history to avoid repetition
         final combinationId = aiOutfit.items.map((e) => e.id).join('-');
         _suggestedOutfitIds.add(combinationId);
+
+        // Increment the daily limit count after a successful generation
+        final updatedLimit = await outfitRepository.incrementAiLimit(userId);
+        _aiLimit = updatedLimit;
       } else {
         _error = "AI could not generate an outfit.";
       }
     } catch (e) {
-      _error = e.toString();
+      final errorStr = e.toString();
+      _error = errorStr.startsWith('Exception: ') ? errorStr.replaceFirst('Exception: ', '') : errorStr;
     } finally {
       _isLoading = false;
       notifyListeners();

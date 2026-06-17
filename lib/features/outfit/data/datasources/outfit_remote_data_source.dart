@@ -1,11 +1,16 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/outfit_model.dart';
+import '../models/user_ai_limit_model.dart';
 
 abstract class OutfitRemoteDataSource {
   Future<List<OutfitModel>> getOutfits(String userId);
   Future<OutfitModel> createOutfit(OutfitModel outfit);
   Future<OutfitModel> updateOutfit(OutfitModel outfit);
   Future<void> deleteOutfit(String id);
+
+  Future<UserAiLimitModel?> getAiLimit(String userId);
+  Future<UserAiLimitModel> createAiLimit(UserAiLimitModel limit);
+  Future<UserAiLimitModel> updateAiLimit(UserAiLimitModel limit);
 }
 
 class OutfitRemoteDataSourceImpl implements OutfitRemoteDataSource {
@@ -82,5 +87,39 @@ class OutfitRemoteDataSourceImpl implements OutfitRemoteDataSource {
   Future<void> deleteOutfit(String id) async {
     await _client.from('outfit_items').delete().eq('outfit_id', id);
     await _client.from('outfits').delete().eq('id', id);
+  }
+
+  @override
+  Future<UserAiLimitModel?> getAiLimit(String userId) async {
+    final response = await _client
+        .from('user_ai_limits')
+        .select()
+        .eq('user_id', userId);
+
+    if (response.isEmpty) return null;
+    return UserAiLimitModel.fromMap(response.first);
+  }
+
+  @override
+  Future<UserAiLimitModel> createAiLimit(UserAiLimitModel limit) async {
+    final response = await _client
+        .from('user_ai_limits')
+        .insert(limit.toMap())
+        .select()
+        .single();
+
+    return UserAiLimitModel.fromMap(response);
+  }
+
+  @override
+  Future<UserAiLimitModel> updateAiLimit(UserAiLimitModel limit) async {
+    final response = await _client
+        .from('user_ai_limits')
+        .update(limit.toMap())
+        .eq('user_id', limit.userId)
+        .select()
+        .single();
+
+    return UserAiLimitModel.fromMap(response);
   }
 }

@@ -15,7 +15,6 @@ import 'package:veloura_ai/features/auth/domain/usecases/delete_account.dart';
 import 'package:veloura_ai/features/auth/presentation/provider/auth_provider.dart';
 import 'package:veloura_ai/features/auth/presentation/pages/reset_password_page.dart';
 import 'package:veloura_ai/core/providers/language_provider.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:veloura_ai/core/l10n/app_localizations.dart';
 import 'theme/app_theme.dart';
 
@@ -139,6 +138,7 @@ class _MyAppState extends State<MyApp> {
             saveOutfitUsecase: SaveOutfit(outfitRepository),
             deleteOutfitUsecase: DeleteOutfit(outfitRepository),
             generateOutfitUsecase: GenerateOutfit(outfitRepository),
+            outfitRepository: outfitRepository,
           );
         }),
         ChangeNotifierProvider(create: (_) {
