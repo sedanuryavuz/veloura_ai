@@ -43,13 +43,13 @@ class OutfitAiDataSourceImpl implements OutfitAiDataSource {
 You are a strict JSON generator. Return ONLY valid JSON.
 No markdown, no explanations, no backticks, no extra text.
 IMPORTANT RULES:
-- category must be one of: top, bottom, shoes, accessories
+- category must be one of: top, bottom, shoes, dress, outerwear, bag, hat, socks, jewelry, watch, glasses, belt, accessory
 - color must be one of: black, white, blue, red, green, beige
 
 Schema:
 {
   "name": "string",
-  "category": "top | bottom | shoes | accessories",
+  "category": "top | bottom | shoes | dress | outerwear | bag | hat | socks | jewelry | watch | glasses | belt | accessory",
   "color": "string",
   "style": "string",
   "description": "string"
@@ -110,12 +110,15 @@ You are a high-end Fashion Stylist and AI Consultant.
 Your goal is to create ONE visually balanced, modern, and aesthetically harmonious outfit using ONLY the items provided in the user's wardrobe.
 
 STYLING RULES:
-1. VISUAL HARMONY: Prioritize color compatibility and silhouette balance (e.g., if the top is oversized, the bottom should be more fitted, unless it's a specific streetwear look).
-2. DRESS LOGIC: If you choose a "dress" (from top or specific category), the "bottom" category MUST be empty. Never suggest pants or jeans under a dress.
-3. NO CLASHING: Avoid visually awkward combinations like dress + pants or duplicate layers that don't make sense (e.g., two heavy coats).
-4. ACCESSORIES: Include accessories ONLY if they improve the outfit's aesthetic. They are optional.
-5. SEASONAL APPROPRIATENESS: The outfit must suit the current weather (Temperature: $temp°C, Condition: $condition, Category: $category).
-6. FRESHNESS: Avoid these specific combinations (IDs): ${previousOutfitIds.join(', ')}. Try to be diverse and creative.
+1. VISUAL HARMONY: Prioritize color compatibility and silhouette balance (e.g., if the top/outerwear is oversized, the bottom should be more fitted, unless it's a specific streetwear look).
+2. DRESS LOGIC: A dress can be a complete outfit on its own. If you choose a "dress", the outfit MUST NOT contain a "top" or "bottom". A dress outfit consists of: Dress + Shoes + optional Accessories and Outerwear.
+3. OUTFIT STRUCTURE: An outfit should consist of:
+   - Option A: One "top", one "bottom", one pair of "shoes", optional "outerwear", and optionally multiple accessories.
+   - Option B: One "dress", one pair of "shoes", optional "outerwear", and optionally multiple accessories.
+4. NO CLASHING: Avoid visually awkward combinations like dress + pants or duplicate layers that don't make sense (e.g., two heavy coats).
+5. MULTIPLE ACCESSORIES: You can include multiple accessories (watch, glasses, bag, hat, jewelry, socks, belt, accessory) in the outfit if they improve the overall look. Do not restrict yourself to a single accessory.
+6. SEASONAL APPROPRIATENESS: The outfit must suit the current weather (Temperature: $temp°C, Condition: $condition, Category: $category).
+7. FRESHNESS: Avoid these specific combinations (IDs): ${previousOutfitIds.join(', ')}. Try to be diverse and creative.
 
 JSON OUTPUT FORMAT:
 Return ONLY valid JSON. No markdown, no extra text.
@@ -127,7 +130,7 @@ Return ONLY valid JSON. No markdown, no extra text.
     {
       "id": "must match wardrobe id",
       "name": "item name",
-      "category": "top | bottom | shoes | accessories"
+      "category": "top | bottom | shoes | dress | outerwear | bag | hat | socks | jewelry | watch | glasses | belt | accessory"
     }
   ]
 }

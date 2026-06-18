@@ -569,7 +569,37 @@ class AppLocalizationsTr extends AppLocalizations {
   String get categoryShoes => 'Ayakkabı';
 
   @override
-  String get categoryAccessories => 'Aksesuar';
+  String get categoryAccessories => 'Aksesuar (Eski)';
+
+  @override
+  String get categoryDress => 'Elbise';
+
+  @override
+  String get categoryOuterwear => 'Dış Giyim';
+
+  @override
+  String get categoryBag => 'Çanta';
+
+  @override
+  String get categoryHat => 'Şapka';
+
+  @override
+  String get categorySocks => 'Çorap';
+
+  @override
+  String get categoryJewelry => 'Takı';
+
+  @override
+  String get categoryWatch => 'Saat';
+
+  @override
+  String get categoryGlasses => 'Gözlük';
+
+  @override
+  String get categoryBelt => 'Kemer';
+
+  @override
+  String get categoryAccessory => 'Aksesuar';
 
   @override
   String get categoryTopDesc => 'Üst beden';
@@ -582,6 +612,36 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get categoryAccessoriesDesc => 'Aksesuar';
+
+  @override
+  String get categoryDressDesc => 'Tek parça elbiseler';
+
+  @override
+  String get categoryOuterwearDesc => 'Ceket ve montlar';
+
+  @override
+  String get categoryBagDesc => 'Çantalar';
+
+  @override
+  String get categoryHatDesc => 'Şapkalar';
+
+  @override
+  String get categorySocksDesc => 'Çoraplar';
+
+  @override
+  String get categoryJewelryDesc => 'Kolyeler ve yüzükler';
+
+  @override
+  String get categoryWatchDesc => 'Saatler';
+
+  @override
+  String get categoryGlassesDesc => 'Gözlükler';
+
+  @override
+  String get categoryBeltDesc => 'Kemerler';
+
+  @override
+  String get categoryAccessoryDesc => 'Diğer aksesuarlar';
 
   @override
   String get deleteGeneralTitle => 'Emin misiniz?';

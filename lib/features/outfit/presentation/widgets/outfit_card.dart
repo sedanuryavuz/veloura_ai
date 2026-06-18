@@ -82,13 +82,19 @@ class OutfitCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              _buildImage(outfit.top?.imageUrl, "Top"),
-              const SizedBox(width: 8),
-              _buildImage(outfit.bottom?.imageUrl, "Bottom"),
+              if (outfit.dress != null) ...[
+                _buildImage(outfit.dress?.imageUrl, "Dress"),
+                const SizedBox(width: 8),
+                _buildImage(outfit.outerwear?.imageUrl, "Outerwear"),
+              ] else ...[
+                _buildImage(outfit.top?.imageUrl, "Top"),
+                const SizedBox(width: 8),
+                _buildImage(outfit.bottom?.imageUrl, "Bottom"),
+              ],
               const SizedBox(width: 8),
               _buildImage(outfit.shoes?.imageUrl, "Shoes"),
               const SizedBox(width: 8),
-              _buildImage(outfit.accessory?.imageUrl, "Acc"),
+              _buildImage(outfit.accessories.firstOrNull?.imageUrl, "Acc"),
             ],
           ),
           const SizedBox(height: 12),

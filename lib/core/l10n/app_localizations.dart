@@ -1166,6 +1166,66 @@ abstract class AppLocalizations {
   /// **'Accessories'**
   String get categoryAccessories;
 
+  /// No description provided for @categoryDress.
+  ///
+  /// In en, this message translates to:
+  /// **'Dress'**
+  String get categoryDress;
+
+  /// No description provided for @categoryOuterwear.
+  ///
+  /// In en, this message translates to:
+  /// **'Outerwear'**
+  String get categoryOuterwear;
+
+  /// No description provided for @categoryBag.
+  ///
+  /// In en, this message translates to:
+  /// **'Bag'**
+  String get categoryBag;
+
+  /// No description provided for @categoryHat.
+  ///
+  /// In en, this message translates to:
+  /// **'Hat'**
+  String get categoryHat;
+
+  /// No description provided for @categorySocks.
+  ///
+  /// In en, this message translates to:
+  /// **'Socks'**
+  String get categorySocks;
+
+  /// No description provided for @categoryJewelry.
+  ///
+  /// In en, this message translates to:
+  /// **'Jewelry'**
+  String get categoryJewelry;
+
+  /// No description provided for @categoryWatch.
+  ///
+  /// In en, this message translates to:
+  /// **'Watch'**
+  String get categoryWatch;
+
+  /// No description provided for @categoryGlasses.
+  ///
+  /// In en, this message translates to:
+  /// **'Glasses'**
+  String get categoryGlasses;
+
+  /// No description provided for @categoryBelt.
+  ///
+  /// In en, this message translates to:
+  /// **'Belt'**
+  String get categoryBelt;
+
+  /// No description provided for @categoryAccessory.
+  ///
+  /// In en, this message translates to:
+  /// **'Accessory'**
+  String get categoryAccessory;
+
   /// No description provided for @categoryTopDesc.
   ///
   /// In en, this message translates to:
@@ -1189,6 +1249,66 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Accessories'**
   String get categoryAccessoriesDesc;
+
+  /// No description provided for @categoryDressDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'One-piece outfits'**
+  String get categoryDressDesc;
+
+  /// No description provided for @categoryOuterwearDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Coats and jackets'**
+  String get categoryOuterwearDesc;
+
+  /// No description provided for @categoryBagDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Bags and purses'**
+  String get categoryBagDesc;
+
+  /// No description provided for @categoryHatDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Hats and caps'**
+  String get categoryHatDesc;
+
+  /// No description provided for @categorySocksDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Socks and hosiery'**
+  String get categorySocksDesc;
+
+  /// No description provided for @categoryJewelryDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Necklaces and rings'**
+  String get categoryJewelryDesc;
+
+  /// No description provided for @categoryWatchDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Watches'**
+  String get categoryWatchDesc;
+
+  /// No description provided for @categoryGlassesDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Glasses and sunglasses'**
+  String get categoryGlassesDesc;
+
+  /// No description provided for @categoryBeltDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Belts'**
+  String get categoryBeltDesc;
+
+  /// No description provided for @categoryAccessoryDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Other accessories'**
+  String get categoryAccessoryDesc;
 
   /// No description provided for @deleteGeneralTitle.
   ///

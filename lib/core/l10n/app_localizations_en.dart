@@ -570,6 +570,36 @@ class AppLocalizationsEn extends AppLocalizations {
   String get categoryAccessories => 'Accessories';
 
   @override
+  String get categoryDress => 'Dress';
+
+  @override
+  String get categoryOuterwear => 'Outerwear';
+
+  @override
+  String get categoryBag => 'Bag';
+
+  @override
+  String get categoryHat => 'Hat';
+
+  @override
+  String get categorySocks => 'Socks';
+
+  @override
+  String get categoryJewelry => 'Jewelry';
+
+  @override
+  String get categoryWatch => 'Watch';
+
+  @override
+  String get categoryGlasses => 'Glasses';
+
+  @override
+  String get categoryBelt => 'Belt';
+
+  @override
+  String get categoryAccessory => 'Accessory';
+
+  @override
   String get categoryTopDesc => 'Upper body';
 
   @override
@@ -580,6 +610,36 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get categoryAccessoriesDesc => 'Accessories';
+
+  @override
+  String get categoryDressDesc => 'One-piece outfits';
+
+  @override
+  String get categoryOuterwearDesc => 'Coats and jackets';
+
+  @override
+  String get categoryBagDesc => 'Bags and purses';
+
+  @override
+  String get categoryHatDesc => 'Hats and caps';
+
+  @override
+  String get categorySocksDesc => 'Socks and hosiery';
+
+  @override
+  String get categoryJewelryDesc => 'Necklaces and rings';
+
+  @override
+  String get categoryWatchDesc => 'Watches';
+
+  @override
+  String get categoryGlassesDesc => 'Glasses and sunglasses';
+
+  @override
+  String get categoryBeltDesc => 'Belts';
+
+  @override
+  String get categoryAccessoryDesc => 'Other accessories';
 
   @override
   String get deleteGeneralTitle => 'Are you sure?';

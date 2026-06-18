@@ -41,6 +41,9 @@ class OutfitProvider extends ChangeNotifier {
   ClothingItem? selectedBottom;
   ClothingItem? selectedShoes;
   ClothingItem? selectedAccessory;
+  ClothingItem? selectedDress;
+  ClothingItem? selectedOuterwear;
+  List<ClothingItem> selectedAccessories = [];
 
   UserAiLimit? _aiLimit;
   UserAiLimit? get aiLimit => _aiLimit;
@@ -83,7 +86,9 @@ class OutfitProvider extends ChangeNotifier {
     if (selectedTop != null) items.add(selectedTop!);
     if (selectedBottom != null) items.add(selectedBottom!);
     if (selectedShoes != null) items.add(selectedShoes!);
-    if (selectedAccessory != null) items.add(selectedAccessory!);
+    if (selectedDress != null) items.add(selectedDress!);
+    if (selectedOuterwear != null) items.add(selectedOuterwear!);
+    items.addAll(selectedAccessories);
 
     if (items.isEmpty) return;
 
@@ -164,7 +169,20 @@ class OutfitProvider extends ChangeNotifier {
         selectedTop = aiOutfit.items.where((i) => i.category == ClothingCategory.top).firstOrNull;
         selectedBottom = aiOutfit.items.where((i) => i.category == ClothingCategory.bottom).firstOrNull;
         selectedShoes = aiOutfit.items.where((i) => i.category == ClothingCategory.shoes).firstOrNull;
-        selectedAccessory = aiOutfit.items.where((i) => i.category == ClothingCategory.accessories).firstOrNull;
+        selectedDress = aiOutfit.items.where((i) => i.category == ClothingCategory.dress).firstOrNull;
+        selectedOuterwear = aiOutfit.items.where((i) => i.category == ClothingCategory.outerwear).firstOrNull;
+        selectedAccessories = aiOutfit.items.where((i) => [
+          ClothingCategory.accessories,
+          ClothingCategory.bag,
+          ClothingCategory.hat,
+          ClothingCategory.socks,
+          ClothingCategory.jewelry,
+          ClothingCategory.watch,
+          ClothingCategory.glasses,
+          ClothingCategory.belt,
+          ClothingCategory.accessory,
+        ].contains(i.category)).toList();
+        selectedAccessory = selectedAccessories.firstOrNull;
 
         aiStyle = aiOutfit.style;
         aiReason = aiOutfit.reason;
@@ -191,16 +209,18 @@ class OutfitProvider extends ChangeNotifier {
 
   void selectAccessory(ClothingItem item) {
     selectedAccessory = item;
-    notifyListeners();
+    toggleAccessory(item);
   }
 
   void selectTop(ClothingItem item) {
     selectedTop = item;
+    selectedDress = null;
     notifyListeners();
   }
 
   void selectBottom(ClothingItem item) {
     selectedBottom = item;
+    selectedDress = null;
     notifyListeners();
   }
 
@@ -209,12 +229,48 @@ class OutfitProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void selectDress(ClothingItem item) {
+    selectedDress = item;
+    selectedTop = null;
+    selectedBottom = null;
+    notifyListeners();
+  }
+
+  void selectOuterwear(ClothingItem item) {
+    selectedOuterwear = item;
+    notifyListeners();
+  }
+
+  void toggleAccessory(ClothingItem item) {
+    final index = selectedAccessories.indexWhere((e) => e.id == item.id);
+    if (index != -1) {
+      selectedAccessories.removeAt(index);
+    } else {
+      selectedAccessories.add(item);
+    }
+    selectedAccessory = selectedAccessories.firstOrNull;
+    notifyListeners();
+  }
+
   void setEditingOutfit(Outfit outfit) {
     editingOutfitId = outfit.id;
     selectedTop = outfit.items.where((i) => i.category == ClothingCategory.top).firstOrNull;
     selectedBottom = outfit.items.where((i) => i.category == ClothingCategory.bottom).firstOrNull;
     selectedShoes = outfit.items.where((i) => i.category == ClothingCategory.shoes).firstOrNull;
-    selectedAccessory = outfit.items.where((i) => i.category == ClothingCategory.accessories).firstOrNull;
+    selectedDress = outfit.items.where((i) => i.category == ClothingCategory.dress).firstOrNull;
+    selectedOuterwear = outfit.items.where((i) => i.category == ClothingCategory.outerwear).firstOrNull;
+    selectedAccessories = outfit.items.where((i) => [
+      ClothingCategory.accessories,
+      ClothingCategory.bag,
+      ClothingCategory.hat,
+      ClothingCategory.socks,
+      ClothingCategory.jewelry,
+      ClothingCategory.watch,
+      ClothingCategory.glasses,
+      ClothingCategory.belt,
+      ClothingCategory.accessory,
+    ].contains(i.category)).toList();
+    selectedAccessory = selectedAccessories.firstOrNull;
     notifyListeners();
   }
 
@@ -222,7 +278,10 @@ class OutfitProvider extends ChangeNotifier {
     selectedTop = null;
     selectedBottom = null;
     selectedShoes = null;
+    selectedDress = null;
+    selectedOuterwear = null;
     selectedAccessory = null;
+    selectedAccessories = [];
     editingOutfitId = null;
     notifyListeners();
   }

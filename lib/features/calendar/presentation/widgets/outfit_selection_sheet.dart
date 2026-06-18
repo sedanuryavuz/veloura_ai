@@ -458,13 +458,19 @@ class _OutfitSelectionSheetState extends State<OutfitSelectionSheet> {
             Expanded(
               child: Row(
                 children: [
-                  Expanded(child: _buildMiniImage(outfit.top?.imageUrl, "Top")),
-                  const SizedBox(width: 4),
-                  Expanded(child: _buildMiniImage(outfit.bottom?.imageUrl, "Bottom")),
+                  if (outfit.dress != null) ...[
+                    Expanded(child: _buildMiniImage(outfit.dress?.imageUrl, "Dress")),
+                    const SizedBox(width: 4),
+                    Expanded(child: _buildMiniImage(outfit.outerwear?.imageUrl, "Outerwear")),
+                  ] else ...[
+                    Expanded(child: _buildMiniImage(outfit.top?.imageUrl, "Top")),
+                    const SizedBox(width: 4),
+                    Expanded(child: _buildMiniImage(outfit.bottom?.imageUrl, "Bottom")),
+                  ],
                   const SizedBox(width: 4),
                   Expanded(child: _buildMiniImage(outfit.shoes?.imageUrl, "Shoes")),
                   const SizedBox(width: 4),
-                  Expanded(child: _buildMiniImage(outfit.accessory?.imageUrl, "Acc")),
+                  Expanded(child: _buildMiniImage(outfit.accessories.firstOrNull?.imageUrl, "Acc")),
                 ],
               ),
             ),
@@ -546,10 +552,15 @@ class _OutfitSelectionSheetState extends State<OutfitSelectionSheet> {
                 mainAxisSpacing: 4,
                 physics: const NeverScrollableScrollPhysics(),
                 children: [
-                  _buildMiniImage(outfit.top?.imageUrl, "Top"),
-                  _buildMiniImage(outfit.bottom?.imageUrl, "Bottom"),
+                  if (outfit.dress != null) ...[
+                    _buildMiniImage(outfit.dress?.imageUrl, "Dress"),
+                    _buildMiniImage(outfit.outerwear?.imageUrl, "Outerwear"),
+                  ] else ...[
+                    _buildMiniImage(outfit.top?.imageUrl, "Top"),
+                    _buildMiniImage(outfit.bottom?.imageUrl, "Bottom"),
+                  ],
                   _buildMiniImage(outfit.shoes?.imageUrl, "Shoes"),
-                  _buildMiniImage(outfit.accessory?.imageUrl, "Acc"),
+                  _buildMiniImage(outfit.accessories.firstOrNull?.imageUrl, "Acc"),
                 ],
               ),
             ),

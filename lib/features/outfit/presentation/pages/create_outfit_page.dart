@@ -133,10 +133,12 @@ class _CreateOutfitPageState extends State<CreateOutfitPage> {
                         ),
                         Expanded(
                           child: DefaultTabController(
-                            length: 4,
+                            length: 6,
                             child: Column(
                               children: [
                                 TabBar(
+                                  isScrollable: true,
+                                  tabAlignment: TabAlignment.start,
                                   dividerColor: Colors.transparent,
                                   labelColor: AppColors.accent,
                                   unselectedLabelColor: Colors.grey,
@@ -146,7 +148,9 @@ class _CreateOutfitPageState extends State<CreateOutfitPage> {
                                   tabs: const [
                                     Tab(text: "TOPS"),
                                     Tab(text: "BOTTOMS"),
+                                    Tab(text: "DRESSES"),
                                     Tab(text: "SHOES"),
+                                    Tab(text: "OUTERWEAR"),
                                     Tab(text: "ACCESSORIES"),
                                   ],
                                 ),
@@ -156,22 +160,42 @@ class _CreateOutfitPageState extends State<CreateOutfitPage> {
                                       _ClothingSelector(
                                         items: wardrobe.items.where((i) => i.category == ClothingCategory.top).toList(),
                                         onSelect: (item) => outfit.selectTop(_mapToClothingItem(item)),
-                                        selectedId: outfit.selectedTop?.id,
+                                        selectedIds: {outfit.selectedTop?.id}.whereType<String>().toSet(),
                                       ),
                                       _ClothingSelector(
                                         items: wardrobe.items.where((i) => i.category == ClothingCategory.bottom).toList(),
                                         onSelect: (item) => outfit.selectBottom(_mapToClothingItem(item)),
-                                        selectedId: outfit.selectedBottom?.id,
+                                        selectedIds: {outfit.selectedBottom?.id}.whereType<String>().toSet(),
+                                      ),
+                                      _ClothingSelector(
+                                        items: wardrobe.items.where((i) => i.category == ClothingCategory.dress).toList(),
+                                        onSelect: (item) => outfit.selectDress(_mapToClothingItem(item)),
+                                        selectedIds: {outfit.selectedDress?.id}.whereType<String>().toSet(),
                                       ),
                                       _ClothingSelector(
                                         items: wardrobe.items.where((i) => i.category == ClothingCategory.shoes).toList(),
                                         onSelect: (item) => outfit.selectShoes(_mapToClothingItem(item)),
-                                        selectedId: outfit.selectedShoes?.id,
+                                        selectedIds: {outfit.selectedShoes?.id}.whereType<String>().toSet(),
                                       ),
                                       _ClothingSelector(
-                                        items: wardrobe.items.where((i) => i.category == ClothingCategory.accessories).toList(),
-                                        onSelect: (item) => outfit.selectAccessory(_mapToClothingItem(item)),
-                                        selectedId: outfit.selectedAccessory?.id,
+                                        items: wardrobe.items.where((i) => i.category == ClothingCategory.outerwear).toList(),
+                                        onSelect: (item) => outfit.selectOuterwear(_mapToClothingItem(item)),
+                                        selectedIds: {outfit.selectedOuterwear?.id}.whereType<String>().toSet(),
+                                      ),
+                                      _ClothingSelector(
+                                        items: wardrobe.items.where((i) => [
+                                          ClothingCategory.accessories,
+                                          ClothingCategory.bag,
+                                          ClothingCategory.hat,
+                                          ClothingCategory.socks,
+                                          ClothingCategory.jewelry,
+                                          ClothingCategory.watch,
+                                          ClothingCategory.glasses,
+                                          ClothingCategory.belt,
+                                          ClothingCategory.accessory,
+                                        ].contains(i.category)).toList(),
+                                        onSelect: (item) => outfit.toggleAccessory(_mapToClothingItem(item)),
+                                        selectedIds: outfit.selectedAccessories.map((e) => e.id).toSet(),
                                       ),
                                     ],
                                   ),
@@ -261,16 +285,21 @@ class _OutfitCanvasState extends State<_OutfitCanvas> {
   final Map<String, Offset> _positions = {
     'top': const Offset(0, -60),
     'bottom': const Offset(0, 60),
+    'dress': const Offset(0, 0),
     'shoes': const Offset(0, 160),
-    'accessories': const Offset(100, -100),
+    'outerwear': const Offset(0, -60),
   };
 
   final Map<String, double> _scales = {
     'top': 1.0,
     'bottom': 1.0,
+    'dress': 1.0,
     'shoes': 1.0,
-    'accessories': 1.0,
+    'outerwear': 1.0,
   };
+
+  final Map<String, Offset> _accessoryPositions = {};
+  final Map<String, double> _accessoryScales = {};
 
   @override
   Widget build(BuildContext context) {
@@ -322,6 +351,17 @@ class _OutfitCanvasState extends State<_OutfitCanvas> {
                 _scales['bottom'] = scale;
               },
             ),
+          if (outfit.selectedDress != null)
+            _TransformableItem(
+              key: ValueKey('dress_${outfit.selectedDress!.id}'),
+              imageUrl: outfit.selectedDress!.imageUrl,
+              initialOffset: _positions['dress']!,
+              initialScale: _scales['dress']!,
+              onTransformChanged: (offset, scale) {
+                _positions['dress'] = offset;
+                _scales['dress'] = scale;
+              },
+            ),
           if (outfit.selectedShoes != null)
             _TransformableItem(
               key: ValueKey('shoes_${outfit.selectedShoes!.id}'),
@@ -333,19 +373,39 @@ class _OutfitCanvasState extends State<_OutfitCanvas> {
                 _scales['shoes'] = scale;
               },
             ),
-          if (outfit.selectedAccessory != null)
+          if (outfit.selectedOuterwear != null)
             _TransformableItem(
-              key: ValueKey('accessories_${outfit.selectedAccessory!.id}'),
-              imageUrl: outfit.selectedAccessory!.imageUrl,
-              initialOffset: _positions['accessories']!,
-              initialScale: _scales['accessories']!,
+              key: ValueKey('outerwear_${outfit.selectedOuterwear!.id}'),
+              imageUrl: outfit.selectedOuterwear!.imageUrl,
+              initialOffset: _positions['outerwear']!,
+              initialScale: _scales['outerwear']!,
               onTransformChanged: (offset, scale) {
-                _positions['accessories'] = offset;
-                _scales['accessories'] = scale;
+                _positions['outerwear'] = offset;
+                _scales['outerwear'] = scale;
               },
             ),
-
-        
+          ...outfit.selectedAccessories.asMap().entries.map((entry) {
+            final index = entry.key;
+            final item = entry.value;
+            final initialOffset = _accessoryPositions.putIfAbsent(
+              item.id,
+              () => Offset(100.0 + (index * 15), -100.0 + (index * 15)),
+            );
+            final initialScale = _accessoryScales.putIfAbsent(
+              item.id,
+              () => 1.0,
+            );
+            return _TransformableItem(
+              key: ValueKey('accessory_${item.id}'),
+              imageUrl: item.imageUrl,
+              initialOffset: initialOffset,
+              initialScale: initialScale,
+              onTransformChanged: (offset, scale) {
+                _accessoryPositions[item.id] = offset;
+                _accessoryScales[item.id] = scale;
+              },
+            );
+          }),
         ],
       ),
     );
@@ -426,12 +486,12 @@ class _TransformableItemState extends State<_TransformableItem> {
 class _ClothingSelector extends StatelessWidget {
   final List<dynamic> items;
   final Function(dynamic) onSelect;
-  final String? selectedId;
+  final Set<String> selectedIds;
 
   const _ClothingSelector({
     required this.items,
     required this.onSelect,
-    this.selectedId,
+    required this.selectedIds,
   });
 
   @override
@@ -457,7 +517,7 @@ class _ClothingSelector extends StatelessWidget {
       itemCount: items.length,
       itemBuilder: (context, index) {
         final item = items[index];
-        final isSelected = item.id == selectedId;
+        final isSelected = selectedIds.contains(item.id);
         return GestureDetector(
           onTap: () => onSelect(item),
           child: Column(

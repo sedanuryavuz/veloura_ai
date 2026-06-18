@@ -21,8 +21,26 @@ class CategorySelector extends StatelessWidget {
         return "Lower body";
       case ClothingCategory.shoes:
         return "Footwear";
-      case ClothingCategory.accessories:
-        return "Accessories";
+      case ClothingCategory.dress:
+        return "One-piece";
+      case ClothingCategory.outerwear:
+        return "Outerwear";
+      case ClothingCategory.bag:
+        return "Bag";
+      case ClothingCategory.hat:
+        return "Hat";
+      case ClothingCategory.socks:
+        return "Socks";
+      case ClothingCategory.jewelry:
+        return "Jewelry";
+      case ClothingCategory.watch:
+        return "Watch";
+      case ClothingCategory.glasses:
+        return "Glasses";
+      case ClothingCategory.belt:
+        return "Belt";
+      case ClothingCategory.accessory:
+        return "Accessory";
       default:
         return "";
     }
@@ -48,7 +66,7 @@ class CategorySelector extends StatelessWidget {
           physics: const BouncingScrollPhysics(),
           child: Row(
             children: ClothingCategory.values
-                .where((e) => e != ClothingCategory.all)
+                .where((e) => e != ClothingCategory.all && e != ClothingCategory.accessories)
                 .map((category) {
               final isSelected = value == category;
               return Padding(

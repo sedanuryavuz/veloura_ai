@@ -17,15 +17,19 @@ class CategoryFilter extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final categories = ClothingCategory.values
+        .where((e) => e != ClothingCategory.accessories)
+        .toList();
+
     return SizedBox(
       height: 48,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: 16),
-        itemCount: ClothingCategory.values.length,
+        itemCount: categories.length,
         separatorBuilder: (_, __) => const SizedBox(width: 12),
         itemBuilder: (context, index) {
-          final category = ClothingCategory.values[index];
+          final category = categories[index];
           final isSelected = selected == category;
 
           return GestureDetector(

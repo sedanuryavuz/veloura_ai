@@ -98,10 +98,15 @@ class OutfitLibrarySelectionPage extends StatelessWidget {
                               mainAxisSpacing: 6,
                               physics: const NeverScrollableScrollPhysics(),
                               children: [
-                                _buildMiniImage(outfit.top?.imageUrl),
-                                _buildMiniImage(outfit.bottom?.imageUrl),
+                                if (outfit.dress != null) ...[
+                                  _buildMiniImage(outfit.dress?.imageUrl),
+                                  _buildMiniImage(outfit.outerwear?.imageUrl),
+                                ] else ...[
+                                  _buildMiniImage(outfit.top?.imageUrl),
+                                  _buildMiniImage(outfit.bottom?.imageUrl),
+                                ],
                                 _buildMiniImage(outfit.shoes?.imageUrl),
-                                _buildMiniImage(outfit.accessory?.imageUrl),
+                                _buildMiniImage(outfit.accessories.firstOrNull?.imageUrl),
                               ],
                             ),
                           ),

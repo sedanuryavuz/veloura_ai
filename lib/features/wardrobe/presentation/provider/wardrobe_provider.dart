@@ -121,6 +121,10 @@ class WardrobeProvider extends ChangeNotifier {
 
     if (_selectedCategory == ClothingCategory.all) {
       _filteredItems = List.from(_items);
+    } else if (_selectedCategory == ClothingCategory.accessory) {
+      _filteredItems = _items
+          .where((item) => item.category == ClothingCategory.accessory || item.category == ClothingCategory.accessories)
+          .toList();
     } else {
       _filteredItems = _items
           .where((item) => item.category == _selectedCategory)

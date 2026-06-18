@@ -23,5 +23,18 @@ class Outfit {
   ClothingItem? get top => items.where((i) => i.category == ClothingCategory.top).firstOrNull;
   ClothingItem? get bottom => items.where((i) => i.category == ClothingCategory.bottom).firstOrNull;
   ClothingItem? get shoes => items.where((i) => i.category == ClothingCategory.shoes).firstOrNull;
-  ClothingItem? get accessory => items.where((i) => i.category == ClothingCategory.accessories).firstOrNull;
+  ClothingItem? get dress => items.where((i) => i.category == ClothingCategory.dress).firstOrNull;
+  ClothingItem? get outerwear => items.where((i) => i.category == ClothingCategory.outerwear).firstOrNull;
+  List<ClothingItem> get accessories => items.where((i) => [
+    ClothingCategory.accessories,
+    ClothingCategory.bag,
+    ClothingCategory.hat,
+    ClothingCategory.socks,
+    ClothingCategory.jewelry,
+    ClothingCategory.watch,
+    ClothingCategory.glasses,
+    ClothingCategory.belt,
+    ClothingCategory.accessory,
+  ].contains(i.category)).toList();
+  ClothingItem? get accessory => accessories.firstOrNull;
 }
